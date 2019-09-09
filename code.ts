@@ -1,23 +1,23 @@
 //turn whatever the fuck svg code is into array of points grouped into 4 or 2 ( this is dependant on what type of bezier curve it is. look it up)
-// figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2. 
+// figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
 var svg2Arr = function(svgData: string) {
 	/*
 	svgData: the fucking shitty svg path data fuck 
 	so like eg [[point1,2,3,4],[4,5],[5,6,7,8]....]
 	i fucking hate this shit
 	*/
-	let test = svgData.split(/M|L|C/);
+	let test = svgData.split(/M|L|C/)
 
 	console.log(test)
 	let cleanType = []
-	for(var d in test) {
+	for (var d in test) {
 		console.log(test[d])
 		cleanType.push(test[d].trim())
 	}
 	console.log(cleanType)
-	let a:boolean = true;
+	let a: boolean = true
 	while (a) {
-		a = false;
+		a = false
 	}
 	return
 }
@@ -28,7 +28,7 @@ var distBtwn = function(a: Array<number>, b: Array<number>) {
   a: [x1,y1]
   b: [x2,y2]
   */
-	return Math.sqrt(((b[0] - a[0]) ** 2) + ((b[1] - a[1]) ** 2))
+	return Math.sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2)
 }
 
 //find point between two points a and b over time
@@ -44,10 +44,10 @@ var pointBtwn = function(a: Array<number>, b: Array<number>, t: number) {
 	//find distance between
 	const dist = distBtwn(a, b)
 	//find the unit vector between points a and b
-	// not really unit vector in the math sense tho 
-	const unitVector = [(b[0] - a[0])/ dist, (b[1] - a[1]) / dist]
+	// not really unit vector in the math sense tho
+	const unitVector = [(b[0] - a[0]) / dist, (b[1] - a[1]) / dist]
 
-	return [ a[0] + unitVector[0]*t , a[1] + unitVector[1]*t ]
+	return [a[0] + unitVector[0] * t, a[1] + unitVector[1] * t]
 }
 
 //calculate De Casteljau’s algorithm from 2-4 points
@@ -58,7 +58,6 @@ function pointOnCurve(curve) {
   curve [point1, point2, point3, point4]
      - each point: [x,y]
   */
-
 
 	var casteljau = function(
 		curve,
@@ -73,27 +72,25 @@ function pointOnCurve(curve) {
 
 			let point = pointBtwn(curve[c], curve[c + 1], (t * dist) / time)
 
-			 if (rotation) {
-				let angle = Math.acos(t/dist ) 
+			if (rotation) {
 				//figma wants this number to be in degrees becasue fuck you i guess
-				angle = angle * (180/Math.PI)
-			 	point.push(angle)
-			 }
-			
+				const angle = Math.acos(t / dist) * (180 / Math.PI)
+				point.push(angle)
+			}
+
 			arr.push(point)
 		}
 		return arr
 	}
 
-	let finalarr = [];
+	let finalarr = []
 	const time = 15
 	for (var t = 0; t < time; t++) {
-		
 		let arr1 = casteljau(curve, t, time)
 		let arr2 = casteljau(arr1, t, time)
 		let arr3 = casteljau(arr2, t, time, true)
-		
-		finalarr.push(arr3);
+
+		finalarr.push(arr3)
 	}
 
 	return finalarr
@@ -139,6 +136,7 @@ function text2Curve(node) {
 
 // main code
 //async required because figma api requires you to load fonts into the plugin to use them
+//honestly im really tempted to just hardcode roboto instead
 async function main(): Promise<string | undefined> {
 	let selection = figma.currentPage.selection
 	if (selection.length == 0) {
@@ -154,9 +152,14 @@ async function main(): Promise<string | undefined> {
 	for (const node of figma.currentPage.selection) {
 		if (node.type == 'VECTOR') {
 			console.log(node.vectorPaths[0])
-			svg2Arr( node.vectorPaths[0].data)
+			svg2Arr(node.vectorPaths[0].data)
 			//testdatas
-			const testdata= [[1.388586401939392,21.729154586791992],[ -4.074989438056946, 2.2291507720947266], [6.92498779296875, -3.775749444961548], [28.388591766357422,2.2291524410247803]]
+			const testdata = [
+				[1.388586401939392, 21.729154586791992],
+				[-4.074989438056946, 2.2291507720947266],
+				[6.92498779296875, -3.775749444961548],
+				[28.388591766357422, 2.2291524410247803]
+			]
 			var a = pointOnCurve(testdata)
 			console.log(a)
 			console.log(a.length)
@@ -175,12 +178,9 @@ async function main(): Promise<string | undefined> {
 			// 	figma.currentPage.appendChild(test)
 			// 	newNodes.push(test)
 
-
-
 			// 	}
 
 			// }
-
 		}
 		if (node.type == 'TEXT') {
 			//the font loading part
@@ -207,5 +207,6 @@ figma.ui.onmessage = msg => {
 
 	// Make sure to close the plugin when you're done. Otherwise the plugin will
 	// keep running, which shows the cancel button at the bottom of the screen.
-	
+
+	// what if i dont wanna lmao. default generated tutorial headass
 }

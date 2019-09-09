@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 //turn whatever the fuck svg code is into array of points grouped into 4 or 2 ( this is dependant on what type of bezier curve it is. look it up)
-// figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2. 
+// figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
 var svg2Arr = function (svgData) {
     /*
     svgData: the fucking shitty svg path data fuck
@@ -35,7 +35,7 @@ var distBtwn = function (a, b) {
   a: [x1,y1]
   b: [x2,y2]
   */
-    return Math.sqrt((Math.pow((b[0] - a[0]), 2)) + (Math.pow((b[1] - a[1]), 2)));
+    return Math.sqrt(Math.pow((b[0] - a[0]), 2) + Math.pow((b[1] - a[1]), 2));
 };
 //find point between two points a and b over time
 // in this case time is pixels
@@ -49,7 +49,7 @@ var pointBtwn = function (a, b, t) {
     //find distance between
     const dist = distBtwn(a, b);
     //find the unit vector between points a and b
-    // not really unit vector in the math sense tho 
+    // not really unit vector in the math sense tho
     const unitVector = [(b[0] - a[0]) / dist, (b[1] - a[1]) / dist];
     return [a[0] + unitVector[0] * t, a[1] + unitVector[1] * t];
 };
@@ -66,9 +66,8 @@ function pointOnCurve(curve) {
             const dist = distBtwn(curve[c], curve[c + 1]);
             let point = pointBtwn(curve[c], curve[c + 1], (t * dist) / time);
             if (rotation) {
-                let angle = Math.acos(t / dist);
                 //figma wants this number to be in degrees becasue fuck you i guess
-                angle = angle * (180 / Math.PI);
+                const angle = Math.acos(t / dist) * (180 / Math.PI);
                 point.push(angle);
             }
             arr.push(point);
@@ -117,6 +116,7 @@ function text2Curve(node) {
 }
 // main code
 //async required because figma api requires you to load fonts into the plugin to use them
+//honestly im really tempted to just hardcode roboto instead
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         let selection = figma.currentPage.selection;
@@ -135,7 +135,12 @@ function main() {
                 console.log(node.vectorPaths[0]);
                 svg2Arr(node.vectorPaths[0].data);
                 //testdatas
-                const testdata = [[1.388586401939392, 21.729154586791992], [-4.074989438056946, 2.2291507720947266], [6.92498779296875, -3.775749444961548], [28.388591766357422, 2.2291524410247803]];
+                const testdata = [
+                    [1.388586401939392, 21.729154586791992],
+                    [-4.074989438056946, 2.2291507720947266],
+                    [6.92498779296875, -3.775749444961548],
+                    [28.388591766357422, 2.2291524410247803]
+                ];
                 var a = pointOnCurve(testdata);
                 console.log(a);
                 console.log(a.length);
@@ -176,4 +181,5 @@ figma.ui.onmessage = msg => {
     }
     // Make sure to close the plugin when you're done. Otherwise the plugin will
     // keep running, which shows the cancel button at the bottom of the screen.
+    // what if i dont wanna lmao. default generated tutorial headass
 };
