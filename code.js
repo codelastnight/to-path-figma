@@ -1,3 +1,10 @@
+/*
+    source code for text 2 curve for figma
+    creater: last night
+    website: notsimon.space
+    version: im baby
+    github: https://github.com/codelastnight/text2path-figma
+*/
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,27 +14,50 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+//splits array into chunks
+// got this code from https://medium.com/@Dragonza/four-ways-to-chunk-an-array-e19c889eac4
+// author: Ngoc Vuong https://dragonza.io
+var arrChunk = function (array, size) {
+    const chunked = [];
+    for (let i = 0; i < array.length; i++) {
+        const last = chunked[chunked.length - 1];
+        if (!last || last.length === size) {
+            chunked.push([array[i]]);
+        }
+        else {
+            last.push(array[i]);
+        }
+    }
+    return chunked;
+};
 //turn whatever the fuck svg code is into array of points grouped into 4 or 2 ( this is dependant on what type of bezier curve it is. look it up)
 // figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
 var svg2Arr = function (svgData) {
     /*
     svgData: the fucking shitty svg path data fuck
-    so like eg [[point1,2,3,4],[4,5],[5,6,7,8]....]
+    i want it to end up like: [[point1,2,3,4],[4,5],[5,6,7,8]....]
     i fucking hate this shit
     */
-    let test = svgData.split(/M|L|C/);
-    console.log(test);
+    let test = svgData.split('M'); //split if more then 1 section and gets rid of the extra array value at front
+    test.shift();
+    if (test.length > 1) {
+        // throw error if theres too many lines becasue im lazy
+        throw 'TOO MANY LINES!!!1111 this only supports one continous vector';
+        return;
+    }
     let cleanType = [];
-    for (var d in test) {
-        console.log(test[d]);
-        cleanType.push(test[d].trim());
+    var poo = test[0].trim().split(/ L|C /); // splits string into the chunks of different lines
+    var splicein = [];
+    for (var e in poo) {
+        //magic
+        var sad = arrChunk(poo[e].trim().split(' '), 2);
+        //this adds the last point from the previous array into the next one.
+        sad.unshift(splicein);
+        splicein = sad[sad.length - 1];
+        cleanType.push(sad);
     }
-    console.log(cleanType);
-    let a = true;
-    while (a) {
-        a = false;
-    }
-    return;
+    cleanType.shift(); // get rid of the extra array value
+    return cleanType;
 };
 //distance between points a and b
 var distBtwn = function (a, b) {
@@ -53,9 +83,15 @@ var pointBtwn = function (a, b, t) {
     const unitVector = [(b[0] - a[0]) / dist, (b[1] - a[1]) / dist];
     return [a[0] + unitVector[0] * t, a[1] + unitVector[1] * t];
 };
-//calculate De Casteljau’s algorithm from 2-4 points
+// use the builtin function getTotalLength() to calculate this
+var curveDist = function (curve) {
+    //create an html svg element becasue the builtin function only works on svg files
+    //logic from this dude: http://xahlee.info/js/js_scritping_svg_basics.html
+    const svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+};
+//calculate De Casteljau’s algorithm from 2-4 points  https://javascript.info/bezier-curve
 // basically turns 4 points on a beizer into a curve
-function pointOnCurve(curve) {
+function pointOnCurve(curve, time = 15, rotation = false) {
     /*
   curve [point1, point2, point3, point4]
      - each point: [x,y]
@@ -75,11 +111,13 @@ function pointOnCurve(curve) {
         return arr;
     };
     let finalarr = [];
-    const time = 15;
     for (var t = 0; t < time; t++) {
-        let arr1 = casteljau(curve, t, time);
-        let arr2 = casteljau(arr1, t, time);
-        let arr3 = casteljau(arr2, t, time, true);
+        // the unreadable code below is just this:
+        //could i use recursive for this? yea. am i gonna? no that sounds like work
+        // let arr1 = casteljau(curve, t, time)
+        // let arr2 = casteljau(arr1, t, time)
+        // let arr3 = casteljau(arr2, t, time, rotation)
+        let arr3 = casteljau(casteljau(casteljau(curve, t, time), t, time), t, time, rotation);
         finalarr.push(arr3);
     }
     return finalarr;
@@ -132,8 +170,9 @@ function main() {
         }
         for (const node of figma.currentPage.selection) {
             if (node.type == 'VECTOR') {
-                console.log(node.vectorPaths[0]);
-                svg2Arr(node.vectorPaths[0].data);
+                console.log(node.vectorNetwork);
+                for (var curve in svg2Arr(node.vectorPaths[0].data)) {
+                }
                 //testdatas
                 const testdata = [
                     [1.388586401939392, 21.729154586791992],
@@ -178,6 +217,9 @@ figma.showUI(__html__);
 figma.ui.onmessage = msg => {
     if (msg.type === 'do-the-thing') {
         main();
+    }
+    if (msg.type === 'cancel') {
+        figma.closePlugin('k');
     }
     // Make sure to close the plugin when you're done. Otherwise the plugin will
     // keep running, which shows the cancel button at the bottom of the screen.
