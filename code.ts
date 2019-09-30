@@ -94,7 +94,7 @@ var curveDist = function(curve) {
 }
 //calculate De Casteljau’s algorithm from 2-4 points  https://javascript.info/bezier-curve
 // basically turns 4 points on a beizer into a curve
-function pointOnCurve(curve, time: number = 15, rotation: boolean = false) {
+function pointOnCurve(curve, time: number = 100, rotation: boolean = false) {
 	/*
   curve [point1, point2, point3, point4]
      - each point: [x,y]
