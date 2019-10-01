@@ -84,7 +84,12 @@ var distBtwn = function(a: Array<number>, b: Array<number>) {
 
 //find point between two points a and b over time
 // in this case time is pixels
-var pointBtwn = function(a: Array<number>, b: Array<number>, t: number) {
+var pointBtwn = function(
+	a: Array<number>,
+	b: Array<number>,
+	t: number,
+	time: number
+) {
 	/*
   a: [x1,y1]
   b: [x2,y2]
@@ -96,11 +101,9 @@ var pointBtwn = function(a: Array<number>, b: Array<number>, t: number) {
 		b[c] = Number(b[c])
 	}
 
-	//find distance between
-	const dist = distBtwn(a, b)
 	//find the unit  vector between points a and b
 	// not really unit vector in the math sense tho
-	const unitVector = [(b[0] - a[0]) / 100, (b[1] - a[1]) / 100]
+	const unitVector = [(b[0] - a[0]) / time, (b[1] - a[1]) / time]
 
 	return [a[0] + unitVector[0] * t, a[1] + unitVector[1] * t]
 }
@@ -124,15 +127,28 @@ function pointOnCurve(curve, time: number = 100, rotation: boolean = false) {
 		for (var c = 0; c < curve.length - 1; c++) {
 			const dist = distBtwn(curve[c], curve[c + 1])
 
-			let point = pointBtwn(curve[c], curve[c + 1], t)
+			let point = pointBtwn(curve[c], curve[c + 1], t, time)
+
+			arr.push(point)
 
 			if (rotation) {
 				//figma wants this number to be in degrees becasue fuck you i guess
-				const angle = Math.acos(t / dist) * (180 / Math.PI)
+				let angle =
+					Math.atan(
+						(curve[c + 1][0] - curve[c][0]) / (curve[c + 1][1] - curve[c][1])
+					) *
+					(180 / Math.PI)
+				if (
+					(curve[c + 1][1] - curve[c][1]) / (curve[c + 1][0] - curve[c][0]) >
+					0
+				) {
+					angle = -90 + angle
+				} else {
+					angle = 90 + angle
+				}
+
 				point.push(angle)
 			}
-
-			arr.push(point)
 		}
 		return arr
 	}
@@ -150,7 +166,7 @@ function pointOnCurve(curve, time: number = 100, rotation: boolean = false) {
 			let arr2 = casteljau(arr1, t, time)
 			let arr3 = casteljau(arr2, t, time, rotation)
 			//could i use recursive? yea. am i gonna? no that sounds like work
-			console.log(arr1)
+
 			// let arr1 = casteljau(
 			// 	casteljau(casteljau(curve, t, time), t, time),
 			// 	t,
@@ -268,7 +284,7 @@ async function main(): Promise<string | undefined> {
 	}
 }
 
-function calcCurves(vectors, vectorLengths) {
+function calcCurves(vectors, vectorLengths, x, y) {
 	let pointArr = []
 	for (var curve in vectors) {
 		pointArr.push(...pointOnCurve(vectors[curve], 100, true))
@@ -279,10 +295,10 @@ function calcCurves(vectors, vectorLengths) {
 		if (isNaN(a[b][0][0])) {
 		} else {
 			const test = figma.createRectangle()
-			test.resize(0.1, 0.1)
-			test.y = a[b][0][0]
-			test.x = a[b][0][1]
-			// 	test.rotation=a[b][0][2]
+			test.resizeWithoutConstraints(0.1, 0.4)
+			test.y = a[b][0][1]
+			test.x = a[b][0][0]
+			test.rotation = a[b][0][2]
 			figma.currentPage.appendChild(test)
 			newNodes.push(test)
 		}
@@ -309,7 +325,7 @@ figma.ui.onmessage = msg => {
 		//turns out u dont need this oops
 		//var relvect = abs2rel(msg.vectors[0], msg.x, msg.y)
 		//console.log(relvect)
-		calcCurves(msg.vectors, msg.vectorLengths)
+		calcCurves(msg.vectors, msg.vectorLengths, msg.x, msg.y)
 		figma.closePlugin()
 	}
 	// Make sure to close the plugin when you're done. Otherwise the plugin will
