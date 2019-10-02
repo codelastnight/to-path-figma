@@ -120,7 +120,8 @@ function pointOnCurve(curve, time: number = 100, rotation: boolean = false) {
 		curve,
 		t: number,
 		time: number,
-		rotation: boolean = false
+		rotation: boolean = false,
+		lastrot = 0
 	) {
 		let arr = []
 
@@ -133,20 +134,17 @@ function pointOnCurve(curve, time: number = 100, rotation: boolean = false) {
 
 			if (rotation) {
 				//figma wants this number to be in degrees becasue fuck you i guess
+
 				let angle =
 					Math.atan(
 						(curve[c + 1][0] - curve[c][0]) / (curve[c + 1][1] - curve[c][1])
 					) *
 					(180 / Math.PI)
-				if (
-					(curve[c + 1][1] - curve[c][1]) / (curve[c + 1][0] - curve[c][0]) >
-					0
-				) {
-					angle = -90 + angle
-				} else {
-					angle = 90 + angle
-				}
 
+				angle = 90 + angle
+				if (curve[c + 1][1] - curve[c][1] < 0) {
+					angle = 180 + angle
+				}
 				point.push(angle)
 			}
 		}
@@ -157,14 +155,20 @@ function pointOnCurve(curve, time: number = 100, rotation: boolean = false) {
 
 	if (curve.length == 2) {
 		for (var t = 1; t < time; t++) {
-			let arr1 = casteljau(curve, t, time, rotation)
+			if (finalarr.length != 0) {
+				var lastrot = finalarr[finalarr.length - 1][2]
+			}
+			let arr1 = casteljau(curve, t, time, rotation, lastrot)
 			finalarr.push(arr1)
 		}
 	} else {
 		for (var t = 1; t <= time; t++) {
+			if (finalarr.length != 0) {
+				var lastrot = finalarr[finalarr.length - 1][2]
+			}
 			let arr1 = casteljau(curve, t, time)
 			let arr2 = casteljau(arr1, t, time)
-			let arr3 = casteljau(arr2, t, time, rotation)
+			let arr3 = casteljau(arr2, t, time, rotation, lastrot)
 			//could i use recursive? yea. am i gonna? no that sounds like work
 
 			// let arr1 = casteljau(
