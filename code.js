@@ -56,8 +56,18 @@ var svg2Arr = function (svgData) {
         splicein = sad[sad.length - 1];
         cleanType.push(sad);
     }
-    cleanType.shift(); // get rid of the extra array value
+    cleanType.shift(); // get rid of the extra empty array value
     return cleanType;
+};
+// turns the absolute values of points in to relative
+var abs2rel = function (PointArr, x, y) {
+    var relcurve = [];
+    for (var e in PointArr) {
+        var relpoint = [Number(PointArr[e][0]) - x, Number(PointArr[e][1]) - y];
+        relcurve.push(relpoint);
+        console.log(PointArr[e]);
+    }
+    return relcurve;
 };
 //distance between points a and b
 var distBtwn = function (a, b) {
@@ -65,33 +75,33 @@ var distBtwn = function (a, b) {
   a: [x1,y1]
   b: [x2,y2]
   */
+    for (var c in a) {
+        a[c] = Number(a[c]);
+        b[c] = Number(b[c]);
+    }
     return Math.sqrt(Math.pow((b[0] - a[0]), 2) + Math.pow((b[1] - a[1]), 2));
 };
 //find point between two points a and b over time
 // in this case time is pixels
-var pointBtwn = function (a, b, t) {
+var pointBtwn = function (a, b, t, time) {
     /*
   a: [x1,y1]
   b: [x2,y2]
   time: number
   rotation: also return rotation if true
   */
-    //find distance between
-    const dist = distBtwn(a, b);
-    //find the unit vector between points a and b
+    for (var c in a) {
+        a[c] = Number(a[c]);
+        b[c] = Number(b[c]);
+    }
+    //find the unit  vector between points a and b
     // not really unit vector in the math sense tho
-    const unitVector = [(b[0] - a[0]) / dist, (b[1] - a[1]) / dist];
+    const unitVector = [(b[0] - a[0]) / time, (b[1] - a[1]) / time];
     return [a[0] + unitVector[0] * t, a[1] + unitVector[1] * t];
-};
-// use the builtin function getTotalLength() to calculate this
-var curveDist = function (curve) {
-    //create an html svg element becasue the builtin function only works on svg files
-    //logic from this dude: http://xahlee.info/js/js_scritping_svg_basics.html
-    const svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 };
 //calculate De Casteljau’s algorithm from 2-4 points  https://javascript.info/bezier-curve
 // basically turns 4 points on a beizer into a curve
-function pointOnCurve(curve, time = 15, rotation = false) {
+function pointOnCurve(curve, time = 100, rotation = false) {
     /*
   curve [point1, point2, point3, point4]
      - each point: [x,y]
@@ -100,25 +110,45 @@ function pointOnCurve(curve, time = 15, rotation = false) {
         let arr = [];
         for (var c = 0; c < curve.length - 1; c++) {
             const dist = distBtwn(curve[c], curve[c + 1]);
-            let point = pointBtwn(curve[c], curve[c + 1], (t * dist) / time);
+            let point = pointBtwn(curve[c], curve[c + 1], t, time);
+            arr.push(point);
             if (rotation) {
                 //figma wants this number to be in degrees becasue fuck you i guess
-                const angle = Math.acos(t / dist) * (180 / Math.PI);
+                let angle = Math.atan((curve[c + 1][0] - curve[c][0]) / (curve[c + 1][1] - curve[c][1])) *
+                    (180 / Math.PI);
+                if ((curve[c + 1][1] - curve[c][1]) / (curve[c + 1][0] - curve[c][0]) >
+                    0) {
+                    angle = -90 + angle;
+                }
+                else {
+                    angle = 90 + angle;
+                }
                 point.push(angle);
             }
-            arr.push(point);
         }
         return arr;
     };
     let finalarr = [];
-    for (var t = 0; t < time; t++) {
-        // the unreadable code below is just this:
-        //could i use recursive for this? yea. am i gonna? no that sounds like work
-        // let arr1 = casteljau(curve, t, time)
-        // let arr2 = casteljau(arr1, t, time)
-        // let arr3 = casteljau(arr2, t, time, rotation)
-        let arr3 = casteljau(casteljau(casteljau(curve, t, time), t, time), t, time, rotation);
-        finalarr.push(arr3);
+    if (curve.length == 2) {
+        for (var t = 1; t < time; t++) {
+            let arr1 = casteljau(curve, t, time, rotation);
+            finalarr.push(arr1);
+        }
+    }
+    else {
+        for (var t = 1; t <= time; t++) {
+            let arr1 = casteljau(curve, t, time);
+            let arr2 = casteljau(arr1, t, time);
+            let arr3 = casteljau(arr2, t, time, rotation);
+            //could i use recursive? yea. am i gonna? no that sounds like work
+            // let arr1 = casteljau(
+            // 	casteljau(casteljau(curve, t, time), t, time),
+            // 	t,
+            // 	time,
+            // 	rotation
+            // )
+            finalarr.push(arr3);
+        }
     }
     return finalarr;
 }
@@ -170,9 +200,13 @@ function main() {
         }
         for (const node of figma.currentPage.selection) {
             if (node.type == 'VECTOR') {
-                console.log(node.vectorNetwork);
-                for (var curve in svg2Arr(node.vectorPaths[0].data)) {
-                }
+                const vectors = svg2Arr(node.vectorPaths[0].data);
+                // create an html svg element becasue the builtin function only works on svg files
+                // so apparently you cant even init a svg path here so i have to send it to the UI HTML
+                //MASSIV BrUH
+                var x = node.x;
+                var y = node.y;
+                figma.ui.postMessage({ type: 'svg', vectors, x, y });
                 //testdatas
                 const testdata = [
                     [1.388586401939392, 21.729154586791992],
@@ -180,9 +214,7 @@ function main() {
                     [6.92498779296875, -3.775749444961548],
                     [28.388591766357422, 2.2291524410247803]
                 ];
-                var a = pointOnCurve(testdata);
-                console.log(a);
-                console.log(a.length);
+                //var a = pointOnCurve(testdata)
                 const newNodes = [];
                 // for (var b =0;b < a.length;b++) {
                 // 	if (isNaN(a[b][0][0])) {
@@ -206,8 +238,30 @@ function main() {
                 text2Curve(node);
             }
         }
-        figma.closePlugin();
     });
+}
+function calcCurves(vectors, vectorLengths, x, y) {
+    let pointArr = [];
+    for (var curve in vectors) {
+        pointArr.push(...pointOnCurve(vectors[curve], 100, true));
+    }
+    let a = pointArr;
+    const newNodes = [];
+    for (var b = 0; b < a.length; b++) {
+        if (isNaN(a[b][0][0])) {
+        }
+        else {
+            const test = figma.createRectangle();
+            test.resizeWithoutConstraints(0.1, 0.4);
+            test.y = a[b][0][1];
+            test.x = a[b][0][0];
+            test.rotation = a[b][0][2];
+            figma.currentPage.appendChild(test);
+            newNodes.push(test);
+        }
+    }
+    figma.flatten(newNodes);
+    console.log(pointArr);
 }
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__);
@@ -220,6 +274,14 @@ figma.ui.onmessage = msg => {
     }
     if (msg.type === 'cancel') {
         figma.closePlugin('k');
+    }
+    if (msg.type === 'svg') {
+        console.log(msg);
+        //turns out u dont need this oops
+        //var relvect = abs2rel(msg.vectors[0], msg.x, msg.y)
+        //console.log(relvect)
+        calcCurves(msg.vectors, msg.vectorLengths, msg.x, msg.y);
+        figma.closePlugin();
     }
     // Make sure to close the plugin when you're done. Otherwise the plugin will
     // keep running, which shows the cancel button at the bottom of the screen.
