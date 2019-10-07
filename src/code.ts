@@ -5,47 +5,10 @@
 	version: im baby
 	github: https://github.com/codelastnight/to-path-figma
 */
-import './extra.ts';
-import './curve.ts';
+import * as Curve from './ts/curve';
+import * as Text from './ts/text';
 
 
-//convert text into indivisual characters
-function text2Curve(node) {
-	//convert text into each letter indivusally
-	const newNodes: SceneNode[] = []
-	const charArr = [...node.characters]
-
-	let spacing = 0
-
-	for (let i = 0; i < node.characters.length; i++) {
-		const letter = figma.createText()
-		letter.characters = charArr[i]
-
-		// center the letters
-		letter.textAlignHorizontal = 'CENTER'
-		letter.textAlignVertical = 'CENTER'
-		letter.textAutoResize = 'WIDTH_AND_HEIGHT'
-
-		//copy settings
-		letter.fontSize = node.fontSize
-		letter.fontName = node.fontName
-
-		//set locations
-		letter.x = node.x + spacing
-		letter.y = node.y + node.height + 3
-
-		//spaceing them
-		spacing = spacing + letter.width
-		//rotate
-
-		//append that shit
-		figma.currentPage.appendChild(letter)
-		newNodes.push(letter)
-	}
-	figma.currentPage.selection = newNodes
-	figma.viewport.scrollAndZoomIntoView(newNodes)
-	return
-}
 
 // main code
 //async required because figma api requires you to load fonts into the plugin to use them
@@ -64,8 +27,9 @@ async function main(): Promise<string | undefined> {
 	}
 	for (const node of figma.currentPage.selection) {
 		if (node.type == 'VECTOR') {
-			const vectors = svg2Arr(node.vectorPaths[0].data)
-
+			console.log("bruh")
+			const vectors = Curve.svg2Arr(node.vectorPaths[0].data)
+			console.log("bruh")
 			// create an html svg element becasue the builtin function only works on svg files
 			// so apparently you cant even init a svg path here so i have to send it to the UI HTML
 			//MASSIV BrUH
@@ -108,7 +72,7 @@ async function main(): Promise<string | undefined> {
 				family: node.fontName['family'],
 				style: node.fontName['style']
 			})
-			text2Curve(node)
+			Text.text2Curve(node)
 		}
 	}
 }
@@ -116,7 +80,7 @@ async function main(): Promise<string | undefined> {
 function calcCurves(vectors, vectorLengths, x, y) {
 	let pointArr = []
 	for (var curve in vectors) {
-		pointArr.push(...pointOnCurve(vectors[curve], 100, true))
+		pointArr.push(...Curve.pointOnCurve(vectors[curve], 100, true))
 	}
 	let a = pointArr
 	const newNodes: SceneNode[] = []
@@ -138,6 +102,17 @@ function calcCurves(vectors, vectorLengths, x, y) {
 
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__)
+
+document.addEventListener("mouseup", function() {
+	let selection = figma.currentPage.selection
+	let selecttype = "nothing"
+	if (selection.length == 0) {
+		selecttype = "nothing"
+		console.log("nothing selected")
+	}
+	figma.ui.postMessage({ type: 'selection', selecttype })
+});
+	
 
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the

@@ -10,7 +10,7 @@
 // got this code from https://medium.com/@Dragonza/four-ways-to-chunk-an-array-e19c889eac4
 // author: Ngoc Vuong https://dragonza.io
 
-var arrChunk = function(array, size) {
+export var arrChunk = function(array, size) {
 	const chunked = []
 	for (let i = 0; i < array.length; i++) {
 		const last = chunked[chunked.length - 1]

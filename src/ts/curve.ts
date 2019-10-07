@@ -8,14 +8,14 @@
 
 //turn whatever the fuck svg code is into array of points grouped into 4 or 2 ( this is dependant on what type of bezier curve it is. look it up)
 // figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
-
-var svg2Arr = function(svgData: string) {
+import * as Extra from './extra';
+export var svg2Arr = function(svgData: string) {
 	/*
 	svgData: the fucking shitty svg path data fuck 
 	i want it to end up like: [[point1,2,3,4],[4,5],[5,6,7,8]....]
 	i fucking hate this shit
 	*/
-
+	console.log("bruh2")
 	let test = svgData.split('M') //split if more then 1 section and gets rid of the extra array value at front
 	test.shift()
 	if (test.length > 1) {
@@ -30,7 +30,7 @@ var svg2Arr = function(svgData: string) {
 
 	for (var e in poo) {
 		//magic
-		var sad = arrChunk(poo[e].trim().split(' '), 2)
+		var sad = Extra.arrChunk(poo[e].trim().split(' '), 2)
 
 		//this adds the last point from the previous array into the next one.
 		sad.unshift(splicein)
@@ -44,7 +44,7 @@ var svg2Arr = function(svgData: string) {
 
 // turns the absolute values of points in to relative
 
-var abs2rel = function(PointArr, x, y) {
+export var abs2rel = function(PointArr, x, y) {
 	var relcurve = []
 	for (var e in PointArr) {
 		var relpoint = [Number(PointArr[e][0]) - x, Number(PointArr[e][1]) - y]
@@ -54,7 +54,7 @@ var abs2rel = function(PointArr, x, y) {
 	return relcurve
 }
 //distance between points a and b
-var distBtwn = function(a: Array<number>, b: Array<number>) {
+export var distBtwn = function(a: Array<number>, b: Array<number>) {
 	/*
   a: [x1,y1]
   b: [x2,y2]
@@ -68,7 +68,7 @@ var distBtwn = function(a: Array<number>, b: Array<number>) {
 
 //find point between two points a and b over time
 // in this case time is pixels
-var pointBtwn = function(
+export var pointBtwn = function(
 	a: Array<number>,
 	b: Array<number>,
 	t: number,
@@ -94,7 +94,7 @@ var pointBtwn = function(
 
 //calculate De Casteljau’s algorithm from 2-4 points  https://javascript.info/bezier-curve
 // basically turns 4 points on a beizer into a curve
-function pointOnCurve(curve, time: number = 100, rotation: boolean = false) {
+ export var pointOnCurve = function(curve, time: number = 100, rotation: boolean = false) {
 	/*
   curve [point1, point2, point3, point4]
      - each point: [x,y]
