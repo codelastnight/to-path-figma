@@ -1,3 +1,5 @@
+import './figma-plugin-ds.min.css'
+
 document.getElementById('create').onclick = () => {
     const textbox = document.getElementById('count')
 //    const count = parseInt(textbox.value, 10)

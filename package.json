@@ -24,6 +24,8 @@
   },
   "homepage": "https://github.com/codelastnight/to-path-figma#readme",
   "devDependencies": {
+    "@types/react": "^16.9.5",
+    "@types/react-dom": "^16.9.1",
     "css-loader": "^3.2.0",
     "html-webpack-inline-source-plugin": "0.0.10",
     "html-webpack-plugin": "^3.2.0",
@@ -36,6 +38,8 @@
   },
   "dependencies": {
     "node-sass": "^4.12.0",
+    "react": "^16.10.2",
+    "react-dom": "^16.10.2",
     "sass-loader": "^8.0.0"
   }
 }
