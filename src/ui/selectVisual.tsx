@@ -8,15 +8,15 @@ const selectCase = {
 	text: 'curve and text selected',
 	clone: 'curve and object selected'
 }
-
 function SelectVisual(props) {
 	switch (props.value) {
 		case 'nothing':
 			return (
 				<div className="visual-bell nothing">
-					<h1 className="type type--neg-large-bold">
+					<div className="icon icon--minus"></div>
+					<span className="visual-bell__msg grey">
 						{selectCase[props.value]}
-					</h1>
+					</span>
 				</div>
 			)
 			break
@@ -24,6 +24,7 @@ function SelectVisual(props) {
 		case 'clone':
 			return (
 				<div className="visual-bell">
+					<div className="icon icon--resolve icon--white"></div>
 					<span className="visual-bell__msg">{selectCase[props.value]}</span>
 				</div>
 			)
@@ -31,34 +32,34 @@ function SelectVisual(props) {
 		default:
 			return (
 				<div className="visual-bell visual-bell--error">
+					<div className="icon icon--warning icon--white"></div>
 					<span className="visual-bell__msg">{selectCase[props.value]}</span>
 				</div>
 			)
 	}
 }
 
-export default SelectVisual
-
-export function SelectOptions(props) {
+function SelectOptions(props) {
 	switch (props.value) {
 		case 'nothing':
 			return (
-				<div className="visual-bell nothing">
-					<h1 className="type type--neg-large-bold">
-						{selectCase[props.value]}
-					</h1>
+				<div className="onboarding-tip">
+					<div className="onboarding-tip__icon">
+						<div className="icon icon--visible"></div>
+					</div>
+					<div className="onboarding-tip__msg">
+						Select a curve and an object to start. selecting a curve and text
+						will turn on curve to text mode
+					</div>
 				</div>
 			)
 			break
 		case 'text':
 		case 'clone':
-			return (
-				<div className="visual-bell">
-					<span className="visual-bell__msg">{selectCase[props.value]}</span>
-				</div>
-			)
+			return <div className=""></div>
 			break
 		default:
 			return <div className=""></div>
 	}
 }
+export { SelectOptions, SelectVisual }

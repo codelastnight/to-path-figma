@@ -3,9 +3,8 @@ import * as ReactDOM from 'react-dom'
 import { useState } from 'react'
 import './figma-plugin-ds.min.css'
 import './scss/main.scss'
-import SelectVisual from './ui/selectVisual'
+import { SelectOptions, SelectVisual } from './ui/selectVisual'
 import Create from './ui/Create'
-import SelectOptions from './ui/selectVisual'
 
 declare function require(path: string): any
 function UI() {
@@ -59,20 +58,19 @@ function UI() {
 	return (
 		<div>
 			<div className="main">
-				<h2 className="type type--pos-xlarge-bold">to path</h2>
 				<SelectVisual value={selection} />
+				<SelectOptions value={selection} />
 			</div>
 
 			<div className="footer">
 				<div className="divider"></div>
+				<div className="flex">
+					<Create value={selection} onClick={onCreate} />
 
-				<Create value={selection} onClick={onCreate} />
-
-				<button
-					className="button button--secondary-destructive"
-					onClick={onCancel}>
-					Cancel
-				</button>
+					<div className="help">
+						<button className="button button--secondary link">About</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	)

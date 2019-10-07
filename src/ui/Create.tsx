@@ -4,7 +4,7 @@ let disabled = true
 function Create(props) {
 	switch (props.value) {
 		case 'text':
-		case 'object':
+		case 'clone':
 			disabled = false
 			break
 		default:

@@ -1,12 +1,14 @@
 .nothing {
 	background-color: transparent;
-	color: #868686;
+
 	border-color: #868686;
 	border-style: solid;
 	border-width: 1px;
 	box-shadow: none;
 }
-
+.grey {
+	color: #868686;
+}
 .mr {
 	margin-right: 1em;
 }
@@ -16,6 +18,17 @@
 	bottom: 0;
 	width: 100%;
 	padding: 8px;
+	.flex {
+		display: flex;
+		justify-content: space-between;
+	}
+	.help {
+		display: flex;
+		font-weight: bold;
+	}
+	.link {
+		border-color: transparent;
+	}
 }
 body {
 	margin: 0;
