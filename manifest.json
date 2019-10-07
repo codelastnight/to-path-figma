@@ -2,6 +2,6 @@
   "name": "Text to Path",
   "id": "751576264585242935",
   "api": "1.0.0",
-  "main": "code.js",
-  "ui": "ui.html"
+  "main": "dist/code.js",
+  "ui": "dist/ui.html"
 }
