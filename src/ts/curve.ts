@@ -8,14 +8,13 @@
 
 //turn whatever the fuck svg code is into array of points grouped into 4 or 2 ( this is dependant on what type of bezier curve it is. look it up)
 // figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
-import * as Extra from './extra';
+import * as Extra from './extra'
 export var svg2Arr = function(svgData: string) {
 	/*
 	svgData: the fucking shitty svg path data fuck 
 	i want it to end up like: [[point1,2,3,4],[4,5],[5,6,7,8]....]
 	i fucking hate this shit
 	*/
-	console.log("bruh2")
 	let test = svgData.split('M') //split if more then 1 section and gets rid of the extra array value at front
 	test.shift()
 	if (test.length > 1) {
@@ -42,19 +41,8 @@ export var svg2Arr = function(svgData: string) {
 	return cleanType
 }
 
-// turns the absolute values of points in to relative
-
-export var abs2rel = function(PointArr, x, y) {
-	var relcurve = []
-	for (var e in PointArr) {
-		var relpoint = [Number(PointArr[e][0]) - x, Number(PointArr[e][1]) - y]
-		relcurve.push(relpoint)
-		console.log(PointArr[e])
-	}
-	return relcurve
-}
 //distance between points a and b
-export var distBtwn = function(a: Array<number>, b: Array<number>) {
+var distBtwn = function(a: Array<number>, b: Array<number>) {
 	/*
   a: [x1,y1]
   b: [x2,y2]
@@ -68,7 +56,7 @@ export var distBtwn = function(a: Array<number>, b: Array<number>) {
 
 //find point between two points a and b over time
 // in this case time is pixels
-export var pointBtwn = function(
+var pointBtwn = function(
 	a: Array<number>,
 	b: Array<number>,
 	t: number,
@@ -91,49 +79,52 @@ export var pointBtwn = function(
 
 	return [a[0] + unitVector[0] * t, a[1] + unitVector[1] * t]
 }
+var casteljau = function(
+	curve,
+	t: number,
+	time: number,
+	rotation: boolean = false,
+	lastrot = 0
+) {
+	let arr = []
+
+	for (var c = 0; c < curve.length - 1; c++) {
+		const dist = distBtwn(curve[c], curve[c + 1])
+
+		let point = pointBtwn(curve[c], curve[c + 1], t, time)
+
+		arr.push(point)
+
+		if (rotation) {
+			//figma wants this number to be in degrees becasue fuck you i guess
+
+			let angle =
+				Math.atan(
+					(curve[c + 1][0] - curve[c][0]) / (curve[c + 1][1] - curve[c][1])
+				) *
+				(180 / Math.PI)
+
+			angle = 90 + angle
+			if (curve[c + 1][1] - curve[c][1] < 0) {
+				angle = 180 + angle
+			}
+			point.push(angle)
+		}
+	}
+	return arr
+}
 
 //calculate De Casteljau’s algorithm from 2-4 points  https://javascript.info/bezier-curve
 // basically turns 4 points on a beizer into a curve
- export var pointOnCurve = function(curve, time: number = 100, rotation: boolean = false) {
+export var pointOnCurve = function(
+	curve,
+	time: number = 100,
+	rotation: boolean = false
+) {
 	/*
   curve [point1, point2, point3, point4]
      - each point: [x,y]
   */
-
-	var casteljau = function(
-		curve,
-		t: number,
-		time: number,
-		rotation: boolean = false,
-		lastrot = 0
-	) {
-		let arr = []
-
-		for (var c = 0; c < curve.length - 1; c++) {
-			const dist = distBtwn(curve[c], curve[c + 1])
-
-			let point = pointBtwn(curve[c], curve[c + 1], t, time)
-
-			arr.push(point)
-
-			if (rotation) {
-				//figma wants this number to be in degrees becasue fuck you i guess
-
-				let angle =
-					Math.atan(
-						(curve[c + 1][0] - curve[c][0]) / (curve[c + 1][1] - curve[c][1])
-					) *
-					(180 / Math.PI)
-
-				angle = 90 + angle
-				if (curve[c + 1][1] - curve[c][1] < 0) {
-					angle = 180 + angle
-				}
-				point.push(angle)
-			}
-		}
-		return arr
-	}
 
 	let finalarr = []
 

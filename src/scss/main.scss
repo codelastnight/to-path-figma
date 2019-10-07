@@ -1,0 +1,25 @@
+.nothing {
+	background-color: transparent;
+	color: #868686;
+	border-color: #868686;
+	border-style: solid;
+	border-width: 1px;
+	box-shadow: none;
+}
+
+.mr {
+	margin-right: 1em;
+}
+
+.footer {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	padding: 8px;
+}
+body {
+	margin: 0;
+}
+.main {
+	margin: 8px;
+}
