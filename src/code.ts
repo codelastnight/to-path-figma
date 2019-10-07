@@ -3,7 +3,7 @@
 	creater: last night
 	website: notsimon.space
 	version: im baby
-	github: https://github.com/codelastnight/text2path-figma
+	github: https://github.com/codelastnight/to-path-figma
 */
 
 //splits array into chunks
