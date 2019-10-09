@@ -7,14 +7,13 @@ also works with text
 
 
 
-##development setup
+## development setup
 
 to install packages:
-```npm i``` 
+`npm i` 
 
 to run:
-
-```npm run prod```
+`npm run prod`
 
 Helpful resources:
 
