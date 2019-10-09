@@ -6,6 +6,14 @@
 	github: https://github.com/codelastnight/to-path-figma
 */
 
+// case for handling spaces, becasue figma will auto them as 0 width
+// character 8197 isnt the best but you kno what... its good enough
+// this didn't need to be a function but like i already wrote so
+var safeSpace = function(c: string) {
+	return c.replace(" ",String.fromCharCode(8197));
+}
+
+
 //convert text into indivisual characters
 
 export function text2Curve(node) {
@@ -17,7 +25,7 @@ export function text2Curve(node) {
 
 	for (let i = 0; i < node.characters.length; i++) {
 		const letter = figma.createText()
-		letter.characters = charArr[i]
+		letter.characters = safeSpace(charArr[i])
 
 		// center the letters
 		letter.textAlignHorizontal = 'CENTER'

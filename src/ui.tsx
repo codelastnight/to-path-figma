@@ -11,7 +11,9 @@ function UI() {
 	const [selection, showselection] = useState('nothing')
 
 	const onCreate = () => {
+		console.log('bruh')
 		parent.postMessage({ pluginMessage: { type: 'do-the-thing' } }, '*')
+		
 	}
 	const onCancel = () => {
 		parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')

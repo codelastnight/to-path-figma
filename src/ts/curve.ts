@@ -5,10 +5,12 @@
 	version: im baby
 	github: https://github.com/codelastnight/to-path-figma
 */
+import * as Extra from './extra'
 
 //turn whatever the fuck svg code is into array of points grouped into 4 or 2 ( this is dependant on what type of bezier curve it is. look it up)
 // figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
-import * as Extra from './extra'
+
+
 export var svg2Arr = function(svgData: string) {
 	/*
 	svgData: the fucking shitty svg path data fuck 
@@ -47,10 +49,10 @@ var distBtwn = function(a: Array<number>, b: Array<number>) {
   a: [x1,y1]
   b: [x2,y2]
   */
-	for (var c in a) {
-		a[c] = Number(a[c])
-		b[c] = Number(b[c])
-	}
+	// for (var c in a) {
+	// 	a[c] = Number(a[c])
+	// 	b[c] = Number(b[c])
+	// }
 	return Math.sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2)
 }
 
@@ -84,7 +86,6 @@ var casteljau = function(
 	t: number,
 	time: number,
 	rotation: boolean = false,
-	lastrot = 0
 ) {
 	let arr = []
 
@@ -114,6 +115,8 @@ var casteljau = function(
 	return arr
 }
 
+
+
 //calculate De Casteljau’s algorithm from 2-4 points  https://javascript.info/bezier-curve
 // basically turns 4 points on a beizer into a curve
 export var pointOnCurve = function(
@@ -130,31 +133,39 @@ export var pointOnCurve = function(
 
 	if (curve.length == 2) {
 		for (var t = 1; t < time; t++) {
-			if (finalarr.length != 0) {
-				var lastrot = finalarr[finalarr.length - 1][2]
-			}
-			let arr1 = casteljau(curve, t, time, rotation, lastrot)
+			
+			let arr1 = casteljau(curve, t, time, rotation, )
 			finalarr.push(arr1)
 		}
 	} else {
 		for (var t = 1; t <= time; t++) {
-			if (finalarr.length != 0) {
-				var lastrot = finalarr[finalarr.length - 1][2]
-			}
-			let arr1 = casteljau(curve, t, time)
-			let arr2 = casteljau(arr1, t, time)
-			let arr3 = casteljau(arr2, t, time, rotation, lastrot)
+			
+		// let arr1 = casteljau(curve, t, time)
+		// let arr2 = casteljau(arr1, t, time)
+		// let arr3 = casteljau(arr2, t, time, rotation, )
 			//could i use recursive? yea. am i gonna? no that sounds like work
 
-			// let arr1 = casteljau(
-			// 	casteljau(casteljau(curve, t, time), t, time),
-			// 	t,
-			// 	time,
-			// 	rotation
-			// )
-			finalarr.push(arr3)
+			let arr1 = casteljau(
+				casteljau(casteljau(curve, t, time), t, time),
+				t,
+				time,
+				rotation
+			)
+			if (finalarr.length > 0) {
+				const addDist = finalarr[finalarr.length -1][0][3] + distBtwn(finalarr[finalarr.length -1][0],arr1[0])
+				console.log()
+				arr1[0].push(addDist)
+			} else {
+				arr1[0].push(0)
+			}
+				
+
+			finalarr.push(arr1)
 		}
 	}
+	// calculate the distance between entirepoints to estimate the distance at that specific point 
 
+	
+	
 	return finalarr
 }

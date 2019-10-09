@@ -14,7 +14,7 @@ function Create(props) {
 		<button
 			className="button button--primary mr"
 			id="create"
-			onClick={props.onCreate}
+			onClick={props.onClick}
 			disabled={disabled}>
 			Create
 		</button>

@@ -21,7 +21,7 @@ async function main(): Promise<string | undefined> {
 			// so apparently you cant even init a svg path here so i have to send it to the UI HTML??? MASSIV BrUH
 			var x = node.x
 			var y = node.y
-
+			// massive iq moment
 			figma.ui.postMessage({ type: 'svg', vectors, x, y })
 		}
 		if (node.type == 'TEXT') {
@@ -36,7 +36,7 @@ async function main(): Promise<string | undefined> {
 	return
 }
 
-function calcCurves(vectors, vectorLengths, x, y) {
+function calcCurves(vectors, vectorLengths=null, x, y) {
 	let pointArr = []
 	for (var curve in vectors) {
 		pointArr.push(...Curve.pointOnCurve(vectors[curve], 100, true))
@@ -74,6 +74,7 @@ figma.ui.onmessage = async msg => {
 		figma.closePlugin('k')
 	}
 	if (msg.type === 'svg') {
+		console.log(msg.vectorLengths)
 		calcCurves(msg.vectors, msg.vectorLengths, msg.x, msg.y)
 		figma.closePlugin()
 	}
