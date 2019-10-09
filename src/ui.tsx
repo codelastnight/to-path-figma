@@ -12,7 +12,9 @@ function UI() {
 	const [about, showabout] = useState(false)
 
 	const onCreate = () => {
+		console.log('bruh')
 		parent.postMessage({ pluginMessage: { type: 'do-the-thing' } }, '*')
+		
 	}
 	const onCancel = () => {
 		parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')

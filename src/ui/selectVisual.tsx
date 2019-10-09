@@ -48,8 +48,11 @@ function SelectOptions(props) {
 						<div className="icon icon--visible"></div>
 					</div>
 					<div className="onboarding-tip__msg">
-						Select a curve and an object to start. selecting a curve and text
-						will turn on curve to text mode
+						Select a curve and an object to start. 
+						<ul>
+							<li>select an object to have it repeat along a curve</li>
+							<li>select text to have the character follow the curve</li>
+						</ul>
 					</div>
 				</div>
 			)
