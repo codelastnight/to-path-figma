@@ -5,6 +5,7 @@ import './figma-plugin-ds.min.css'
 import './scss/main.scss'
 import { SelectOptions, SelectVisual } from './ui/selectVisual'
 import Create from './ui/Create'
+import * as Curve from './ts/curve'
 
 declare function require(path: string): any
 function UI() {
@@ -12,9 +13,7 @@ function UI() {
 	const [about, showabout] = useState(false)
 
 	const onCreate = () => {
-		console.log('bruh')
 		parent.postMessage({ pluginMessage: { type: 'do-the-thing' } }, '*')
-		
 	}
 	const onCancel = () => {
 		parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
@@ -25,33 +24,33 @@ function UI() {
 
 		switch (event.data.pluginMessage.type) {
 			case 'svg':
-				const vectors = event.data.pluginMessage.vectors
-				let vectorLengths = []
-				for (var curve in vectors) {
-					let back2svg = vectors[curve].slice(0)
-					back2svg.splice(0, 0, 'M')
+				// const vectors: Array<Array<Point>> = event.data.pluginMessage.vectors
+				// let vectorLengths = []
+				// for (var curve in vectors) {
+				//   let back2svg = vectors[curve].slice(0)
+				//   back2svg.splice(0, 0, 'M')
 
-					if (back2svg.length == 3) {
-						back2svg.splice(2, 0, 'L')
-					} else {
-						back2svg.splice(2, 0, 'C')
-					}
-					var a = back2svg.join(' ')
-					let path = document.createElementNS(
-						'http://www.w3.org/2000/svg',
-						'path'
-					)
-					path.setAttribute('d', a.replace(/,/g, ' '))
-					// use the builtin function getTotalLength() to calculate length
-					var svglength = path.getTotalLength()
-					vectorLengths.push(svglength)
-				}
-				var x = event.data.pluginMessage.x
-				var y = event.data.pluginMessage.y
-				parent.postMessage(
-					{ pluginMessage: { type: 'svg', vectorLengths, vectors, x, y } },
-					'*'
-				)
+				//   if (back2svg.length == 3) {
+				//     back2svg.splice(2, 0, 'L')
+				//   } else {
+				//     back2svg.splice(2, 0, 'C')
+				//   }
+				//   var a = back2svg.join(' ')
+				//   let path = document.createElementNS(
+				//     'http://www.w3.org/2000/svg',
+				//     'path'
+				//   )
+				//   path.setAttribute('d', a.replace(/,/g, ' '))
+				//   // use the builtin function getTotalLength() to calculate length
+				//   var svglength = path.getTotalLength()
+				//   vectorLengths.push(svglength)
+				// }
+				// var x = event.data.pluginMessage.x
+				// var y = event.data.pluginMessage.y
+				// parent.postMessage(
+				//   { pluginMessage: { type: 'svg', vectorLengths, vectors, x, y } },
+				//   '*'
+				// )
 				break
 			case 'selection':
 				showselection(event.data.pluginMessage.value)

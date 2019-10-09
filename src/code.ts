@@ -16,13 +16,19 @@ import * as Text from './ts/text'
 async function main(): Promise<string | undefined> {
 	for (const node of figma.currentPage.selection) {
 		if (node.type == 'VECTOR') {
-			const vectors = Curve.svg2Arr(node.vectorPaths[0].data)
-			// create an html svg element becasue the builtin function only works on svg files
-			// so apparently you cant even init a svg path here so i have to send it to the UI HTML??? MASSIV BrUH
-			var x = node.x
-			var y = node.y
-			// massive iq moment
-			figma.ui.postMessage({ type: 'svg', vectors, x, y })
+			const vectors: Array<Array<Point>> = Curve.svg2Point(
+				node.vectorPaths[0].data
+			)
+
+			calcCurves(vectors)
+
+			figma.closePlugin()
+			// // create an html svg element becasue the builtin function only works on svg files
+			// // so apparently you cant even init a svg path here so i have to send it to the UI HTML??? MASSIV BrUH
+			// var x = node.x
+			// var y = node.y
+			// // massive iq moment
+			// //figma.ui.postMessage({ type: 'svg', vectors, x, y })
 		}
 		if (node.type == 'TEXT') {
 			//the font loading part
@@ -36,21 +42,25 @@ async function main(): Promise<string | undefined> {
 	return
 }
 
-function calcCurves(vectors, vectorLengths=null, x, y) {
-	let pointArr = []
+function calcCurves(
+	vectors: Array<Array<Point>>,
+	vectorLengths = null,
+	x = null,
+	y = null
+) {
+	let pointArr: Array<Point> = []
 	for (var curve in vectors) {
 		pointArr.push(...Curve.pointOnCurve(vectors[curve], 100, true))
 	}
-	let a = pointArr
 	const newNodes: SceneNode[] = []
-	for (var b = 0; b < a.length; b++) {
-		if (isNaN(a[b][0][0])) {
+	for (var b = 0; b < pointArr.length; b++) {
+		if (isNaN(pointArr[b].x)) {
 		} else {
 			const test = figma.createRectangle()
 			test.resizeWithoutConstraints(0.1, 0.4)
-			test.y = a[b][0][1]
-			test.x = a[b][0][0]
-			test.rotation = a[b][0][2]
+			test.y = pointArr[b].y
+			test.x = pointArr[b].x
+			test.rotation = pointArr[b].angle
 			figma.currentPage.appendChild(test)
 			newNodes.push(test)
 		}

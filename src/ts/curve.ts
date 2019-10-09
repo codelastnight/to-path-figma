@@ -10,8 +10,7 @@ import * as Extra from './extra'
 //turn whatever the fuck svg code is into array of points grouped into 4 or 2 ( this is dependant on what type of bezier curve it is. look it up)
 // figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
 
-
-export var svg2Arr = function(svgData: string) {
+var svg2Arr = function(svgData: string) {
 	/*
 	svgData: the fucking shitty svg path data fuck 
 	i want it to end up like: [[point1,2,3,4],[4,5],[5,6,7,8]....]
@@ -42,9 +41,23 @@ export var svg2Arr = function(svgData: string) {
 
 	return cleanType
 }
+//cleans and typeifies the point data
+export var svg2Point = function(svgData: string) {
+	const cleanArray = svg2Arr(svgData)
+	for (var each in cleanArray) {
+		for (var i in cleanArray[each]) {
+			const newpoint: Point = {
+				x: cleanArray[each][i][0],
+				y: cleanArray[each][i][1]
+			}
+			cleanArray[each][i] = newpoint
+		}
+	}
+	return cleanArray
+}
 
 //distance between points a and b
-var distBtwn = function(a: Array<number>, b: Array<number>) {
+var distBtwn = function(a: Point, b: Point) {
 	/*
   a: [x1,y1]
   b: [x2,y2]
@@ -53,39 +66,37 @@ var distBtwn = function(a: Array<number>, b: Array<number>) {
 	// 	a[c] = Number(a[c])
 	// 	b[c] = Number(b[c])
 	// }
-	return Math.sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2)
+	return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2)
 }
 
 //find point between two points a and b over time
 // in this case time is pixels
-var pointBtwn = function(
-	a: Array<number>,
-	b: Array<number>,
-	t: number,
-	time: number
-) {
+var pointBtwn = function(a: Point, b: Point, t: number, time: number) {
 	/*
   a: [x1,y1]
   b: [x2,y2]
   time: number
   rotation: also return rotation if true
   */
-	for (var c in a) {
-		a[c] = Number(a[c])
-		b[c] = Number(b[c])
-	}
 
+	a.x = Number(a.x)
+	a.y = Number(a.y)
+	b.x = Number(b.x)
+	b.y = Number(b.y)
 	//find the unit  vector between points a and b
 	// not really unit vector in the math sense tho
-	const unitVector = [(b[0] - a[0]) / time, (b[1] - a[1]) / time]
-
-	return [a[0] + unitVector[0] * t, a[1] + unitVector[1] * t]
+	const unitVector: Point = { x: (b.x - a.x) / time, y: (b.y - a.y) / time }
+	const pointbtwn: Point = {
+		x: a.x + unitVector.x * t,
+		y: a.y + unitVector.y * t
+	}
+	return pointbtwn
 }
 var casteljau = function(
-	curve,
+	curve: Array<Point>,
 	t: number,
 	time: number,
-	rotation: boolean = false,
+	rotation: boolean = false
 ) {
 	let arr = []
 
@@ -101,26 +112,24 @@ var casteljau = function(
 
 			let angle =
 				Math.atan(
-					(curve[c + 1][0] - curve[c][0]) / (curve[c + 1][1] - curve[c][1])
+					(curve[c + 1].x - curve[c].x) / (curve[c + 1].y - curve[c].y)
 				) *
 				(180 / Math.PI)
 
 			angle = 90 + angle
-			if (curve[c + 1][1] - curve[c][1] < 0) {
+			if (curve[c + 1].y - curve[c].y < 0) {
 				angle = 180 + angle
 			}
-			point.push(angle)
+			point.angle = angle
 		}
 	}
 	return arr
 }
 
-
-
 //calculate De Casteljau’s algorithm from 2-4 points  https://javascript.info/bezier-curve
 // basically turns 4 points on a beizer into a curve
 export var pointOnCurve = function(
-	curve,
+	curve: Array<Point>,
 	time: number = 100,
 	rotation: boolean = false
 ) {
@@ -133,16 +142,14 @@ export var pointOnCurve = function(
 
 	if (curve.length == 2) {
 		for (var t = 1; t < time; t++) {
-			
-			let arr1 = casteljau(curve, t, time, rotation, )
+			let arr1 = casteljau(curve, t, time, rotation)
 			finalarr.push(arr1)
 		}
 	} else {
 		for (var t = 1; t <= time; t++) {
-			
-		// let arr1 = casteljau(curve, t, time)
-		// let arr2 = casteljau(arr1, t, time)
-		// let arr3 = casteljau(arr2, t, time, rotation, )
+			// let arr1 = casteljau(curve, t, time)
+			// let arr2 = casteljau(arr1, t, time)
+			// let arr3 = casteljau(arr2, t, time, rotation, )
 			//could i use recursive? yea. am i gonna? no that sounds like work
 
 			let arr1 = casteljau(
@@ -151,21 +158,22 @@ export var pointOnCurve = function(
 				time,
 				rotation
 			)
+			// get rid of the extra bracket
+			let pointdata = arr1[0]
+			// calculate the distance between entirepoints to estimate the distance at that specific point
 			if (finalarr.length > 0) {
-				const addDist = finalarr[finalarr.length -1][0][3] + distBtwn(finalarr[finalarr.length -1][0],arr1[0])
-				console.log()
-				arr1[0].push(addDist)
-			} else {
-				arr1[0].push(0)
-			}
-				
+				const addDist = distBtwn(finalarr[finalarr.length - 1], pointdata)
 
-			finalarr.push(arr1)
+				pointdata.dist = addDist
+				pointdata.totalDist = addDist + finalarr[finalarr.length - 1].totalDist
+			} else {
+				pointdata.dist = 0
+				pointdata.totalDist = 0
+			}
+
+			finalarr.push(pointdata)
 		}
 	}
-	// calculate the distance between entirepoints to estimate the distance at that specific point 
 
-	
-	
 	return finalarr
 }
