@@ -55,8 +55,36 @@ function SelectOptions(props) {
 			)
 			break
 		case 'text':
+			return (
+				<div className="">
+					<div className="section-title mt">Text to Path Options</div>
+					<div className="checkbox">
+						<input
+							className="checkbox__box"
+							type="checkbox"
+							id="uniqueId"
+							checked={props.rotCheck}
+						/>
+						<label className="checkbox__label">follow curve angle</label>
+					</div>
+				</div>
+			)
+			break
 		case 'clone':
-			return <div className=""></div>
+			return (
+				<div className="">
+					<div className="section-title mt">Object To Path Options</div>
+					<div className="checkbox">
+						<input
+							className="checkbox__box"
+							type="checkbox"
+							id="unique2"
+							checked
+						/>
+						<label className="checkbox__label">follow curve angle</label>
+					</div>
+				</div>
+			)
 			break
 		default:
 			return <div className=""></div>

@@ -9,6 +9,7 @@ import Create from './ui/Create'
 declare function require(path: string): any
 function UI() {
 	const [selection, showselection] = useState('nothing')
+	const [about, showabout] = useState(false)
 
 	const onCreate = () => {
 		parent.postMessage({ pluginMessage: { type: 'do-the-thing' } }, '*')
@@ -57,6 +58,10 @@ function UI() {
 
 	return (
 		<div>
+			<div className={about === true ? 'about' : 'about hidden'}>
+				aasdasdasdassd
+			</div>
+
 			<div className="main">
 				<SelectVisual value={selection} />
 				<SelectOptions value={selection} />
@@ -65,11 +70,14 @@ function UI() {
 			<div className="footer">
 				<div className="divider"></div>
 				<div className="flex">
-					<Create value={selection} onClick={onCreate} />
-
 					<div className="help">
-						<button className="button button--secondary link">About</button>
+						<button
+							className="button button--secondary link"
+							onClick={() => showabout(!about)}>
+							{about === true ? 'back ' : 'about'}
+						</button>
 					</div>
+					<Create value={selection} onClick={onCreate} />
 				</div>
 			</div>
 		</div>

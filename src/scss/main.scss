@@ -9,8 +9,12 @@
 .grey {
 	color: #868686;
 }
-.mr {
-	margin-right: 1em;
+
+.mt {
+	margin-top: 1.3em;
+}
+.onboarding-tip {
+	margin-top: 1em;
 }
 
 .footer {
@@ -18,6 +22,7 @@
 	bottom: 0;
 	width: 100%;
 	padding: 8px;
+	z-index: 420;
 	.flex {
 		display: flex;
 		justify-content: space-between;
@@ -34,5 +39,17 @@ body {
 	margin: 0;
 }
 .main {
-	margin: 8px;
+	padding: 8px;
+}
+.about {
+	position: absolute;
+	height: 90%;
+	width: 100%;
+	z-index: 69;
+	padding: 8px;
+
+	background-color: #fff;
+	&.hidden {
+		display: none;
+	}
 }
