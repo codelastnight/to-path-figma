@@ -1,7 +1,21 @@
-# Text2Path for Figma
+# To-Path: A Figma Plugin
 
-a rudimentary text to path plugin for the figma design tool
+a plugin that puts things on a specified path.
+also works with text
 
-helpful article on svg curves and how to make that mess of data useful:
+(currently in development)
+
+
+
+##development setup
+
+to install packages:
+```npm i``` 
+
+to run:
+
+```npm run prod```
+
+Helpful resources:
 
 https://javascript.info/bezier-curve
