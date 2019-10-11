@@ -7,7 +7,7 @@
 */
 
 import { pointBtwnByLength } from './curve'
-
+import { multiply, move, rotate } from './extra'
 // case for handling spaces, becasue figma will auto them as 0 width; character 8197 isnt the best but you kno what... its good enough
 // this didn't need to be a function but like i already wrote so
 var safeSpace = function(c: string) {
@@ -40,7 +40,7 @@ export function text2Curve(node: TextNode, pointArr: Array<Point>, curve) {
 		let estPoint: Point
 		for (pointIndex; pointIndex < pointArr.length; pointIndex++) {
 			// find nearest point to the length of the word
-			if (spacing < pointArr[pointIndex].totalDist) {
+			if (spacing <= pointArr[pointIndex].totalDist) {
 				let nextpoint = pointArr[pointIndex + 1]
 
 				const localDist = spacing - pointArr[pointIndex].totalDist
@@ -61,17 +61,34 @@ export function text2Curve(node: TextNode, pointArr: Array<Point>, curve) {
 		spacing += letter.width
 
 		//set locations
-		letter.x = estPoint.x + curve.x
-		letter.y = estPoint.y + curve.y
-
+		//letter.x = estPoint.x + curve.x
+		//letter.y = estPoint.y + curve.y
+		const centerX = letter.width / 2
+		const centerY = letter.height / 2
 		//spaceing them
-		//rotate
-		letter.rotation = rotation - 180
+		let angle = ((rotation - 180) * Math.PI) / 180
+		letter.x = 0
+		letter.y = 0
+		// letter.relativeTransform = multiply(
+		// 	move(-letter.width / 2, -0.5 * letter.height),
+		// 	letter.relativeTransform
+		// )
+
+		// more code taken from jyc, the god himself https://github.com/jyc http://jyc.eqv.io
+		// Rotate the letter.
+		letter.rotation = 0
+		letter.relativeTransform = multiply(rotate(angle), letter.relativeTransform)
+		letter.relativeTransform = multiply(
+			move(estPoint.x + curve.x, estPoint.y + curve.y),
+			letter.relativeTransform
+		)
 		//append that shit
+		letter.characters = safeSpace(charArr[i])
 		newNodes.push(letter)
 		figma.currentPage.appendChild(letter)
 	}
-	newNodes.push(curve.clone())
+	let clone = curve.clone()
+	newNodes.push(clone)
 	figma.currentPage.selection = newNodes
 
 	figma.viewport.scrollAndZoomIntoView(newNodes)

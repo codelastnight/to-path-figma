@@ -5,7 +5,7 @@
 	version: im baby
 	github: https://github.com/codelastnight/to-path-figma
 */
-import * as Extra from './extra'
+import { arrChunk } from './extra'
 
 //turn whatever the fuck svg code is into array of points grouped into 4 or 2 ( this is dependant on what type of bezier curve it is. look it up)
 // figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
@@ -30,7 +30,7 @@ var svg2Arr = function(svgData: string) {
 
 	for (var e in poo) {
 		//magic
-		var sad = Extra.arrChunk(poo[e].trim().split(' '), 2)
+		var sad = arrChunk(poo[e].trim().split(' '), 2)
 
 		//this adds the last point from the previous array into the next one.
 		sad.unshift(splicein)
