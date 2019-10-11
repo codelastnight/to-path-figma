@@ -6,49 +6,74 @@
 	github: https://github.com/codelastnight/to-path-figma
 */
 
-// case for handling spaces, becasue figma will auto them as 0 width
-// character 8197 isnt the best but you kno what... its good enough
+import { pointBtwnByLength } from './curve'
+
+// case for handling spaces, becasue figma will auto them as 0 width; character 8197 isnt the best but you kno what... its good enough
 // this didn't need to be a function but like i already wrote so
 var safeSpace = function(c: string) {
-	return c.replace(" ",String.fromCharCode(8197));
+	return c.replace(' ', String.fromCharCode(8197))
 }
-
 
 //convert text into indivisual characters
 
-export function text2Curve(node) {
+export function text2Curve(node: TextNode, pointArr: Array<Point>, curve) {
 	//convert text into each letter indivusally
 	const newNodes: SceneNode[] = []
 	const charArr = [...node.characters]
-
 	let spacing = 0
+	let pointIndex: number = 0
+	let rotation
+	for (let i = 0; i < charArr.length; i++) {
+		let letter = figma.createText()
+		//copy settings
 
-	for (let i = 0; i < node.characters.length; i++) {
-		const letter = figma.createText()
-		letter.characters = safeSpace(charArr[i])
-
+		letter.fontName = node.getRangeFontName(i, i + 1)
+		letter.fontSize = node.getRangeFontSize(i, i + 1)
+		letter.characters = safeSpace(charArr[i] + ' ')
+		letter.letterSpacing = node.getRangeLetterSpacing(i, i + 1)
 		// center the letters
-		letter.textAlignHorizontal = 'CENTER'
+		//letter.textAlignHorizontal = 'CENTER'
 		letter.textAlignVertical = 'CENTER'
 		letter.textAutoResize = 'WIDTH_AND_HEIGHT'
 
-		//copy settings
-		letter.fontSize = node.fontSize
-		letter.fontName = node.fontName
+		console.log(spacing)
+		let estPoint: Point
+		for (pointIndex; pointIndex < pointArr.length; pointIndex++) {
+			// find nearest point to the length of the word
+			if (spacing < pointArr[pointIndex].totalDist) {
+				let nextpoint = pointArr[pointIndex + 1]
+
+				const localDist = spacing - pointArr[pointIndex].totalDist
+				rotation = nextpoint.angle
+				estPoint = pointBtwnByLength(
+					pointArr[pointIndex],
+					nextpoint,
+					localDist,
+					nextpoint.dist,
+					rotation
+				)
+
+				break
+			} else {
+			}
+		}
+
+		spacing += letter.width
 
 		//set locations
-		letter.x = node.x + spacing
-		letter.y = node.y + node.height + 3
+		letter.x = estPoint.x + curve.x
+		letter.y = estPoint.y + curve.y
 
 		//spaceing them
-		spacing = spacing + letter.width
 		//rotate
-
+		letter.rotation = rotation - 180
 		//append that shit
-		figma.currentPage.appendChild(letter)
 		newNodes.push(letter)
+		figma.currentPage.appendChild(letter)
 	}
+	newNodes.push(curve.clone())
 	figma.currentPage.selection = newNodes
+
 	figma.viewport.scrollAndZoomIntoView(newNodes)
 	return
 }
