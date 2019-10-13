@@ -22,3 +22,38 @@ export var arrChunk = function(array, size) {
 	}
 	return chunked
 }
+
+//matrix manipulation code taken from https://github.com/figma/plugin-samples/blob/master/circletext/code.ts
+//author: Jonathan Chan https://github.com/jyc http://jyc.eqv.io
+// the biggest thanks I am mathmatically challenged
+
+export var multiply = function(a, b) {
+	return [
+		[
+			a[0][0] * b[0][0] + a[0][1] * b[1][0],
+			a[0][0] * b[0][1] + a[0][1] * b[1][1],
+			a[0][0] * b[0][2] + a[0][1] * b[1][2] + a[0][2]
+		],
+		[
+			a[1][0] * b[0][0] + a[1][1] * b[1][0],
+			a[1][0] * b[0][1] + a[1][1] * b[1][1] + 0,
+			a[1][0] * b[0][2] + a[1][1] * b[1][2] + a[1][2]
+		]
+	] as [[number, number, number], [number, number, number]]
+}
+
+// Creates a "move" transform.
+export var move = function(x, y) {
+	return [[1, 0, x], [0, 1, y]] as [
+		[number, number, number],
+		[number, number, number]
+	]
+}
+
+// Creates a "rotate" transform.
+export var rotate = function(theta) {
+	return [
+		[Math.cos(theta), Math.sin(theta), 0],
+		[-Math.sin(theta), Math.cos(theta), 0]
+	] as [[number, number, number], [number, number, number]]
+}

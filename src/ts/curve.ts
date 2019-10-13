@@ -5,7 +5,7 @@
 	version: im baby
 	github: https://github.com/codelastnight/to-path-figma
 */
-import * as Extra from './extra'
+import { arrChunk } from './extra'
 
 //turn whatever the fuck svg code is into array of points grouped into 4 or 2 ( this is dependant on what type of bezier curve it is. look it up)
 // figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
@@ -30,7 +30,7 @@ var svg2Arr = function(svgData: string) {
 
 	for (var e in poo) {
 		//magic
-		var sad = Extra.arrChunk(poo[e].trim().split(' '), 2)
+		var sad = arrChunk(poo[e].trim().split(' '), 2)
 
 		//this adds the last point from the previous array into the next one.
 		sad.unshift(splicein)
@@ -42,7 +42,7 @@ var svg2Arr = function(svgData: string) {
 	return cleanType
 }
 //cleans and typeifies the point data
-export var svg2Point = function(svgData: string) {
+var svg2Point = function(svgData: string) {
 	const cleanArray = svg2Arr(svgData)
 	for (var each in cleanArray) {
 		for (var i in cleanArray[each]) {
@@ -90,7 +90,21 @@ var pointBtwn = function(a: Point, b: Point, t: number, time: number) {
 		x: a.x + unitVector.x * t,
 		y: a.y + unitVector.y * t
 	}
+
 	return pointbtwn
+}
+export var pointBtwnByLength = function(
+	a: Point,
+	b: Point,
+	dist: number,
+	totalDist: number, // length between the two known poiints
+	angle: number
+) {
+	// finds the x value of a point between two points given the magnitude of that point
+	const t: number = Math.cos((angle * Math.PI) / 180) * dist
+	const bruh = pointBtwn(a, b, t, totalDist)
+
+	return bruh
 }
 var casteljau = function(
 	curve: Array<Point>,
@@ -128,10 +142,11 @@ var casteljau = function(
 
 //calculate De Casteljau’s algorithm from 2-4 points  https://javascript.info/bezier-curve
 // basically turns 4 points on a beizer into a curve
-export var pointOnCurve = function(
+var pointOnCurve = function(
 	curve: Array<Point>,
 	time: number = 100,
-	rotation: boolean = false
+	rotation: boolean = false,
+	totalDist: number
 ) {
 	/*
   curve [point1, point2, point3, point4]
@@ -166,9 +181,10 @@ export var pointOnCurve = function(
 
 				pointdata.dist = addDist
 				pointdata.totalDist = addDist + finalarr[finalarr.length - 1].totalDist
+				totalDist = pointdata.totalDist
 			} else {
 				pointdata.dist = 0
-				pointdata.totalDist = 0
+				pointdata.totalDist = totalDist
 			}
 
 			finalarr.push(pointdata)
@@ -176,4 +192,23 @@ export var pointOnCurve = function(
 	}
 
 	return finalarr
+}
+
+// calculate point data for all curves
+export var allPoints = function(
+	svgData: string,
+	resolution: number = 100,
+	rotation: boolean = true
+) {
+	let pointArr: Array<Point> = []
+	let vectors = svg2Point(svgData)
+	let totalDist = 0
+
+	for (var curve in vectors) {
+		pointArr.push(
+			...pointOnCurve(vectors[curve], resolution, rotation, totalDist)
+		)
+		totalDist = pointArr[pointArr.length - 1].totalDist
+	}
+	return pointArr
 }
