@@ -15,9 +15,15 @@ import * as Text from './ts/text'
 //async required because figma api requires you to load fonts into the plugin to use them... honestly im really tempted to just hardcode a dumb font like swanky and moo moo instead
 async function main(): Promise<string | undefined> {
 	for (const node of figma.currentPage.selection) {
-		if (node.type == 'VECTOR') {
+		if (node.type == 'VECTOR' || node.type == 'ELLIPSE') {
+			let node2: VectorNode
+			if (node.type == 'ELLIPSE') {
+				node2 = figma.flatten([node])
+			} else {
+				node
+			}
 			const vectors: Array<Array<Point>> = Curve.svg2Point(
-				node.vectorPaths[0].data
+				node2.vectorPaths[0].data
 			)
 
 			calcCurves(vectors)

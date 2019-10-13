@@ -1,3 +1,5 @@
 node_modules
 dist
 dist/ui.html
+dist/ui.html
+dist/ui.js
