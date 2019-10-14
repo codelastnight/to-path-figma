@@ -26,7 +26,19 @@ async function main(): Promise<string | undefined> {
 	const pointArr: Array<Point> = Curve.allPoints(curve.vectorPaths[0].data, 300)
 	curve.rotation = 0
 	for (const node of figma.currentPage.selection) {
-		if (node.type == 'VECTOR') {
+		if (node.type == 'VECTOR' || node.type == 'ELLIPSE') {
+			let node2: VectorNode
+			if (node.type == 'ELLIPSE') {
+				node2 = figma.flatten([node])
+			} else {
+				node
+			}
+			const vectors: Array<Point> = Curve.allPoints(
+				node2.vectorPaths[0].data
+			)
+
+
+			figma.closePlugin()
 			// // create an html svg element becasue the builtin function only works on svg files
 			// // so apparently you cant even init a svg path here so i have to send it to the UI HTML??? MASSIV BrUH
 			// var x = node.x
