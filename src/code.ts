@@ -33,11 +33,10 @@ async function main(): Promise<string | undefined> {
 			} else {
 				node
 			}
-			const vectors: Array<Array<Point>> = Curve.svg2Point(
+			const vectors: Array<Point> = Curve.allPoints(
 				node2.vectorPaths[0].data
 			)
 
-			calcCurves(vectors)
 
 			figma.closePlugin()
 			// // create an html svg element becasue the builtin function only works on svg files

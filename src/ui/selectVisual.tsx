@@ -1,4 +1,7 @@
 import * as React from 'react'
+import {Checkbox, InputIcon } from './Form'
+import { useState,useEffect } from 'react'
+import { isNullOrUndefined } from 'util'
 
 const selectCase = {
 	one: 'please select two things',
@@ -39,7 +42,43 @@ function SelectVisual(props) {
 	}
 }
 
+interface Formb {
+	
+    verticalAlign: number
+    spacing: number
+
+}
+
 function SelectOptions(props) {
+	const settings: Formb = {
+		verticalAlign: 0, 
+		spacing: 20,
+	}
+	const [check, setCheck] = useState(props.rotCheck)
+	const [values, setValues] = useState<Formb | null>(settings);
+
+	function handleInput(e,key) {
+		const copy = {...values}
+		
+			setValues(copy[key] = e.target.value)
+
+		
+		
+	}
+	function onOffFocus(e) {
+		
+		
+			const copy = {...values}
+			if( e.target.value == "" ) {
+				setValues(copy[e.target.name] = settings[e.target.name])
+				console.log("d")
+			} else {
+				setValues(copy[e.target.name] = e.target.value)
+	
+			}
+		
+	} 
+		
 	switch (props.value) {
 		case 'nothing':
 			return (
@@ -61,15 +100,12 @@ function SelectOptions(props) {
 			return (
 				<div className="">
 					<div className="section-title mt">Text to Path Options</div>
-					<div className="checkbox">
-						<input
-							className="checkbox__box"
-							type="checkbox"
-							id="uniqueId"
-							checked={props.rotCheck}
-						/>
-						<label className="checkbox__label">follow curve angle</label>
-					</div>
+					<div className="label">Vertical Alignment:</div>
+					<InputIcon icon="icon icon--layout-align-vert-cent icon--black-3"  value={values.verticalAlign} name="verticalAlign" blur={e => onOffFocus(e)} change={e => handleInput(e,'verticalAlign')}></InputIcon>
+					<div className="label">Rotation:</div>
+
+					<Checkbox id="rotCheck" checked={check} change={() => setCheck(!check)}>follow curve rotation</Checkbox>
+	
 				</div>
 			)
 			break
@@ -77,15 +113,15 @@ function SelectOptions(props) {
 			return (
 				<div className="">
 					<div className="section-title mt">Object To Path Options</div>
-					<div className="checkbox">
-						<input
-							className="checkbox__box"
-							type="checkbox"
-							id="unique2"
-							checked
-						/>
-						<label className="checkbox__label">follow curve angle</label>
-					</div>
+					<div className="label">Vertical Alignment:</div>
+					<InputIcon icon="icon icon--layout-align-vert-cent icon--black-3" value={values.verticalAlign} blur={e => onOffFocus(e)} name="verticalAlign" change={e => handleInput(e,'verticalAlign')}></InputIcon>
+					<div className="label">Spacing</div>
+					<InputIcon icon="icon icon--layout-align-vert-cent icon--black-3" value={values.spacing} blur={e => onOffFocus(e)} name="spacing" change={e => handleInput(e,'spacing')}></InputIcon>
+
+					<div className="label">Rotation:</div>
+
+					<Checkbox id="rotCheck" checked={check} change={() => setCheck(!check)}>follow curve rotation</Checkbox>
+	
 				</div>
 			)
 			break

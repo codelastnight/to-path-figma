@@ -11,12 +11,12 @@ declare function require(path: string): any
 function UI() {
 	const [selection, showselection] = useState('nothing')
 	const [about, showabout] = useState(false)
-
 	const onCreate = () => {
 		parent.postMessage({ pluginMessage: { type: 'do-the-thing' } }, '*')
 	}
-	const onCancel = () => {
-		parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
+	let settings = {
+		verticalAlign: 0, 
+		spacing: 0,
 	}
 	onmessage = event => {
 		// idk how to put this in react and im too lazy to find out
@@ -65,7 +65,8 @@ function UI() {
 
 			<div className="main">
 				<SelectVisual value={selection} />
-				<SelectOptions value={selection} />
+				<SelectOptions value={selection} rotCheck={true} form={settings}/>
+				
 			</div>
 
 			<div className="footer">
@@ -78,7 +79,7 @@ function UI() {
 							{about === true ? 'back ' : 'about'}
 						</button>
 					</div>
-					<Create value={selection} onClick={onCreate} />
+					<Create value={selection}  />
 				</div>
 			</div>
 		</div>
