@@ -173,9 +173,10 @@ var sendSelection = function(value: string, selection = null, width = 0) {
 		if (!isNullOrUndefined(selection)) {
 			const curve = selectCurve(selection)
 			const width = curve.other.width
+			console.log(curve)
+			figma.ui.postMessage({ type: 'svg', curve, width })
 		}
-
-		figma.ui.postMessage({ type: 'selection', value, selection, width })
+		figma.ui.postMessage({ type: 'selection', value })
 		selected = value
 	}
 }

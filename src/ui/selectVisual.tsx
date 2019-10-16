@@ -126,10 +126,10 @@ function SelectOptions(props) {
 									name="spacing"
 									blur={e => onOffFocus(e)}
 									setvalues={props.setForm}
-									disabled={props.form.autowidth}></InputIcon>
+									disabled={props.form.autoWidth}></InputIcon>
 								<div
 									className={
-										props.form.autowidth
+										props.form.autoWidth
 											? 'icon icon--link-connected icon--button icon--selected a'
 											: 'icon icon--link-broken icon--button a'
 									}

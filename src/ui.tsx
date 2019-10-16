@@ -44,15 +44,12 @@ function UI() {
 
 		switch (event.data.pluginMessage.type) {
 			case 'svg':
-				break
-			case 'selection':
-				showselection(event.data.pluginMessage.value)
-				const svgdata = event.data.pluginMessage.selection
-
+				const svgdata = event.data.pluginMessage.curve
+				console.log(svgdata)
 				if (svgdata != null && svgdata != undefined) {
 					if (svgdata.data != null && svgdata.data != '') {
 						const width = event.data.pluginMessage.width
-						console.log(width)
+
 						let path = document.createElementNS(
 							'http://www.w3.org/2000/svg',
 							'path'
@@ -60,13 +57,11 @@ function UI() {
 						path.setAttribute('d', svgdata.data)
 
 						const isLoop: boolean = svgdata.data.toUpperCase().includes('Z')
-							? true
-							: false
 						// use the builtin function getTotalLength() to calculate length
 						const svglength = path.getTotalLength()
 						if (svglength != 0 && setting.autoWidth) {
 							const space = isLoop
-								? svglength / (setting.count - 1) - width
+								? svglength / setting.count - width
 								: svglength / setting.count - width
 							setSetting({ ...setting, spacing: space })
 						}
@@ -78,6 +73,9 @@ function UI() {
 						})
 					}
 				}
+				break
+			case 'selection':
+				showselection(event.data.pluginMessage.value)
 
 				break
 		}
@@ -107,7 +105,7 @@ function UI() {
 						<button
 							className="button button--secondary link"
 							onClick={() => showabout(!about)}>
-							{about === true ? 'back ' : 'about'}
+							{about ? 'back ' : 'about'}
 						</button>
 					</div>
 					<Create value={selection} onClick={onCreate} />
