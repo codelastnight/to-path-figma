@@ -10,35 +10,36 @@
 */
 import * as Curve from './ts/curve'
 import * as Text from './ts/text'
-import { node } from 'prop-types'
+import { isNullOrUndefined } from 'util'
 
 // main code
 //async required because figma api requires you to load fonts into the plugin to use them... honestly im really tempted to just hardcode a dumb font like swanky and moo moo instead
-async function main(): Promise<string | undefined> {
+async function main(options): Promise<string | undefined> {
 	const selection = figma.currentPage.selection
 	let curve: VectorNode
+	let clone: EllipseNode
 	selection.filter(n => {
-		if (n.type === 'VECTOR') {
-			curve = n
+		
+		if (n.type === 'VECTOR' || n.type === 'ELLIPSE') {
+			if (n.type == 'ELLIPSE') {
+			    clone = n.clone()
+				
+				curve = figma.flatten([clone])
+			} else {
+				curve = n
+			}
+			
 		}
 	})
 	// take the svg data of the curve and turn it into an array of points
-	const pointArr: Array<Point> = Curve.allPoints(curve.vectorPaths[0].data, 300)
 	curve.rotation = 0
+	const pointArr: Array<Point> = Curve.allPoints(curve.vectorPaths[0].data, 300)
+	if (!isNullOrUndefined(clone)) clone.remove()
+	//clearInterval(watch)
 	for (const node of figma.currentPage.selection) {
 		if (node.type == 'VECTOR' || node.type == 'ELLIPSE') {
 			let node2: VectorNode
-			if (node.type == 'ELLIPSE') {
-				node2 = figma.flatten([node])
-			} else {
-				node
-			}
-			const vectors: Array<Point> = Curve.allPoints(
-				node2.vectorPaths[0].data
-			)
-
-
-			figma.closePlugin()
+			
 			// // create an html svg element becasue the builtin function only works on svg files
 			// // so apparently you cant even init a svg path here so i have to send it to the UI HTML??? MASSIV BrUH
 			// var x = node.x
@@ -63,7 +64,7 @@ async function main(): Promise<string | undefined> {
 					'text path is too long!  please make it shorter than the curve!'
 				)
 			}
-			Text.text2Curve(node, pointArr, curve)
+			Text.text2Curve(node, pointArr, curve, options)
 			let group = [figma.group(figma.currentPage.selection, node.parent)]
 			figma.currentPage.selection = group
 		}
@@ -100,15 +101,16 @@ function calcCurves(
 }
 
 // This shows the HTML page in "ui.html".
-figma.showUI(__html__, { width: 300, height: 400 })
+figma.showUI(__html__, { width: 300, height: 450 })
 
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the
 // posted message.
 figma.ui.onmessage = async msg => {
 	if (msg.type === 'do-the-thing') {
-		clearInterval(watch)
-		main()
+		let options = {...msg.options, rotCheck: msg.rotCheck}
+		main(options)
+
 	}
 	if (msg.type === 'cancel') {
 		figma.closePlugin('k')

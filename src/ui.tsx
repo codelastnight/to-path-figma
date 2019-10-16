@@ -7,17 +7,25 @@ import { SelectOptions, SelectVisual } from './ui/selectVisual'
 import Create from './ui/Create'
 import * as Curve from './ts/curve'
 
+interface Formb {
+	
+    verticalAlign: number
+    spacing: number
+
+}
 declare function require(path: string): any
 function UI() {
 	const [selection, showselection] = useState('nothing')
 	const [about, showabout] = useState(false)
+	let settings: Formb = {
+		verticalAlign: 0.5, 
+		spacing: 20,
+	}
+	let rotCheck=true
 	const onCreate = () => {
-		parent.postMessage({ pluginMessage: { type: 'do-the-thing' } }, '*')
+		parent.postMessage({ pluginMessage: { type: 'do-the-thing', options: settings, rotCheck: rotCheck } }, '*')
 	}
-	let settings = {
-		verticalAlign: 0, 
-		spacing: 0,
-	}
+
 	onmessage = event => {
 		// idk how to put this in react and im too lazy to find out
 		// LMAO i cant believe this works this is some 300 iq going on rn
@@ -65,7 +73,7 @@ function UI() {
 
 			<div className="main">
 				<SelectVisual value={selection} />
-				<SelectOptions value={selection} rotCheck={true} form={settings}/>
+				<SelectOptions value={selection} rotCheck={rotCheck} form={settings}/>
 				
 			</div>
 
@@ -79,7 +87,7 @@ function UI() {
 							{about === true ? 'back ' : 'about'}
 						</button>
 					</div>
-					<Create value={selection}  />
+					<Create value={selection} onClick={onCreate}/>
 				</div>
 			</div>
 		</div>

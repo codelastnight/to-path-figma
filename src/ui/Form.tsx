@@ -16,13 +16,28 @@ function Checkbox(props) {
     )
 }
 function InputIcon(props) {
+    const handleChange= (e) => {
+        const { target: { name, value } } = e
+        let _test = {...props.values, [name]: value}
+        switch(name) {
+
+            case 'verticalAlign' :
+                if (value < 0) _test = {...props.values, [name]: 0}
+                if (value > 1) _test = {...props.values, [name]: 1}
+                break
+            default:
+              break
+          }
+        props.setValues(_test)
+
+    }
     return (
     <div className="input-icon">
         <div className="input-icon__icon">
             <div className={props.icon}>            
         </div>
         </div>
-        <input type="number" className="input-icon__input" value={props.value} onInput={props.change} onBlur={props.blur} required/>
+        <input type="number" className="input-icon__input" name={props.name} value={props.values[props.name]} onChange={handleChange} onBlur={props.blur} {...props} required/>
     </div>
     )
 }

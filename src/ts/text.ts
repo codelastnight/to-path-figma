@@ -16,13 +16,14 @@ var safeSpace = function(c: string) {
 
 //convert text into indivisual characters
 
-export function text2Curve(node: TextNode, pointArr: Array<Point>, curve) {
+export function text2Curve(node: TextNode, pointArr: Array<Point>, curve, options) {
 	//convert text into each letter indivusally
 	const newNodes: SceneNode[] = []
 	const charArr = [...node.characters]
 	let spacing = 0
 	let pointIndex: number = 0
 	let rotation
+	console.log(options)
 	for (let i = 0; i < charArr.length; i++) {
 		let letter = figma.createText()
 		//copy settings
@@ -32,7 +33,7 @@ export function text2Curve(node: TextNode, pointArr: Array<Point>, curve) {
 		letter.characters = safeSpace(charArr[i] + ' ')
 
 		letter.letterSpacing = node.getRangeLetterSpacing(i, i + 1)
-
+		
 		// center the letters
 		//letter.textAlignHorizontal = 'CENTER'
 		letter.textAlignVertical = 'CENTER'
@@ -66,7 +67,7 @@ export function text2Curve(node: TextNode, pointArr: Array<Point>, curve) {
 		//letter.x = estPoint.x + curve.x
 		//letter.y = estPoint.y + curve.y
 		const centerX = letter.width / 2
-		const centerY = letter.height * 0.8 // change this to change height
+		const centerY = letter.height * options.verticalAlign // change this to change height
 		//spaceing them
 		let angle = ((rotation - 180) * Math.PI) / 180
 		letter.x = 0
@@ -79,8 +80,9 @@ export function text2Curve(node: TextNode, pointArr: Array<Point>, curve) {
 		// more code taken from jyc, the god himself https://github.com/jyc http://jyc.eqv.io
 		// Rotate the letter.
 		letter.rotation = 0
+		if (options.rotCheck) letter.relativeTransform = multiply(rotate(angle), letter.relativeTransform)
 
-		letter.relativeTransform = multiply(rotate(angle), letter.relativeTransform)
+		//move the letter
 		letter.relativeTransform = multiply(
 			move(estPoint.x + curve.x, estPoint.y + curve.y),
 			letter.relativeTransform

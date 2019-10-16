@@ -42,40 +42,26 @@ function SelectVisual(props) {
 	}
 }
 
-interface Formb {
-	
-    verticalAlign: number
-    spacing: number
-
-}
 
 function SelectOptions(props) {
-	const settings: Formb = {
-		verticalAlign: 0, 
-		spacing: 20,
-	}
+	
 	const [check, setCheck] = useState(props.rotCheck)
-	const [values, setValues] = useState<Formb | null>(settings);
-
-	function handleInput(e,key) {
-		const copy = {...values}
-		
-			setValues(copy[key] = e.target.value)
-
-		
-		
-	}
+	const [values, setValues] = useState(props.form);
 	function onOffFocus(e) {
 		
-		
-			const copy = {...values}
+			let copy = {}
+			
 			if( e.target.value == "" ) {
-				setValues(copy[e.target.name] = settings[e.target.name])
+				 copy = {...values, [e.target.name]: props.form[e.target.name]}
+				
 				console.log("d")
 			} else {
-				setValues(copy[e.target.name] = e.target.value)
+				 copy = {...values, [e.target.name]: e.target.value}
 	
 			}
+			setValues(copy)
+			props.form = copy
+			console.log(props.form)
 		
 	} 
 		
@@ -98,30 +84,39 @@ function SelectOptions(props) {
 			break
 		case 'text':
 			return (
-				<div className="">
+				<div className="text">
 					<div className="section-title mt">Text to Path Options</div>
 					<div className="label">Vertical Alignment:</div>
-					<InputIcon icon="icon icon--layout-align-vert-cent icon--black-3"  value={values.verticalAlign} name="verticalAlign" blur={e => onOffFocus(e)} change={e => handleInput(e,'verticalAlign')}></InputIcon>
+					<InputIcon icon="icon icon--layout-align-vert-cent icon--black-3"  values={values} name="verticalAlign" blur={e => onOffFocus(e)} min={0} max={1} step={0.1} setValues={setValues}></InputIcon>
 					<div className="label">Rotation:</div>
 
-					<Checkbox id="rotCheck" checked={check} change={() => setCheck(!check)}>follow curve rotation</Checkbox>
+					<Checkbox id="rotCheck" checked={check} change={() => {setCheck(!check); props.rotCheck = check}}>characters follow curve rotation</Checkbox>
 	
 				</div>
 			)
 			break
 		case 'clone':
 			return (
-				<div className="">
+				<div className="clone">
+					
 					<div className="section-title mt">Object To Path Options</div>
-					<div className="label">Vertical Alignment:</div>
-					<InputIcon icon="icon icon--layout-align-vert-cent icon--black-3" value={values.verticalAlign} blur={e => onOffFocus(e)} name="verticalAlign" change={e => handleInput(e,'verticalAlign')}></InputIcon>
-					<div className="label">Spacing</div>
-					<InputIcon icon="icon icon--layout-align-vert-cent icon--black-3" value={values.spacing} blur={e => onOffFocus(e)} name="spacing" change={e => handleInput(e,'spacing')}></InputIcon>
+					<div className="label">Vertical Alignment:</div>	
+					<InputIcon icon="icon icon--layout-align-vert-cent icon--black-3"  values={values} name="verticalAlign" blur={e => onOffFocus(e)} min={0} max={1} step={0.1} setValues={setValues}></InputIcon>
+					<div className="label">Spacing(px):</div>
+					<InputIcon icon="icon icon--layout-align-vert-cent icon--black-3"  values={values} name="spacing" blur={e => onOffFocus(e)} setValues={setValues}></InputIcon>
 
 					<div className="label">Rotation:</div>
 
-					<Checkbox id="rotCheck" checked={check} change={() => setCheck(!check)}>follow curve rotation</Checkbox>
-	
+					<Checkbox id="rotCheck" checked={check} change={() => {setCheck(!check); props.rotCheck = check}}>object follows curve rotation</Checkbox>
+					<div className="onboarding-tip">
+					<div className="onboarding-tip__icon">
+						<div className="icon icon--warning"></div>
+					</div>
+					<div className="onboarding-tip__msg">
+						<span className="type type--neg-medium-bold">Warning:</span> if two curves are selected, the plugin will ALWAYS take the curve that is on a lower layer. this will be fixed in a later version
+					</div>
+				</div>
+
 				</div>
 			)
 			break
