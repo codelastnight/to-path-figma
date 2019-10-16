@@ -9,10 +9,10 @@ also works with text
 
 ## development setup
 
-to install packages:
+1.  install packages:
 `npm i` 
 
-to run:
+2. compile :
 `npm run prod`
 
 Helpful resources:
