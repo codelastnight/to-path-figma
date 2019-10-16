@@ -36,8 +36,10 @@ var selectCurve = function(selection) {
 		}
 	} else {
 		n = filterselect[0]
+		console.log(n)
+
 		other = selection.filter(
-			n => n.type !== 'VECTOR' || n.type !== 'ELLIPSE'
+			a => a.type !== 'VECTOR' && a.type !== 'ELLIPSE'
 		)[0]
 	}
 
