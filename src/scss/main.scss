@@ -57,6 +57,9 @@ body {
 .flex {
 	display: flex;
 	flex-direction: row;
+	.a {
+		min-width: 32px;
+	}
 	.col {
 		width: 100%;
 	}

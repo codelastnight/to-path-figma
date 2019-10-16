@@ -6,20 +6,36 @@ import './scss/main.scss'
 import { SelectOptions, SelectVisual } from './ui/selectVisual'
 import Create from './ui/Create'
 
-
 declare function require(path: string): any
 function UI() {
 	const [selection, showselection] = useState('nothing')
 	const [about, showabout] = useState(false)
-	let settings: Formb = {
-		verticalAlign: 0.5, 
+
+	const settingsDefault: Formb = {
+		verticalAlign: 0.5,
 		horizontalAlign: 0.5,
 		spacing: 20,
-		count: 5
+		count: 5,
+		autoWidth: true,
+		totalLength: 0,
+		isLoop: false,
+		objWidth: 0
 	}
-	let rotCheck=true
+	const [setting, setSetting] = useState(settingsDefault)
+
+	let rotCheck = true
 	const onCreate = () => {
-		parent.postMessage({ pluginMessage: { type: 'do-the-thing', options: settings, rotCheck: rotCheck } }, '*')
+		parent.postMessage(
+			{
+				pluginMessage: {
+					type: 'do-the-thing',
+					options: setting,
+					rotCheck: rotCheck
+				}
+			},
+			'*'
+		)
+		console.log(setting)
 	}
 
 	onmessage = event => {
@@ -28,49 +44,60 @@ function UI() {
 
 		switch (event.data.pluginMessage.type) {
 			case 'svg':
-				// const vectors: Array<Array<Point>> = event.data.pluginMessage.vectors
-				// let vectorLengths = []
-				// for (var curve in vectors) {
-				//   let back2svg = vectors[curve].slice(0)
-				//   back2svg.splice(0, 0, 'M')
-
-				//   if (back2svg.length == 3) {
-				//     back2svg.splice(2, 0, 'L')
-				//   } else {
-				//     back2svg.splice(2, 0, 'C')
-				//   }
-				//   var a = back2svg.join(' ')
-				//   let path = document.createElementNS(
-				//     'http://www.w3.org/2000/svg',
-				//     'path'
-				//   )
-				//   path.setAttribute('d', a.replace(/,/g, ' '))
-				//   // use the builtin function getTotalLength() to calculate length
-				//   var svglength = path.getTotalLength()
-				//   vectorLengths.push(svglength)
-				// }
-				// var x = event.data.pluginMessage.x
-				// var y = event.data.pluginMessage.y
-				// parent.postMessage(
-				//   { pluginMessage: { type: 'svg', vectorLengths, vectors, x, y } },
-				//   '*'
-				// )
 				break
 			case 'selection':
 				showselection(event.data.pluginMessage.value)
+				const svgdata = event.data.pluginMessage.selection
+
+				if (svgdata != null && svgdata != undefined) {
+					if (svgdata.data != null && svgdata.data != '') {
+						const width = event.data.pluginMessage.width
+						console.log(width)
+						let path = document.createElementNS(
+							'http://www.w3.org/2000/svg',
+							'path'
+						)
+						path.setAttribute('d', svgdata.data)
+
+						const isLoop: boolean = svgdata.data.toUpperCase().includes('Z')
+							? true
+							: false
+						// use the builtin function getTotalLength() to calculate length
+						const svglength = path.getTotalLength()
+						if (svglength != 0 && setting.autoWidth) {
+							const space = isLoop
+								? svglength / (setting.count - 1) - width
+								: svglength / setting.count - width
+							setSetting({ ...setting, spacing: space })
+						}
+						setSetting({
+							...setting,
+							totalLength: svglength,
+							isLoop: isLoop,
+							objWidth: width
+						})
+					}
+				}
+
+				break
 		}
 	}
 
 	return (
 		<div>
 			<div className={about === true ? 'about' : 'about hidden'}>
-				aasdasdasdassd
+				<h2>To Path</h2>
+				<p> version 0.1</p>
 			</div>
 
 			<div className="main">
 				<SelectVisual value={selection} />
-				<SelectOptions value={selection} rotCheck={rotCheck} form={settings}/>
-				
+				<SelectOptions
+					value={selection}
+					rotCheck={rotCheck}
+					form={setting}
+					setForm={setSetting}
+				/>
 			</div>
 
 			<div className="footer">
@@ -83,7 +110,7 @@ function UI() {
 							{about === true ? 'back ' : 'about'}
 						</button>
 					</div>
-					<Create value={selection} onClick={onCreate}/>
+					<Create value={selection} onClick={onCreate} />
 				</div>
 			</div>
 		</div>

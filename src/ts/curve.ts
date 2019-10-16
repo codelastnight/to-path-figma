@@ -158,7 +158,19 @@ var pointOnCurve = function(
 	if (curve.length == 2) {
 		for (var t = 1; t < time; t++) {
 			let arr1 = casteljau(curve, t, time, rotation)
-			finalarr.push(arr1)
+			let pointdata = arr1[0]
+
+			if (finalarr.length > 0) {
+				const addDist = distBtwn(finalarr[finalarr.length - 1], pointdata)
+
+				pointdata.dist = addDist
+				pointdata.totalDist = addDist + finalarr[finalarr.length - 1].totalDist
+				totalDist = pointdata.totalDist
+			} else {
+				pointdata.dist = 0
+				pointdata.totalDist = totalDist
+			}
+			finalarr.push(pointdata)
 		}
 	} else {
 		for (var t = 1; t <= time; t++) {

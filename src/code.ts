@@ -12,75 +12,105 @@ import * as Curve from './ts/curve'
 import * as Place from './ts/place'
 import { isNullOrUndefined } from 'util'
 
+var selectCurve = function(selection) {
+	let curve: VectorNode
+	let n
+	let other
+	let svgdata = null
+	const filterselect = selection.filter(
+		n => n.type === 'VECTOR' || n.type === 'ELLIPSE'
+	)
+
+	// if two curves are selected, select one with bigger x or y
+
+	if (filterselect.length == 2) {
+		if (
+			filterselect[0].width > filterselect[1].width ||
+			filterselect[0].height > filterselect[1].height
+		) {
+			n = filterselect[0]
+			other = filterselect[1]
+		} else {
+			n = filterselect[1]
+			other = filterselect[0]
+		}
+	} else {
+		n = filterselect[0]
+		other = selection.filter(
+			n => n.type !== 'VECTOR' || n.type !== 'ELLIPSE'
+		)[0]
+	}
+
+	if (n.type == 'ELLIPSE') {
+		const clone = n.clone()
+
+		curve = figma.flatten([clone])
+		const curve2 = { ...curve }
+
+		svgdata = curve2.vectorPaths[0].data
+
+		clone.remove()
+	} else {
+		curve = n
+		svgdata = curve.vectorPaths[0].data
+	}
+	console.log(curve, other)
+	return { data: svgdata, curve: curve, other: other }
+}
 // main code
 //async required because figma api requires you to load fonts into the plugin to use them... honestly im really tempted to just hardcode a dumb font like swanky and moo moo instead
 async function main(options): Promise<string | undefined> {
 	const selection = figma.currentPage.selection
-	let curve: VectorNode
-	let clone: EllipseNode
+
 	// select the curve
-	selection.filter(n => {
-		
-		if (n.type === 'VECTOR' || n.type === 'ELLIPSE') {
-			if (n.type == 'ELLIPSE') {
-			    clone = n.clone()
-				
-				curve = figma.flatten([clone])
-			} else {
-				curve = n
-			}
-			
-		}
-	})
+	let curve = selectCurve(selection)
+
 	// take the svg data of the curve and turn it into an array of points
-	curve.rotation = 0
-	const pointArr: Array<Point> = Curve.allPoints(curve.vectorPaths[0].data, 300)
-	if (!isNullOrUndefined(clone)) clone.remove()
+	const pointArr: Array<Point> = Curve.allPoints(curve.data, 300)
 	//clearInterval(watch)
-	for (const node of figma.currentPage.selection) {
-		// if (node.type == 'VECTOR' || node.type == 'ELLIPSE') {
-		// 	let node2: VectorNode
 
+	// if (node.type == 'VECTOR' || node.type == 'ELLIPSE') {
+	// 	let node2: VectorNode
 
-			
-		// }
-		if (node.type === 'TEXT') {
-			//the font loading part
+	// }
+	if (curve.other.type === 'TEXT') {
+		//the font loading part
 
-			let len = node.characters.length
+		let len = curve.other.characters.length
 
-			for (let i = 0; i < len; i++) {
-				await figma.loadFontAsync(node.getRangeFontName(i, i + 1) as FontName)
-			}
-
-			if (
-				node.width > pointArr[pointArr.length - 1].totalDist ||
-				figma.hasMissingFont == true
-			) {
-				figma.closePlugin(
-					'text path is too long!  please make it shorter than the curve!'
-				)
-			}
-			//place it on the thing
-			Place.text2Curve(node, pointArr, curve, options)
-			
-			
-		} else {
-
-			if (node.type === 'FRAME' || node.type === 'GROUP') figma.closePlugin(" frame and group cloning not supported yet")
-
-			if (node != curve && node != clone) Place.object2Curve(node, pointArr, curve, options)
-
+		for (let i = 0; i < len; i++) {
+			await figma.loadFontAsync(curve.other.getRangeFontName(
+				i,
+				i + 1
+			) as FontName)
 		}
-		// group and scroll intoview
 
-		const group: FrameNode = figma.group(figma.currentPage.selection, node.parent)
-		figma.currentPage.selection = [group]
-		figma.viewport.scrollAndZoomIntoView(figma.currentPage.selection)
+		if (
+			curve.other.width > pointArr[pointArr.length - 1].totalDist ||
+			figma.hasMissingFont == true
+		) {
+			figma.closePlugin(
+				'text path is too long!  please make it shorter than the curve!'
+			)
+		}
+		//place it on the thing
+		Place.text2Curve(curve.other, pointArr, curve.curve, options)
+	} else {
+		if (curve.other.type === 'FRAME' || curve.other.type === 'GROUP') {
+			const textnode = curve.other.findAll(e => e.type === 'TEXT') as TextNode[]
+
+			for (const find of textnode) {
+				for (let i = 0; i < find.characters.length; i++) {
+					await figma.loadFontAsync(find.getRangeFontName(i, i + 1) as FontName)
+				}
+			}
+		}
+		Place.object2Curve(curve.other, pointArr, curve.curve, options)
 	}
+
 	figma.closePlugin()
 	return
-}	
+}
 
 function calcCurves(
 	vectors: Array<Array<Point>>,
@@ -117,15 +147,14 @@ figma.showUI(__html__, { width: 300, height: 450 })
 // posted message.
 figma.ui.onmessage = async msg => {
 	if (msg.type === 'do-the-thing') {
-		let options: Formb  = {...msg.options, rotCheck: msg.rotCheck}
+		let options: Formb = { ...msg.options, rotCheck: msg.rotCheck }
+		console.log(options)
 		main(options)
-
 	}
 	if (msg.type === 'cancel') {
 		figma.closePlugin('k')
 	}
 	if (msg.type === 'svg') {
-		console.log(msg.vectorLengths)
 		calcCurves(msg.vectors, msg.vectorLengths, msg.x, msg.y)
 		figma.closePlugin()
 	}
@@ -139,9 +168,14 @@ figma.ui.onmessage = async msg => {
 // uses polling cuz i couldnt figure out another way
 let selected = ''
 //update ui only when selection is updated
-var sendSelection = function(value: string) {
+var sendSelection = function(value: string, selection = null, width = 0) {
 	if (selected != value) {
-		figma.ui.postMessage({ type: 'selection', value })
+		if (!isNullOrUndefined(selection)) {
+			const curve = selectCurve(selection)
+			const width = curve.other.width
+		}
+
+		figma.ui.postMessage({ type: 'selection', value, selection, width })
 		selected = value
 	}
 }
@@ -160,7 +194,7 @@ const watchSelection = function() {
 				if (selection.filter(node => node.type === 'TEXT').length == 1) {
 					sendSelection('text')
 				} else {
-					sendSelection('clone')
+					sendSelection('clone', selection)
 				}
 			} else {
 				sendSelection('nocurve')

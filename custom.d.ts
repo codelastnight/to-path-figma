@@ -7,13 +7,15 @@ interface Point {
 }
 
 interface Formb {
-	
 	verticalAlign: number
 	horizontalAlign: number
 	spacing: number
 	count: number
 	rotCheck?: boolean
-
+	autoWidth: boolean
+	totalLength?: number
+	isLoop?: boolean
+	objWidth?: number
 }
 interface Pass {
 	spacing: number
