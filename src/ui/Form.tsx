@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { checkPropTypes } from 'prop-types'
 
 function Checkbox(props) {
     return (
@@ -15,15 +14,22 @@ function Checkbox(props) {
         </div>
     )
 }
+// input component
 function InputIcon(props) {
     const handleChange= (e) => {
         const { target: { name, value } } = e
-        let _test = {...props.values, [name]: value}
+        let _test = {...props.values, [name]: Number(value)}
         switch(name) {
-
+            case 'horizontalAlign':
             case 'verticalAlign' :
+                // limit input to min 0 and max 1
                 if (value < 0) _test = {...props.values, [name]: 0}
                 if (value > 1) _test = {...props.values, [name]: 1}
+                break
+            case 'count' :
+                // limit input to positive integers only
+                if (value < 0) _test = {...props.values, [name]: 0} 
+                else _test = {...props.values, [name]: Math.round(value)}                
                 break
             default:
               break

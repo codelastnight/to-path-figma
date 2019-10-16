@@ -42,7 +42,8 @@ function SelectVisual(props) {
 	}
 }
 
-
+// show different options depending on what is selected.
+// currently two: text to path and curve to path
 function SelectOptions(props) {
 	
 	const [check, setCheck] = useState(props.rotCheck)
@@ -56,7 +57,7 @@ function SelectOptions(props) {
 				
 				console.log("d")
 			} else {
-				 copy = {...values, [e.target.name]: e.target.value}
+				 copy = {...values, [e.target.name]: Number(e.target.value)}
 	
 			}
 			setValues(copy)
@@ -97,14 +98,38 @@ function SelectOptions(props) {
 			break
 		case 'clone':
 			return (
+				
 				<div className="clone">
 					
-					<div className="section-title mt">Object To Path Options</div>
-					<div className="label">Vertical Alignment:</div>	
-					<InputIcon icon="icon icon--layout-align-vert-cent icon--black-3"  values={values} name="verticalAlign" blur={e => onOffFocus(e)} min={0} max={1} step={0.1} setValues={setValues}></InputIcon>
-					<div className="label">Spacing(px):</div>
-					<InputIcon icon="icon icon--layout-align-vert-cent icon--black-3"  values={values} name="spacing" blur={e => onOffFocus(e)} setValues={setValues}></InputIcon>
+					<div className="section-title mt">Object To Path Options
+					</div>
+					<div className="flex">
+						<div className="col">
+							<div className="label">Count:</div>
+							<InputIcon icon="icon icon--layout-grid-uniform icon--black-3"  values={values} name="count" blur={e => onOffFocus(e)} setValues={setValues}></InputIcon>
+						
+						</div>
+						<div className="col">
+							<div className="label">Spacing(px):</div>
+							<InputIcon icon="icon icon--layout-align-vert-cent icon--black-3"  values={values} name="spacing" blur={e => onOffFocus(e)} setValues={setValues}></InputIcon>
 
+						</div>
+					
+					</div>
+					<div className="flex">
+						<div className="col">
+							<div className="label">Vertical Align:</div>	
+							<InputIcon icon="icon icon--layout-align-vert-cent icon--black-3"  values={values} name="verticalAlign" blur={e => onOffFocus(e)} min={0} max={1} step={0.1} setValues={setValues}></InputIcon>
+					
+						</div>
+						<div className="col">
+							<div className="label">Horozontal Align:</div>	
+							<InputIcon icon="icon icon--layout-align-vert-cent icon--black-3"  values={values} name="horizontalAlign" blur={e => onOffFocus(e)} min={0} max={1} step={0.1} setValues={setValues}></InputIcon>
+					
+						</div>
+					
+					</div>
+					
 					<div className="label">Rotation:</div>
 
 					<Checkbox id="rotCheck" checked={check} change={() => {setCheck(!check); props.rotCheck = check}}>object follows curve rotation</Checkbox>

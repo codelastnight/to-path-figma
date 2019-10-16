@@ -9,7 +9,7 @@
     i dont know how to code
 */
 import * as Curve from './ts/curve'
-import * as Text from './ts/text'
+import * as Place from './ts/place'
 import { isNullOrUndefined } from 'util'
 
 // main code
@@ -18,6 +18,7 @@ async function main(options): Promise<string | undefined> {
 	const selection = figma.currentPage.selection
 	let curve: VectorNode
 	let clone: EllipseNode
+	// select the curve
 	selection.filter(n => {
 		
 		if (n.type === 'VECTOR' || n.type === 'ELLIPSE') {
@@ -37,16 +38,12 @@ async function main(options): Promise<string | undefined> {
 	if (!isNullOrUndefined(clone)) clone.remove()
 	//clearInterval(watch)
 	for (const node of figma.currentPage.selection) {
-		if (node.type == 'VECTOR' || node.type == 'ELLIPSE') {
-			let node2: VectorNode
+		// if (node.type == 'VECTOR' || node.type == 'ELLIPSE') {
+		// 	let node2: VectorNode
+
+
 			
-			// // create an html svg element becasue the builtin function only works on svg files
-			// // so apparently you cant even init a svg path here so i have to send it to the UI HTML??? MASSIV BrUH
-			// var x = node.x
-			// var y = node.y
-			// // massive iq moment
-			// //figma.ui.postMessage({ type: 'svg', vectors, x, y })
-		}
+		// }
 		if (node.type === 'TEXT') {
 			//the font loading part
 
@@ -64,14 +61,26 @@ async function main(options): Promise<string | undefined> {
 					'text path is too long!  please make it shorter than the curve!'
 				)
 			}
-			Text.text2Curve(node, pointArr, curve, options)
-			let group = [figma.group(figma.currentPage.selection, node.parent)]
-			figma.currentPage.selection = group
+			//place it on the thing
+			Place.text2Curve(node, pointArr, curve, options)
+			
+			
+		} else {
+
+			if (node.type === 'FRAME' || node.type === 'GROUP') figma.closePlugin(" frame and group cloning not supported yet")
+
+			if (node != curve && node != clone) Place.object2Curve(node, pointArr, curve, options)
+
 		}
+		// group and scroll intoview
+
+		const group: FrameNode = figma.group(figma.currentPage.selection, node.parent)
+		figma.currentPage.selection = [group]
+		figma.viewport.scrollAndZoomIntoView(figma.currentPage.selection)
 	}
 	figma.closePlugin()
 	return
-}
+}	
 
 function calcCurves(
 	vectors: Array<Array<Point>>,
@@ -108,7 +117,7 @@ figma.showUI(__html__, { width: 300, height: 450 })
 // posted message.
 figma.ui.onmessage = async msg => {
 	if (msg.type === 'do-the-thing') {
-		let options = {...msg.options, rotCheck: msg.rotCheck}
+		let options: Formb  = {...msg.options, rotCheck: msg.rotCheck}
 		main(options)
 
 	}

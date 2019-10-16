@@ -5,3 +5,17 @@ interface Point {
 	dist?: number //distance from last point
 	totalDist?: number //total length of curve up to this point
 }
+
+interface Formb {
+	
+	verticalAlign: number
+	horizontalAlign: number
+	spacing: number
+	count: number
+	rotCheck?: boolean
+
+}
+interface Pass {
+	spacing: number
+	pointIndex: number
+}

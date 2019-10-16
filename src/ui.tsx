@@ -5,21 +5,17 @@ import './figma-plugin-ds.min.css'
 import './scss/main.scss'
 import { SelectOptions, SelectVisual } from './ui/selectVisual'
 import Create from './ui/Create'
-import * as Curve from './ts/curve'
 
-interface Formb {
-	
-    verticalAlign: number
-    spacing: number
 
-}
 declare function require(path: string): any
 function UI() {
 	const [selection, showselection] = useState('nothing')
 	const [about, showabout] = useState(false)
 	let settings: Formb = {
 		verticalAlign: 0.5, 
+		horizontalAlign: 0.5,
 		spacing: 20,
+		count: 5
 	}
 	let rotCheck=true
 	const onCreate = () => {

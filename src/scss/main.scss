@@ -53,3 +53,11 @@ body {
 		display: none;
 	}
 }
+
+.flex {
+	display: flex;
+	flex-direction: row;
+	.col {
+		width: 100%;
+	}
+}
