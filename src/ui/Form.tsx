@@ -55,7 +55,7 @@ function InputIcon(props) {
 				type="number"
 				className="input-icon__input"
 				name={props.name}
-				value={props.values[props.name]}
+				value={Math.round(props.values[props.name]*100)/100}
 				onChange={handleChange}
 				onBlur={props.blur}
 				{...props}

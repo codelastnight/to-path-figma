@@ -36,27 +36,28 @@ var selectCurve = function(selection) {
 		}
 	} else {
 		n = filterselect[0]
-		console.log(n)
-
+		
 		other = selection.filter(
 			a => a.type !== 'VECTOR' && a.type !== 'ELLIPSE'
 		)[0]
+		
+
 	}
 
 	if (n.type == 'ELLIPSE') {
-		const clone = n.clone()
+		//const clone = n.clone()
 
-		curve = figma.flatten([clone])
-		const curve2 = { ...curve }
+		curve = figma.flatten([n])
+		const curve2 = {...curve}
 
 		svgdata = curve2.vectorPaths[0].data
 
-		clone.remove()
+		//clone.remove()
 	} else {
 		curve = n
 		svgdata = curve.vectorPaths[0].data
 	}
-	console.log(curve, other)
+	
 	return { data: svgdata, curve: curve, other: other }
 }
 // main code
@@ -150,7 +151,6 @@ figma.showUI(__html__, { width: 300, height: 450 })
 figma.ui.onmessage = async msg => {
 	if (msg.type === 'do-the-thing') {
 		let options: Formb = { ...msg.options, rotCheck: msg.rotCheck }
-		console.log(options)
 		main(options)
 	}
 	if (msg.type === 'cancel') {
@@ -175,7 +175,6 @@ var sendSelection = function(value: string, selection = null, width = 0) {
 		if (!isNullOrUndefined(selection)) {
 			const curve = selectCurve(selection)
 			const width = curve.other.width
-			console.log(curve)
 			figma.ui.postMessage({ type: 'svg', curve, width })
 		}
 		figma.ui.postMessage({ type: 'selection', value })

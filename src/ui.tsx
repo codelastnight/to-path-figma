@@ -6,6 +6,7 @@ import './scss/main.scss'
 import { SelectOptions, SelectVisual } from './ui/selectVisual'
 import Create from './ui/Create'
 
+const logo = require('./logo.svg')
 declare function require(path: string): any
 function UI() {
 	const [selection, showselection] = useState('nothing')
@@ -44,37 +45,37 @@ function UI() {
 
 		switch (event.data.pluginMessage.type) {
 			case 'svg':
-				const svgdata = event.data.pluginMessage.curve
-				console.log(svgdata)
-				if (svgdata != null && svgdata != undefined) {
-					if (svgdata.data != null && svgdata.data != '') {
-						const width = event.data.pluginMessage.width
-
-						let path = document.createElementNS(
-							'http://www.w3.org/2000/svg',
-							'path'
-						)
-						path.setAttribute('d', svgdata.data)
-
-						const isLoop: boolean = svgdata.data.toUpperCase().includes('Z')
-						// use the builtin function getTotalLength() to calculate length
-						const svglength = path.getTotalLength()
-						if (svglength != 0 && setting.autoWidth) {
-							const space = isLoop
-								? svglength / setting.count - width
-								: svglength / setting.count - width
-							setSetting({ ...setting, spacing: space })
-						}
-						setSetting({
-							...setting,
-							totalLength: svglength,
-							isLoop: isLoop,
-							objWidth: width
-						})
-					}
-				}
-				break
+				
+			
 			case 'selection':
+
+					const svgdata = event.data.pluginMessage.curve
+					if (svgdata != null && svgdata != undefined) {
+						if (svgdata.data != null && svgdata.data != '') {
+							const width = event.data.pluginMessage.width
+	
+							let path = document.createElementNS(
+								'http://www.w3.org/2000/svg',
+								'path'
+							)
+							path.setAttribute('d', svgdata.data)
+	
+							const isLoop: boolean = svgdata.data.toUpperCase().includes('Z')
+							// use the builtin function getTotalLength() to calculate length
+							const svglength = path.getTotalLength()
+							
+							console.log(svglength)
+							if (svglength != 0 && setting.autoWidth) {
+								const space = isLoop
+									? svglength / setting.count - width
+									: svglength / setting.count - width
+								setSetting({ ...setting, totalLength: svglength, spacing: space,isLoop: isLoop,
+									objWidth: width })
+							}
+							
+							
+						}
+					}
 				showselection(event.data.pluginMessage.value)
 
 				break
@@ -84,6 +85,7 @@ function UI() {
 	return (
 		<div>
 			<div className={about === true ? 'about' : 'about hidden'}>
+				<img src={logo} alt="logo " width="75px" height="75px"/>
 				<h2>To Path</h2>
 				<p> version 0.1</p>
 			</div>

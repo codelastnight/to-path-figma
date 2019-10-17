@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { Checkbox, InputIcon } from './Form'
 import { useState, useEffect } from 'react'
-import { isNullOrUndefined } from 'util'
 
 const selectCase = {
 	one: 'please select two things',
@@ -136,8 +135,9 @@ function SelectOptions(props) {
 									onClick={() => {
 										props.setForm({
 											...props.form,
-											autoWidth: !props.form.autoWidth
+											autoWidth: !props.form.autoWidth,
 										})
+										
 									}}></div>
 							</div>
 						</div>
