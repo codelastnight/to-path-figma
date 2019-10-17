@@ -1,13 +1,11 @@
 # To-Path: A Figma Plugin
 
-a plugin that puts things on a specified path.
-also works with text
+
+Put any objects or text on a path! 
+
+Select an object and a curve, adjust the options, and watch the magic* happen!
 
 release 1.0 
-
-**KNOWN BUGS** please check the issues!
-
-mfw someone else already put out something similar to my plugin but i spent too much time on this to stop now.
 
 
 
@@ -22,3 +20,5 @@ mfw someone else already put out something similar to my plugin but i spent too 
 Helpful resources:
 
 https://javascript.info/bezier-curve
+
+mfw someone else already put out something similar to my plugin but i spent too much time on this to stop now.
