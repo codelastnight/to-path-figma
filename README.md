@@ -5,6 +5,8 @@ also works with text
 
 release 1.0 
 
+**KNOWN BUGS** please check the issues!
+
 mfw someone else already put out something similar to my plugin but i spent too much time on this to stop now.
 
 
