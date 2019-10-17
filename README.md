@@ -5,6 +5,8 @@ Put any objects or text on a path!
 
 Select an object and a curve, adjust the options, and watch the magic* happen!
 
+
+*not actually magic
 release 1.0 
 
 
