@@ -3,7 +3,9 @@
 a plugin that puts things on a specified path.
 also works with text
 
-(currently in development)
+release 1.0 
+
+mfw someone else already put out something similar to my plugin but i spent too much time on this to stop now.
 
 
 
