@@ -106,7 +106,7 @@ export var text2Curve = function(
 	options.spacing = 0
 
 	for (let i = 0; i < charArr.length; i++) {
-		let letter = figma.createText()
+		let letter = node.clone()
 		//copy settings
 
 		letter.fontName = node.getRangeFontName(i, i + 1)
