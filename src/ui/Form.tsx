@@ -35,8 +35,8 @@ function InputIcon(props) {
 
 				if (props.values.totalLength != 0 && props.values.autoWidth) {
 					const space = _test.isLoop
-						? _test.totalLength / (_test.count - 1) - _test.objWidth
-						: _test.totalLength / _test.count - _test.objWidth
+						? _test.totalLength / _test.count - _test.objWidth
+						: _test.totalLength / (_test.count -1) - _test.objWidth
 					_test = { ..._test, spacing: space }
 				}
 				console.log(props.values)

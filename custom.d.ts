@@ -16,6 +16,7 @@ interface Formb {
 	totalLength?: number
 	isLoop?: boolean
 	objWidth?: number
+	offset: number
 }
 interface Pass {
 	spacing: number

@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Checkbox, InputIcon } from './Form'
 import { useState, useEffect } from 'react'
+import { checkPropTypes } from 'prop-types'
 
 const selectCase = {
 	one: 'please select two things',
@@ -47,16 +48,36 @@ function SelectOptions(props) {
 	const [check, setCheck] = useState(props.rotCheck)
 
 	function onOffFocus(e) {
-		let copy = { ...props.form }
+		let copy
 
 		if (e.target.value == '') {
-			copy = { ...props.form, [e.target.name]: props.form[e.target.name] }
+			copy = {...props.form,[e.target.name]: props.form[e.target.name] }
 		} else {
-			copy = { ...props.form, [e.target.name]: Number(e.target.value) }
+			copy = {...props.form, [e.target.name]: Number(e.target.value) }
 		}
 		props.setForm(copy)
 	}
 
+	function onOffset(align = "right") {
+		if (!props.form.autoWidth) {
+			let copy:Formb =  { ...props.form}
+			const length = copy.count * (copy.objWidth + copy.spacing)
+			switch (align) {
+				
+				case "left":
+					copy.offset = 0 
+				break
+				case "center":
+					copy.offset = (copy.totalLength / 2) - (length /2)
+				break
+				case "right":
+					copy.offset = copy.totalLength - length
+				break
+			}
+			props.setForm(copy)
+		}
+		
+	}
 	switch (props.value) {
 		case 'nothing':
 			return (
@@ -70,6 +91,9 @@ function SelectOptions(props) {
 							<li>select an object to have it repeat along a curve</li>
 							<li>select text to have the character follow the curve</li>
 						</ul>
+						<span className="type type--neg-medium-bold">Note:</span> if
+							two curves/ellipses are selected, the plugin will try to pick the
+							one that is bigger in either height or width.
 					</div>
 				</div>
 			)
@@ -80,7 +104,7 @@ function SelectOptions(props) {
 					<div className="section-title mt">Text to Path Options</div>
 					<div className="label">Vertical Alignment:</div>
 					<InputIcon
-						icon="icon icon--layout-align-vert-cent icon--black-3"
+						icon="icon icon--arrow-up-down icon--black-3"
 						values={props.form}
 						name="verticalAlign"
 						blur={e => onOffFocus(e)}
@@ -88,8 +112,41 @@ function SelectOptions(props) {
 						max={1}
 						step={0.1}
 						setvalues={props.setForm}></InputIcon>
+					<div className="label">Offset(px):</div>
+					<div className="flex">
+						<InputIcon
+							icon="icon icon--layout-grid-columns icon--black-3"
+							values={props.form}
+							name="offset"
+							blur={e => onOffFocus(e)}
+							setvalues={props.setForm}
+							disabled={props.form.autoWidth}></InputIcon>
+						<div className="flex">
+							<div
+								className={
+									props.form.autoWidth
+										? 'icon icon--layout-align-left icon--black-3'
+										: 'icon icon--layout-align-left icon--button'
+								}
+								onClick={() => onOffset("left") }></div>
+							<div
+								className={
+									props.form.autoWidth
+										? 'icon icon--layout-align-horiz-cent icon--black-3'
+										: 'icon icon--layout-align-horiz-cent icon--button'
+								}
+								onClick={() => onOffset("center") }></div>
+							<div
+								className={
+									props.form.autoWidth
+										? 'icon icon--layout-align-right icon--black-3'
+										: 'icon icon--layout-align-right icon--button'
+								}
+								onClick={() => onOffset("right") }></div>
+						</div>
+						
+					</div>
 					<div className="label">Rotation:</div>
-
 					<Checkbox
 						id="rotCheck"
 						checked={check}
@@ -120,7 +177,7 @@ function SelectOptions(props) {
 							<div className="label">Spacing(px):</div>
 							<div className="flex">
 								<InputIcon
-									icon="icon icon--layout-align-vert-cent icon--black-3"
+									icon="icon icon--dist-horiz-spacing icon--black-3"
 									values={props.form}
 									name="spacing"
 									blur={e => onOffFocus(e)}
@@ -138,7 +195,9 @@ function SelectOptions(props) {
 											autoWidth: !props.form.autoWidth,
 										})
 										
-									}}></div>
+									}}>
+
+									</div>
 							</div>
 						</div>
 					</div>
@@ -146,7 +205,7 @@ function SelectOptions(props) {
 						<div className="col">
 							<div className="label">Vertical Align:</div>
 							<InputIcon
-								icon="icon icon--layout-align-vert-cent icon--black-3"
+								icon="icon icon--arrow-up-down icon--black-3"
 								values={props.form}
 								name="verticalAlign"
 								blur={e => onOffFocus(e)}
@@ -156,9 +215,9 @@ function SelectOptions(props) {
 								setvalues={props.setForm}></InputIcon>
 						</div>
 						<div className="col">
-							<div className="label">Horozontal Align:</div>
+							<div className="label">Horizontal Align:</div>
 							<InputIcon
-								icon="icon icon--layout-align-vert-cent icon--black-3"
+								icon="icon icon--arrow-left-right icon--black-3"
 								values={props.form}
 								name="horizontalAlign"
 								blur={e => onOffFocus(e)}
@@ -168,7 +227,40 @@ function SelectOptions(props) {
 								setvalues={props.setForm}></InputIcon>
 						</div>
 					</div>
-
+					<div className="label">Offset(px):</div>
+					<div className="flex">
+						<InputIcon
+							icon="icon icon--layout-grid-columns icon--black-3"
+							values={props.form}
+							name="offset"
+							blur={e => onOffFocus(e)}
+							setvalues={props.setForm}
+							disabled={props.form.autoWidth}></InputIcon>
+						<div className="flex">
+							<div
+								className={
+									props.form.autoWidth
+										? 'icon icon--layout-align-left icon--black-3'
+										: 'icon icon--layout-align-left icon--button'
+								}
+								onClick={() => onOffset("left") }></div>
+							<div
+								className={
+									props.form.autoWidth
+										? 'icon icon--layout-align-horiz-cent icon--black-3'
+										: 'icon icon--layout-align-horiz-cent icon--button'
+								}
+								onClick={() => onOffset("center") }></div>
+							<div
+								className={
+									props.form.autoWidth
+										? 'icon icon--layout-align-right icon--black-3'
+										: 'icon icon--layout-align-right icon--button'
+								}
+								onClick={() => onOffset("right") }></div>
+						</div>
+						
+					</div>
 					<div className="label">Rotation:</div>
 
 					<Checkbox
@@ -180,16 +272,7 @@ function SelectOptions(props) {
 						}}>
 						object follows curve rotation
 					</Checkbox>
-					<div className="onboarding-tip">
-						<div className="onboarding-tip__icon">
-							<div className="icon icon--warning"></div>
-						</div>
-						<div className="onboarding-tip__msg">
-							<span className="type type--neg-medium-bold">Warning:</span> if
-							two curves/ellipses are selected, the plugin will try to pick the
-							one that is bigger in either height or width.
-						</div>
-					</div>
+					
 				</div>
 			)
 			break

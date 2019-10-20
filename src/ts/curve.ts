@@ -103,7 +103,7 @@ export var pointBtwnByLength = function(
 	// finds the x value of a point between two points given the magnitude of that point
 	const t: number = Math.cos((angle * Math.PI) / 180) * dist
 	const bruh = pointBtwn(a, b, t, totalDist)
-
+	bruh.angle = angle;
 	return bruh
 }
 var casteljau = function(

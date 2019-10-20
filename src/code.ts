@@ -20,8 +20,8 @@ var selectCurve = function(selection) {
 	const filterselect = selection.filter(
 		n => n.type === 'VECTOR' || n.type === 'ELLIPSE'
 	)
-
 	// if two curves are selected, select one with bigger x or y
+	// im sure theres a way to make this code smaller but idk how
 
 	if (filterselect.length == 2) {
 		if (
@@ -40,7 +40,6 @@ var selectCurve = function(selection) {
 		other = selection.filter(
 			a => a.type !== 'VECTOR' && a.type !== 'ELLIPSE'
 		)[0]
-		
 
 	}
 
@@ -48,10 +47,8 @@ var selectCurve = function(selection) {
 		//const clone = n.clone()
 
 		curve = figma.flatten([n])
-		const curve2 = {...curve}
-
-		svgdata = curve2.vectorPaths[0].data
-
+		figma.currentPage.selection = [...figma.currentPage.selection, curve]
+		
 		//clone.remove()
 	} else {
 		curve = n
@@ -70,12 +67,7 @@ async function main(options): Promise<string | undefined> {
 
 	// take the svg data of the curve and turn it into an array of points
 	const pointArr: Array<Point> = Curve.allPoints(curve.data, 300)
-	//clearInterval(watch)
 
-	// if (node.type == 'VECTOR' || node.type == 'ELLIPSE') {
-	// 	let node2: VectorNode
-
-	// }
 	if (curve.other.type === 'TEXT') {
 		//the font loading part
 
@@ -110,37 +102,12 @@ async function main(options): Promise<string | undefined> {
 		}
 		Place.object2Curve(curve.other, pointArr, curve.curve, options)
 	}
-
+	clearTimeout(watch)	
 	figma.closePlugin()
 	return
 }
 
-function calcCurves(
-	vectors: Array<Array<Point>>,
-	vectorLengths = null,
-	x = null,
-	y = null
-) {
-	// let pointArr: Array<Point> = []
-	// for (var curve in vectors) {
-	// 	pointArr.push(...Curve.pointOnCurve(vectors[curve], 100, true))
-	// }
-	// const newNodes: SceneNode[] = []
-	// for (var b = 0; b < pointArr.length; b++) {
-	// 	if (isNaN(pointArr[b].x)) {
-	// 	} else {
-	// 		const test = figma.createRectangle()
-	// 		test.resizeWithoutConstraints(0.1, 0.4)
-	// 		test.y = pointArr[b].y
-	// 		test.x = pointArr[b].x
-	// 		test.rotation = pointArr[b].angle
-	// 		figma.currentPage.appendChild(test)
-	// 		newNodes.push(test)
-	// 	}
-	// }
-	// figma.flatten(newNodes)
-	// console.log(pointArr)
-}
+
 
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__, { width: 300, height: 450 })
@@ -153,13 +120,7 @@ figma.ui.onmessage = async msg => {
 		let options: Formb = { ...msg.options, rotCheck: msg.rotCheck }
 		main(options)
 	}
-	if (msg.type === 'cancel') {
-		figma.closePlugin('k')
-	}
-	if (msg.type === 'svg') {
-		calcCurves(msg.vectors, msg.vectorLengths, msg.x, msg.y)
-		figma.closePlugin()
-	}
+
 	// Make sure to close the plugin when you're done. Otherwise the plugin will
 	// keep running, which shows the cancel button at the bottom of the screen.
 
@@ -213,6 +174,9 @@ const watchSelection = function() {
 		default:
 			sendSelection('toomany')
 	}
-}
+	setTimeout(watchSelection, 600);
 
-var watch = setInterval(watchSelection, 600)
+}
+//sEt tiMeoUt type beat
+//apparantly you can do this with promise but idk how so we have this abomination instead
+var watch = setTimeout(watchSelection, 600)

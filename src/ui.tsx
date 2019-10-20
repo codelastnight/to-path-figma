@@ -20,7 +20,8 @@ function UI() {
 		autoWidth: true,
 		totalLength: 0,
 		isLoop: false,
-		objWidth: 0
+		objWidth: 0,
+		offset: 0
 	}
 	const [setting, setSetting] = useState(settingsDefault)
 
@@ -66,7 +67,7 @@ function UI() {
 						if (svglength != 0 && setting.autoWidth) {
 							const space = isLoop
 								? svglength / setting.count - width
-								: svglength / setting.count - width
+								: svglength / (setting.count -1 ) - width
 							setSetting({
 								...setting,
 								totalLength: svglength,
@@ -78,6 +79,10 @@ function UI() {
 					}
 				}
 				showselection(event.data.pluginMessage.value)
+				if (event.data.pluginMessage.value === "text") {
+					setSetting({...setting, autoWidth: false})
+
+				}
 
 				break
 		}

@@ -15,61 +15,36 @@ var safeSpace = function(c: string) {
 	return c.replace(' ', String.fromCharCode(8197))
 }
 
-//convert text into indivisual characters
-var object2Point = function(
-	object,
-	pointArr: Array<Point>,
-	curve,
-	options: Formb,
-	pass: Pass
-) {
-	//
-	let rotation
+//groups and puts things into view
+var groupView = function(curve,nodes,node) {
+	// copy the curve, and select everything
+	
+	let clone2: SceneNode = curve.clone()
+	nodes.unshift(clone2)
+	clone2.visible = false
+	figma.currentPage.selection = nodes
+	// group and scroll intoview
 
-	let estPoint: Point
-	for (pass.pointIndex; pass.pointIndex < pointArr.length; pass.pointIndex++) {
-		// find nearest point to the length of the word
+	const group = [figma.group(figma.currentPage.selection, node.parent)]
+	figma.currentPage.selection = group
+	figma.viewport.scrollAndZoomIntoView(figma.currentPage.selection)
+}
+// place the objects on a point, based on user settings.
+var place = function(object: SceneNode, point: Point, options: Formb, curve = {x: 0,y: 0}) {
+//set locations
 
-		if (pass.spacing <= pointArr[pass.pointIndex].totalDist) {
-			let nextpoint = pointArr[pass.pointIndex + 1]
-
-			const localDist = pass.spacing - pointArr[pass.pointIndex].totalDist
-			rotation = nextpoint.angle
-			estPoint = pointBtwnByLength(
-				pointArr[pass.pointIndex],
-				nextpoint,
-				localDist,
-				nextpoint.dist,
-				rotation
-			)
-			if (estPoint.x === Infinity) {
-			} else {
-				break
-			}
-		} else {
-		}
+	// find center of object
+	const center = {
+	x: (object.type == 'TEXT' ? 0 : object.width * options.horizontalAlign), // no horozonatal align on text, kerning gets fucked up
+	y: object.height * options.verticalAlign
 	}
-
-	const centerX = object.width * options.horizontalAlign
-	const centerY = object.height * options.verticalAlign
-
-	//set locations
+	//angle of object converted to degrees
+	let angle = ((point.angle- 180) * Math.PI) / 180
+	
 	//spaceing them
-	let angle = ((rotation - 180) * Math.PI) / 180
 
-	object.x = 0
-	object.y = 0 - centerY
-
-	if (object.type != 'TEXT') {
-		object.x = 0 - centerX
-	} // kerning gets fucked up
-
-	pass.spacing = pass.spacing + object.width + options.spacing
-
-	// object.relativeTransform = multiply(
-	// 	move(-object.width / 2, -0.5 * object.height),
-	// 	object.relativeTransform
-	// )
+	object.x = 0 - center.x
+	object.y = 0 - center.y
 
 	// more code taken from jyc, the god himself https://github.com/jyc http://jyc.eqv.io
 	// Rotate the object.
@@ -80,10 +55,45 @@ var object2Point = function(
 	//move the object
 
 	object.relativeTransform = multiply(
-		move(estPoint.x + curve.x, estPoint.y + curve.y),
+		move(point.x + curve.x, point.y + curve.y),
 		object.relativeTransform
 	)
 }
+//  estimates and returns the point closest to where the object should be, based on horizontal length
+var object2Point = function(
+	pointArr: Array<Point>,
+	pass: Pass
+) {
+	//
+	let rotation
+
+	let estPoint: Point
+	for (pass.pointIndex; pass.pointIndex < pointArr.length; pass.pointIndex++) {
+		// find nearest point to the length of the word
+		if (pass.spacing <= pointArr[pass.pointIndex].totalDist) {
+			let nextpoint = pointArr[pass.pointIndex + 1]
+
+			const localDist = pass.spacing - pointArr[pass.pointIndex].totalDist
+			rotation = nextpoint.angle
+
+			estPoint = pointBtwnByLength(
+				pointArr[pass.pointIndex],
+				nextpoint,
+				localDist,
+				nextpoint.dist,
+				rotation
+			)
+
+			if (estPoint.x === Infinity) {
+			} else {
+				break
+			}
+		} else {
+		}
+	}
+	return estPoint
+}
+//convert text into indivisual characters
 
 export var text2Curve = function(
 	node: TextNode,
@@ -99,7 +109,7 @@ export var text2Curve = function(
 
 	// values needed to pass between each objects
 	let pass: Pass = {
-		spacing: 0,
+		spacing: 0 + options.offset,
 		pointIndex: 0
 	}
 	// disable spacing option in text mode
@@ -121,8 +131,12 @@ export var text2Curve = function(
 		letter.textAutoResize = 'WIDTH_AND_HEIGHT'
 
 		// put the object in the right place
-		object2Point(letter, pointArr, curve, options, pass)
+		let point = object2Point(pointArr, pass)
+		
+		pass.spacing = pass.spacing + letter.width + options.spacing
 
+		// place the thing
+		place(letter, point,options,curve)
 		//append that shit
 		letter.characters = safeSpace(charArr[i])
 		newNodes.push(letter)
@@ -132,19 +146,9 @@ export var text2Curve = function(
 			break
 		}
 	}
-	// copy the curve, and select everything
-
-	let clone2: SceneNode = curve.clone()
-	newNodes.unshift(clone2)
-	clone2.visible = false
-	figma.currentPage.selection = newNodes
-	// group and scroll intoview
-
-	const group = [figma.group(figma.currentPage.selection, node.parent)]
-
-	figma.currentPage.selection = group
-
-	figma.viewport.scrollAndZoomIntoView(figma.currentPage.selection)
+	// group things and scroll into view
+	groupView(curve,newNodes,node)
+	
 	return
 }
 
@@ -157,15 +161,19 @@ export var object2Curve = function(
 	const newNodes: SceneNode[] = []
 	// values needed to pass between each objects
 	let pass: Pass = {
-		spacing: node.width / 2,
+		spacing: node.width * options.horizontalAlign + options.offset,
 		pointIndex: 0
 	}
 	for (let i = 0; i < options.count; i++) {
+		//copy object
 		let object = node.clone()
-		//copy settings
-		// put the object in the right place
-		object2Point(object, pointArr, curve, options, pass)
+		// find the position where object should go
+		let point = object2Point(pointArr, pass)
 
+		
+		pass.spacing = pass.spacing + object.width + options.spacing
+		// place the thing
+		place(object, point,options,curve)
 		//append that shit
 		newNodes.push(object)
 		figma.currentPage.appendChild(object)
@@ -175,20 +183,16 @@ export var object2Curve = function(
 			break
 		}
 	}
-	// copy the curve, and select everything
-	let clone: SceneNode = curve.clone()
-	clone.visible = false
 
-	newNodes.unshift(clone)
-
-	figma.currentPage.selection = newNodes
-	// group and scroll intoview
-
-	const group = [figma.group(figma.currentPage.selection, node.parent)]
-
-	figma.currentPage.selection = group
-
-	figma.viewport.scrollAndZoomIntoView(figma.currentPage.selection)
-	// some repeated code that could be shrunken
+	// if autowidth put object at very last point
+	if (!options.isLoop && options.autoWidth) {
+		let object = node.clone()
+		const point = pointArr[pointArr.length-1]
+		place(object, point,options,curve)
+		newNodes.push(object)
+		figma.currentPage.appendChild(object)
+	}
+	// group things and scroll into view
+	groupView(curve,newNodes,node)
 	return
 }
