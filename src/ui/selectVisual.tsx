@@ -60,18 +60,19 @@ function SelectOptions(props) {
 
 	function onOffset(align = "right") {
 		if (!props.form.autoWidth) {
-			let copy:Formb =  { ...props.form}
-			const length = copy.count * (copy.objWidth + copy.spacing)
+			let copy:Formb =  { ...props.form}	
+			const count = (copy.isLoop ? copy.count -1 : copy.count )
+			const length = count * (copy.objWidth) + copy.spacing *(count -1)
 			switch (align) {
 				
 				case "left":
 					copy.offset = 0 
 				break
 				case "center":
-					copy.offset = (copy.totalLength / 2) - (length /2)
+					copy.offset = (copy.totalLength / 2) - (length /2) + copy.objWidth/2
 				break
 				case "right":
-					copy.offset = copy.totalLength - length
+					copy.offset = copy.totalLength - length + copy.objWidth/2
 				break
 			}
 			props.setForm(copy)

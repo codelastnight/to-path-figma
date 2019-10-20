@@ -161,7 +161,7 @@ export var object2Curve = function(
 	const newNodes: SceneNode[] = []
 	// values needed to pass between each objects
 	let pass: Pass = {
-		spacing: node.width * options.horizontalAlign + options.offset,
+		spacing: 0  + options.offset,
 		pointIndex: 0
 	}
 	for (let i = 0; i < options.count; i++) {

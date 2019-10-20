@@ -5,7 +5,7 @@ import './figma-plugin-ds.min.css'
 import './scss/main.scss'
 import { SelectOptions, SelectVisual } from './ui/selectVisual'
 import Create from './ui/Create'
-
+const manifest = require( './../package.json')
 const logo = require('./logo.svg')
 declare function require(path: string): any
 function UI() {
@@ -37,7 +37,7 @@ function UI() {
 			},
 			'*'
 		)
-		console.log(setting)
+		//console.log(setting)
 	}
 
 	onmessage = event => {
@@ -91,7 +91,7 @@ function UI() {
 	return (
 		<div>
 			<div className={about === true ? 'about' : 'about hidden'}>
-				<div className="flex">
+				<div className="flex-about">
 					<img src={logo} className="logo"></img>
 					<svg
 						className="logotext"
@@ -105,20 +105,29 @@ function UI() {
 							fill="#2E445D"
 						/>
 					</svg>
-					<p className="type type--pos-medium-bold"> author: last night</p>
-					<p className="type type--pos-medium-normal"> version 1.0</p>
+					<p className="type type--pos-medium-bold"> author: {manifest.author} </p>
+					<p className="type type--pos-medium-normal"> version {manifest.version}</p>
+					<p className="flex type type--pos-medium-bold" >
+					
 					<a
 						className="type type--pos-medium-bold"
 						href="https://github.com/codelastnight/to-path-figma"
 						target="_blank">
 						github
-					</a>
+					</a>  
+					<div > | 
+					</div>
+
 					<a
 						className="type type--pos-medium-bold"
 						href="https://twitter.com/art_last_night"
 						target="_blank">
 						twitter
 					</a>
+					
+					
+					</p>
+					
 				</div>
 			</div>
 

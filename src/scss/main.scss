@@ -47,14 +47,21 @@ body {
 	width: 100%;
 	z-index: 69;
 	padding: 8px;
-	.flex {
+	
+	background-color: #fff;
+
+	.flex-about {
 		display: flex;
 		align-items: center;
 		flex-direction: column;
 	}
-	background-color: #fff;
+
 	&.hidden {
 		display: none;
+	}
+
+	.logotext {
+		margin-bottom: 1.3em;
 	}
 	.logo {
 		margin: 2em;
@@ -65,7 +72,10 @@ body {
 	}
 
 	p {
-		margin-bottom: 0;
+		margin: 0.4em 0;
+	}
+	a {
+		margin: 0 1em ;
 	}
 }
 
