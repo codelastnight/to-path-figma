@@ -1,4 +1,8 @@
+
 # To-Path: A Figma Plugin
+
+![version badge](https://img.shields.io/badge/dynamic/json?color=ff69b4&label=version&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fcodelastnight%2Fto-path-figma%2Fmaster%2Fpackage.json?style=flat-square)
+
 
 ![logo and info image](info.png)
 
