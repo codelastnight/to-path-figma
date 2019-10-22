@@ -62,14 +62,24 @@ function SelectOptions(props) {
 		if (!props.form.autoWidth) {
 			let copy:Formb =  { ...props.form}	
 			const count = (copy.isLoop ? copy.count -1 : copy.count )
-			const length = count * (copy.objWidth) + copy.spacing *(count -1)
+			let length = 0
+
+			if(props.value=='text') {
+				length = copy.objWidth 
+				console.log(length)
+
+			}
+			 else {
+				length = count * (copy.objWidth) + copy.spacing *(count -1)
+
+			 }
 			switch (align) {
 				
 				case "left":
 					copy.offset = 0 
 				break
 				case "center":
-					copy.offset = (copy.totalLength / 2) - (length /2) + copy.objWidth/2
+					copy.offset = (copy.totalLength / 2) - (length /2) + (props.value=='clone' ? copy.objWidth/2 : 0)
 				break
 				case "right":
 					copy.offset = copy.totalLength - length + copy.objWidth/2
