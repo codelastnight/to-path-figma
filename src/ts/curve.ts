@@ -5,7 +5,7 @@
 	version: im baby
 	github: https://github.com/codelastnight/to-path-figma
 */
-import { arrChunk } from './extra'
+import { arrChunk } from './helper'
 
 //turn whatever the fuck svg code is into array of points grouped into 4 or 2 ( this is dependant on what type of bezier curve it is. look it up)
 // figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
@@ -140,7 +140,7 @@ var casteljau = function(
 	return arr
 }
 
-//calculate De Casteljau’s algorithm from 2-4 points  https://javascript.info/bezier-curve
+//calculate De Casteljau’s algorithm from 2 or 4 points  https://javascript.info/bezier-curve
 // basically turns 4 points on a beizer into a curve
 var pointOnCurve = function(
 	curve: Array<Point>,

@@ -6,7 +6,7 @@
 	github: https://github.com/codelastnight/to-path-figma
 
 	disclaimer:
-    i dont know how to code
+	i dont know how to code
 */
 import * as Curve from './ts/curve'
 import * as Place from './ts/place'
@@ -44,12 +44,11 @@ var selectCurve = function(selection) {
 	}
 
 	if (n.type == 'ELLIPSE') {
-		//const clone = n.clone()
-
+		// flatten the ellipse so it is registered as a curve.
+		// this isn't ideal at all, but it reduces code.
 		curve = figma.flatten([n])
 		figma.currentPage.selection = [...figma.currentPage.selection, curve]
 		
-		//clone.remove()
 	} else {
 		curve = n
 		svgdata = curve.vectorPaths[0].data
@@ -91,6 +90,7 @@ async function main(options): Promise<string | undefined> {
 		//place it on the thing
 		Place.text2Curve(curve.other, pointArr, curve.curve, options)
 	} else {
+		// load fonts if selected object is a group or frame
 		if (curve.other.type === 'FRAME' || curve.other.type === 'GROUP') {
 			const textnode = curve.other.findAll(e => e.type === 'TEXT') as TextNode[]
 
@@ -102,8 +102,6 @@ async function main(options): Promise<string | undefined> {
 		}
 		Place.object2Curve(curve.other, pointArr, curve.curve, options)
 	}
-	clearTimeout(watch)	
-	figma.closePlugin()
 	return
 }
 
@@ -117,8 +115,8 @@ figma.showUI(__html__, { width: 300, height: 450 })
 // posted message.
 figma.ui.onmessage = async msg => {
 	if (msg.type === 'do-the-thing') {
-		let options: Formb = { ...msg.options, rotCheck: msg.rotCheck }
-		main(options)
+		console.log(msg.options)
+		main(msg.options)
 	}
 
 	// Make sure to close the plugin when you're done. Otherwise the plugin will

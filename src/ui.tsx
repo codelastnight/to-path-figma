@@ -11,7 +11,7 @@ declare function require(path: string): any
 function UI() {
 	const [selection, showselection] = useState('nothing')
 	const [about, showabout] = useState(false)
-
+	// default settings
 	const settingsDefault: Formb = {
 		verticalAlign: 0.5,
 		horizontalAlign: 0.5,
@@ -21,18 +21,17 @@ function UI() {
 		totalLength: 0,
 		isLoop: false,
 		objWidth: 0,
-		offset: 0
+		offset: 0,
+		rotCheck: true,
 	}
 	const [setting, setSetting] = useState(settingsDefault)
 
-	let rotCheck = true
 	const onCreate = () => {
 		parent.postMessage(
 			{
 				pluginMessage: {
 					type: 'do-the-thing',
 					options: setting,
-					rotCheck: rotCheck
 				}
 			},
 			'*'
@@ -41,7 +40,6 @@ function UI() {
 	}
 
 	onmessage = event => {
-		// idk how to put this in react and im too lazy to find out
 		// LMAO i cant believe this works this is some 300 iq going on rn
 
 		switch (event.data.pluginMessage.type) {
@@ -135,7 +133,6 @@ function UI() {
 				<SelectVisual value={selection} />
 				<SelectOptions
 					value={selection}
-					rotCheck={rotCheck}
 					form={setting}
 					setForm={setSetting}
 				/>

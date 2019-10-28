@@ -45,8 +45,7 @@ function SelectVisual(props) {
 // show different options depending on what is selected.
 // currently two: text to path and curve to path
 function SelectOptions(props) {
-	const [check, setCheck] = useState(props.rotCheck)
-
+	
 	function onOffFocus(e) {
 		let copy
 
@@ -160,11 +159,10 @@ function SelectOptions(props) {
 					<div className="label">Rotation:</div>
 					<Checkbox
 						id="rotCheck"
-						checked={check}
-						change={() => {
-							setCheck(!check)
-							props.rotCheck = check
-						}}>
+						values={props.form}
+						setvalues={props.setForm}
+
+						>
 						characters follow curve rotation
 					</Checkbox>
 				</div>
@@ -276,12 +274,11 @@ function SelectOptions(props) {
 
 					<Checkbox
 						id="rotCheck"
-						checked={check}
-						change={() => {
-							setCheck(!check)
-							props.rotCheck = check
-						}}>
-						object follows curve rotation
+						values={props.form}
+						setvalues={props.setForm}
+
+						>
+						objects follow curve rotation
 					</Checkbox>
 					
 				</div>
