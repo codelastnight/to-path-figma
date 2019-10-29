@@ -14,6 +14,12 @@ Put any objects or text on a path!
 
 *not actually magic
 
+### roadmap 
+
+ [ ] live previewing
+ [ ] switch from polling to event calls for detecting selection change (when figma api updates)
+ [ ] support for vector networks (maybe?)
+ [ ] advanced settings (eg, increase size of object every time its cloned)
 
 ## How it Works
 
