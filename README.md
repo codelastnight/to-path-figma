@@ -39,7 +39,7 @@ Put any objects or text on a path!
 2. compile :
 `npm run prod`
 
-Helpful resources:
+
 
 
 mfw someone else already put out something similar to my plugin but i spent too much time on this to stop now.
