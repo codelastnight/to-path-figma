@@ -62,8 +62,9 @@ function UI() {
 						const svglength = path.getTotalLength()
 						if (svglength != 0 && setting.autoWidth) {
 							const space = (isLoop
-								? svglength / (setting.count - width)
-								: svglength / ((setting.count -1 ) - width))
+								? svglength / setting.count - width
+								: svglength / (setting.count -1 ) - width)
+
 							copy = {...copy, spacing: space}
 						}
 						copy = {...copy, totalLength: svglength,
