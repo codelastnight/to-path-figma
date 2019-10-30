@@ -36,11 +36,10 @@ var selectCurve = function(selection) {
 		}
 	} else {
 		n = filterselect[0]
-		
+
 		other = selection.filter(
 			a => a.type !== 'VECTOR' && a.type !== 'ELLIPSE'
 		)[0]
-
 	}
 
 	if (n.type == 'ELLIPSE') {
@@ -48,13 +47,13 @@ var selectCurve = function(selection) {
 
 		curve = figma.flatten([n])
 		figma.currentPage.selection = [...figma.currentPage.selection, curve]
-		
+
 		//clone.remove()
 	} else {
 		curve = n
 		svgdata = curve.vectorPaths[0].data
 	}
-	
+
 	return { data: svgdata, curve: curve, other: other }
 }
 // main code
@@ -102,12 +101,10 @@ async function main(options): Promise<string | undefined> {
 		}
 		Place.object2Curve(curve.other, pointArr, curve.curve, options)
 	}
-	clearTimeout(watch)	
+	clearTimeout(watch)
 	figma.closePlugin()
 	return
 }
-
-
 
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__, { width: 300, height: 450 })
@@ -133,12 +130,12 @@ let selected = ''
 //update ui only when selection is updated
 var sendSelection = function(value: string, selection = null, width = 0) {
 	if (selected != value) {
-		if (!isNullOrUndefined(selection)) {
+		if (selection != undefined) {
 			const curve = selectCurve(selection)
 			const width = curve.other.width
-			console.log(width)
-			figma.ui.postMessage({ type: 'svg', curve, width,value })
+			figma.ui.postMessage({ type: 'svg', curve, width, value })
 		}
+
 		figma.ui.postMessage({ type: 'selection', value })
 		selected = value
 	}
@@ -156,7 +153,7 @@ const watchSelection = function() {
 			) {
 				// if its a text or somethin else
 				if (selection.filter(node => node.type === 'TEXT').length == 1) {
-					sendSelection('text')
+					sendSelection('text', selection)
 				} else {
 					sendSelection('clone', selection)
 				}
@@ -175,8 +172,7 @@ const watchSelection = function() {
 		default:
 			sendSelection('toomany')
 	}
-	setTimeout(watchSelection, 600);
-
+	setTimeout(watchSelection, 600)
 }
 //sEt tiMeoUt type beat
 //apparantly you can do this with promise but idk how so we have this abomination instead

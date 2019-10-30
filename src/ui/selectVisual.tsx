@@ -51,43 +51,43 @@ function SelectOptions(props) {
 		let copy
 
 		if (e.target.value == '') {
-			copy = {...props.form,[e.target.name]: props.form[e.target.name] }
+			copy = { ...props.form, [e.target.name]: props.form[e.target.name] }
 		} else {
-			copy = {...props.form, [e.target.name]: Number(e.target.value) }
+			copy = { ...props.form, [e.target.name]: Number(e.target.value) }
 		}
 		props.setForm(copy)
 	}
 
-	function onOffset(align = "right") {
+	function onOffset(align = 'right') {
 		if (!props.form.autoWidth) {
-			let copy:Formb =  { ...props.form}	
-			const count = (copy.isLoop ? copy.count -1 : copy.count )
+			let copy: Formb = { ...props.form }
+			const count = copy.isLoop ? copy.count - 1 : copy.count
 			let length = 0
 
-			if(props.value=='text') {
-				length = copy.objWidth 
-				console.log(length)
-
+			if (props.value == 'text') {
+				length = props.form.objWidth
+			} else {
+				length = count * copy.objWidth + copy.spacing * (count - 1)
 			}
-			 else {
-				length = count * (copy.objWidth) + copy.spacing *(count -1)
-
-			 }
 			switch (align) {
-				
-				case "left":
-					copy.offset = 0 
-				break
-				case "center":
-					copy.offset = (copy.totalLength / 2) - (length /2) + (props.value=='clone' ? copy.objWidth/2 : 0)
-				break
-				case "right":
-					copy.offset = copy.totalLength - length + copy.objWidth/2
-				break
+				case 'left':
+					copy.offset = 0
+					break
+				case 'center':
+					copy.offset =
+						copy.totalLength / 2 -
+						length / 2 +
+						(props.value == 'clone' ? copy.objWidth / 2 : 0)
+					break
+				case 'right':
+					copy.offset =
+						copy.totalLength -
+						length +
+						(props.value == 'clone' ? copy.objWidth / 2 : 0)
+					break
 			}
 			props.setForm(copy)
 		}
-		
 	}
 	switch (props.value) {
 		case 'nothing':
@@ -102,9 +102,9 @@ function SelectOptions(props) {
 							<li>select an object to have it repeat along a curve</li>
 							<li>select text to have the character follow the curve</li>
 						</ul>
-						<span className="type type--neg-medium-bold">Note:</span> if
-							two curves/ellipses are selected, the plugin will try to pick the
-							one that is bigger in either height or width.
+						<span className="type type--neg-medium-bold">Note:</span> if two
+						curves/ellipses are selected, the plugin will try to pick the one
+						that is bigger in either height or width.
 					</div>
 				</div>
 			)
@@ -139,23 +139,22 @@ function SelectOptions(props) {
 										? 'icon icon--layout-align-left icon--black-3'
 										: 'icon icon--layout-align-left icon--button'
 								}
-								onClick={() => onOffset("left") }></div>
+								onClick={() => onOffset('left')}></div>
 							<div
 								className={
 									props.form.autoWidth
 										? 'icon icon--layout-align-horiz-cent icon--black-3'
 										: 'icon icon--layout-align-horiz-cent icon--button'
 								}
-								onClick={() => onOffset("center") }></div>
+								onClick={() => onOffset('center')}></div>
 							<div
 								className={
 									props.form.autoWidth
 										? 'icon icon--layout-align-right icon--black-3'
 										: 'icon icon--layout-align-right icon--button'
 								}
-								onClick={() => onOffset("right") }></div>
+								onClick={() => onOffset('right')}></div>
 						</div>
-						
 					</div>
 					<div className="label">Rotation:</div>
 					<Checkbox
@@ -203,12 +202,9 @@ function SelectOptions(props) {
 									onClick={() => {
 										props.setForm({
 											...props.form,
-											autoWidth: !props.form.autoWidth,
+											autoWidth: !props.form.autoWidth
 										})
-										
-									}}>
-
-									</div>
+									}}></div>
 							</div>
 						</div>
 					</div>
@@ -254,23 +250,22 @@ function SelectOptions(props) {
 										? 'icon icon--layout-align-left icon--black-3'
 										: 'icon icon--layout-align-left icon--button'
 								}
-								onClick={() => onOffset("left") }></div>
+								onClick={() => onOffset('left')}></div>
 							<div
 								className={
 									props.form.autoWidth
 										? 'icon icon--layout-align-horiz-cent icon--black-3'
 										: 'icon icon--layout-align-horiz-cent icon--button'
 								}
-								onClick={() => onOffset("center") }></div>
+								onClick={() => onOffset('center')}></div>
 							<div
 								className={
 									props.form.autoWidth
 										? 'icon icon--layout-align-right icon--black-3'
 										: 'icon icon--layout-align-right icon--button'
 								}
-								onClick={() => onOffset("right") }></div>
+								onClick={() => onOffset('right')}></div>
 						</div>
-						
 					</div>
 					<div className="label">Rotation:</div>
 
@@ -283,7 +278,6 @@ function SelectOptions(props) {
 						}}>
 						object follows curve rotation
 					</Checkbox>
-					
 				</div>
 			)
 			break

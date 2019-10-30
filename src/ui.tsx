@@ -5,7 +5,7 @@ import './figma-plugin-ds.min.css'
 import './scss/main.scss'
 import { SelectOptions, SelectVisual } from './ui/selectVisual'
 import Create from './ui/Create'
-const manifest = require( './../package.json')
+const manifest = require('./../package.json')
 const logo = require('./logo.svg')
 declare function require(path: string): any
 function UI() {
@@ -46,8 +46,6 @@ function UI() {
 
 		switch (event.data.pluginMessage.type) {
 			case 'svg':
-
-			case 'selection':
 				const svgdata = event.data.pluginMessage.curve
 				if (svgdata != null && svgdata != undefined) {
 					if (svgdata.data != null && svgdata.data != '') {
@@ -64,10 +62,22 @@ function UI() {
 						const svglength = path.getTotalLength()
 
 						console.log(svglength)
-						if (svglength != 0 && setting.autoWidth) {
-							const space = isLoop
-								? svglength / setting.count - width
-								: svglength / (setting.count -1 ) - width
+
+						if (svglength != 0) {
+							if (setting.autoWidth) {
+								const space = isLoop
+									? svglength / setting.count - width
+									: svglength / (setting.count - 1) - width
+								setSetting({
+									...setting,
+									totalLength: svglength,
+									spacing: space,
+									isLoop: isLoop,
+									objWidth: width
+								})
+							}
+						} else {
+							const space = 20
 							setSetting({
 								...setting,
 								totalLength: svglength,
@@ -78,10 +88,11 @@ function UI() {
 						}
 					}
 				}
+				break
+			case 'selection':
 				showselection(event.data.pluginMessage.value)
-				if (event.data.pluginMessage.value === "text") {
-					setSetting({...setting, autoWidth: false})
-
+				if (event.data.pluginMessage.value === 'text') {
+					setSetting({ ...setting, autoWidth: false })
 				}
 
 				break
@@ -105,29 +116,30 @@ function UI() {
 							fill="#2E445D"
 						/>
 					</svg>
-					<p className="type type--pos-medium-bold"> author: {manifest.author} </p>
-					<p className="type type--pos-medium-normal"> version {manifest.version}</p>
-					<p className="flex type type--pos-medium-bold" >
-					
-					<a
-						className="type type--pos-medium-bold"
-						href="https://github.com/codelastnight/to-path-figma"
-						target="_blank">
-						github
-					</a>  
-					<div > | 
-					</div>
-
-					<a
-						className="type type--pos-medium-bold"
-						href="https://twitter.com/art_last_night"
-						target="_blank">
-						twitter
-					</a>
-					
-					
+					<p className="type type--pos-medium-bold">
+						{' '}
+						author: {manifest.author}{' '}
 					</p>
-					
+					<p className="type type--pos-medium-normal">
+						{' '}
+						version {manifest.version}
+					</p>
+					<p className="flex type type--pos-medium-bold">
+						<a
+							className="type type--pos-medium-bold"
+							href="https://github.com/codelastnight/to-path-figma"
+							target="_blank">
+							github
+						</a>
+						<div> |</div>
+
+						<a
+							className="type type--pos-medium-bold"
+							href="https://twitter.com/art_last_night"
+							target="_blank">
+							twitter
+						</a>
+					</p>
 				</div>
 			</div>
 
