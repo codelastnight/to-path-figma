@@ -201,7 +201,7 @@ function SelectOptions(props) {
 											const space = copy.isLoop
 												? copy.totalLength / copy.count - copy.objWidth
 												: copy.totalLength / (copy.count - 1) - copy.objWidth
-											copy = { ...copy, spacing: space }
+											copy = { ...copy, spacing: space, offset: 0 }
 										}
 										props.setForm(copy)
 									}}></div>
