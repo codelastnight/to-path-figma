@@ -46,7 +46,6 @@ function SelectVisual(props) {
 // show different options depending on what is selected.
 // currently two: text to path and curve to path
 function SelectOptions(props) {
-
 	function onOffFocus(e) {
 		let copy
 
@@ -157,12 +156,7 @@ function SelectOptions(props) {
 						</div>
 					</div>
 					<div className="label">Rotation:</div>
-					<Checkbox
-						id="rotCheck"
-						values={props.form}
-						setvalues={props.setForm}
-
-						>
+					<Checkbox id="rotCheck" values={props.form} setvalues={props.setForm}>
 						characters follow curve rotation
 					</Checkbox>
 				</div>
@@ -199,10 +193,17 @@ function SelectOptions(props) {
 											: 'icon icon--link-broken icon--button a'
 									}
 									onClick={() => {
-										props.setForm({
-											...props.form,
-											autoWidth: !props.form.autoWidth
-										})
+										// clean up later. now it just needs to work lmao
+										let copy: Formb = { ...props.form }
+										copy = { ...copy, autoWidth: !copy.autoWidth }
+
+										if (copy.autoWidth) {
+											const space = copy.isLoop
+												? copy.totalLength / copy.count - copy.objWidth
+												: copy.totalLength / (copy.count - 1) - copy.objWidth
+											copy = { ...copy, spacing: space }
+										}
+										props.setForm(copy)
 									}}></div>
 							</div>
 						</div>
@@ -268,12 +269,7 @@ function SelectOptions(props) {
 					</div>
 					<div className="label">Rotation:</div>
 
-					<Checkbox
-						id="rotCheck"
-						values={props.form}
-						setvalues={props.setForm}
-
-						>
+					<Checkbox id="rotCheck" values={props.form} setvalues={props.setForm}>
 						objects follow curve rotation
 					</Checkbox>
 				</div>

@@ -59,6 +59,8 @@ function UI() {
 
 						// use the builtin function getTotalLength() to calculate length
 						const svglength = path.getTotalLength()
+
+						// change the spacing number on "auto width" setting (space evenly thru whole thing)
 						if (svglength != 0 && setting.autoWidth) {
 							const space = isLoop
 								? svglength / setting.count - width

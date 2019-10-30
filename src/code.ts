@@ -122,20 +122,16 @@ figma.ui.onmessage = async msg => {
 }
 
 //watches for updates on selection
-// uses polling cuz i couldnt figure out another way
-let selected = ''
+
 //update ui only when selection is updated
 var sendSelection = function(value: string, selection = null, width = 0) {
-	if (selected != value) {
-		if (selection != null) {
-			const curve = selectCurve(selection)
-			if (curve.data.match(/M/g).length > 1) value = 'vectornetwork'
-			const width = curve.other.width
-			figma.ui.postMessage({ type: 'svg', curve, width, value })
-		} else {
-			figma.ui.postMessage({ type: 'selection', value })
-		}
-		selected = value
+	if (selection != null) {
+		const curve = selectCurve(selection)
+		if (curve.data.match(/M/g).length > 1) value = 'vectornetwork'
+		const width = curve.other.width
+		figma.ui.postMessage({ type: 'svg', curve, width, value })
+	} else {
+		figma.ui.postMessage({ type: 'selection', value })
 	}
 }
 const watchSelection = function() {
@@ -170,8 +166,9 @@ const watchSelection = function() {
 		default:
 			sendSelection('toomany')
 	}
-	setTimeout(watchSelection, 600)
 }
-//sEt tiMeoUt type beat
-//apparantly you can do this with promise but idk how so we have this abomination instead
-var watch = setTimeout(watchSelection, 600)
+
+watchSelection()
+figma.on('selectionchange', function() {
+	watchSelection()
+})
