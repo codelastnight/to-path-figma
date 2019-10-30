@@ -7,8 +7,7 @@
 */
 
 import { pointBtwnByLength } from './curve'
-import { multiply, move, rotate } from './extra'
-import { object } from 'prop-types'
+import { multiply, move, rotate } from './helper'
 // case for handling spaces, becasue figma will auto them as 0 width; character 8197 isnt the best but you kno what... its good enough
 // this didn't need to be a function but like i already wrote so
 var safeSpace = function(c: string) {
@@ -16,40 +15,39 @@ var safeSpace = function(c: string) {
 }
 
 //groups and puts things into view
-var groupView = function(curve, nodes, node) {
+var groupView = function(curve: VectorNode, nodes, node) {
 	// copy the curve, and select everything
 
 	let clone2: SceneNode = curve.clone()
 	nodes.unshift(clone2)
+	curve.parent.appendChild(clone2)
 	clone2.visible = false
-	figma.currentPage.selection = nodes
+	//figma.currentPage.selection = nodes
 	// group and scroll intoview
 
-	const group = [figma.group(figma.currentPage.selection, node.parent)]
-	figma.currentPage.selection = group
-	figma.viewport.scrollAndZoomIntoView(figma.currentPage.selection)
+	const group = [figma.group(nodes, node.parent)]
+	//figma.currentPage.selection = group
 }
 // place the objects on a point, based on user settings.
 var place = function(
 	object: SceneNode,
 	point: Point,
 	options: Formb,
-	curve = { x: 0, y: 0 }
+	curve: VectorNode
 ) {
 	//set locations
 
 	// find center of object
 	const center = {
-		x: object.type == 'TEXT' ? 0 : object.width * options.horizontalAlign, // no horozonatal align on text, kerning gets fucked up
-		y: object.height * options.verticalAlign
+		x: 0 - (object.type == 'TEXT' ? 0 : object.width * options.horizontalAlign), // no horozonatal align on text, kerning gets fucked up
+		y: 0 - object.height * options.verticalAlign
 	}
 	//angle of object converted to degrees
 	let angle = ((point.angle - 180) * Math.PI) / 180
 
+	// zero it
 	//spaceing them
-
-	object.x = 0 - center.x
-	object.y = 0 - center.y
+	object.relativeTransform = move(center.x, center.y)
 
 	// more code taken from jyc, the god himself https://github.com/jyc http://jyc.eqv.io
 	// Rotate the object.
@@ -60,9 +58,13 @@ var place = function(
 	//move the object
 
 	object.relativeTransform = multiply(
-		move(point.x + curve.x, point.y + curve.y),
+		move(
+			point.x + curve.relativeTransform[0][2],
+			point.y + curve.relativeTransform[1][2]
+		),
 		object.relativeTransform
 	)
+	console.log(object.relativeTransform)
 }
 //  estimates and returns the point closest to where the object should be, based on horizontal length
 var object2Point = function(pointArr: Array<Point>, pass: Pass) {
@@ -143,8 +145,9 @@ export var text2Curve = function(
 		//append that shit
 		letter.characters = safeSpace(charArr[i])
 		newNodes.push(letter)
-		figma.currentPage.appendChild(letter)
+		curve.parent.appendChild(letter)
 		// kill loop early if the objects are longer then the curve
+		// replace later with a better thing
 		if (pass.spacing >= pointArr[pointArr.length - 1].totalDist) {
 			break
 		}
@@ -181,8 +184,9 @@ export var object2Curve = function(
 		place(object, point, options, curve)
 		//append that shit
 		newNodes.push(object)
-		figma.currentPage.appendChild(object)
+		curve.parent.appendChild(object)
 		// kill loop early if the objects are longer then the curve
+		// replace later with a better thing
 
 		if (pass.spacing >= pointArr[pointArr.length - 1].totalDist) {
 			break
@@ -198,7 +202,7 @@ export var object2Curve = function(
 		const point = pointArr[pointArr.length - 1]
 		place(object, point, options, curve)
 		newNodes.push(object)
-		figma.currentPage.appendChild(object)
+		curve.parent.appendChild(object)
 	}
 	// group things and scroll into view
 	groupView(curve, newNodes, node)

@@ -1,14 +1,19 @@
 import * as React from 'react'
 
 function Checkbox(props) {
+	function thecheck() {
+		props.setvalues({...props.values, rotCheck: !props.values.rotCheck})
+	}
 	return (
-		<div className="checkbox" onClick={props.change}>
+		
+		<div className="checkbox" onClick={thecheck}>
 			<input
 				className="checkbox__box"
 				type="checkbox"
 				id={props.id}
-				checked={props.checked}
-				onChange={props.change}
+				checked={props.values.rotCheck}
+				onChange={thecheck}
+				
 			/>
 			<label className="checkbox__label">{props.children}</label>
 		</div>
