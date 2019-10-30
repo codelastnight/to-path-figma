@@ -12,6 +12,7 @@ function Checkbox(props) {
 				type="checkbox"
 				id={props.id}
 				checked={props.values.rotCheck}
+				onChange={thecheck}
 				
 			/>
 			<label className="checkbox__label">{props.children}</label>

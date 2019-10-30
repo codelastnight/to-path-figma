@@ -6,6 +6,7 @@ import { checkPropTypes } from 'prop-types'
 const selectCase = {
 	one: 'please select two things',
 	nothing: 'nothing selected',
+	vectornetwork: 'multiple curves not supported',
 	nocurve: 'please select a curve',
 	toomany: 'please select only two things',
 	text: 'curve and text selected',
@@ -45,7 +46,7 @@ function SelectVisual(props) {
 // show different options depending on what is selected.
 // currently two: text to path and curve to path
 function SelectOptions(props) {
-	
+
 	function onOffFocus(e) {
 		let copy
 

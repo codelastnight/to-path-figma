@@ -131,14 +131,19 @@ let selected = ''
 //update ui only when selection is updated
 var sendSelection = function(value: string, selection = null, width = 0) {
 	if (selected != value) {
-		if (!isNullOrUndefined(selection)) {
+		if (selection!=null) {
 			const curve = selectCurve(selection)
+			if( (curve.data.match(/M/g)).length > 1) value = 'vectornetwork'
 			const width = curve.other.width
-			console.log(width)
 			figma.ui.postMessage({ type: 'svg', curve, width,value })
+
+
+		} else {
+			figma.ui.postMessage({ type: 'selection', value })
+
 		}
-		figma.ui.postMessage({ type: 'selection', value })
 		selected = value
+
 	}
 }
 const watchSelection = function() {
@@ -154,7 +159,7 @@ const watchSelection = function() {
 			) {
 				// if its a text or somethin else
 				if (selection.filter(node => node.type === 'TEXT').length == 1) {
-					sendSelection('text')
+					sendSelection('text', selection)
 				} else {
 					sendSelection('clone', selection)
 				}
