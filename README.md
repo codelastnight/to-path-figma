@@ -16,8 +16,9 @@ Put any objects or text on a path!
 
 ### roadmap 
 
- - [ ] live previewing
- - [ ] switch from polling to event calls for detecting selection change (when figma api updates)
+-  [x] switch from polling to event calls for detecting selection change (when figma api updates)
+-  [ ] live previewing
+-  [ ] remember previous settings and reset to default
 -  [ ] support for vector networks (maybe?)
 -  [ ] advanced settings (eg, increase size of object every time its cloned)
 
