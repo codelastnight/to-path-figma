@@ -56,14 +56,14 @@ var selectCurve = function(selection) {
 }
 // main code
 //async required because figma api requires you to load fonts into the plugin to use them... honestly im really tempted to just hardcode a dumb font like swanky and moo moo instead
-async function main(options): Promise<string | undefined> {
+async function main(options:Formb): Promise<string | undefined> {
 	const selection = figma.currentPage.selection
 
 	// select the curve
 	let curve = selectCurve(selection)
 
 	// take the svg data of the curve and turn it into an array of points
-	const pointArr: Array<Point> = Curve.allPoints(curve.data, 608)
+	const pointArr: Array<Point> = Curve.allPoints(curve.data, options.precision)
 
 	if (curve.other.type === 'TEXT') {
 		//the font loading part

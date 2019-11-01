@@ -5,9 +5,12 @@ import './figma-plugin-ds.min.css'
 import './scss/main.scss'
 import { SelectOptions, SelectVisual } from './ui/selectVisual'
 import Create from './ui/Create'
+import { InputIcon } from './ui/Form'
+
 const manifest = require('./../package.json')
 const logo = require('./logo.svg')
 
+// default settings
 let settingsDefault: Formb = {
 	verticalAlign: 0.5,
 	horizontalAlign: 0.5,
@@ -18,7 +21,8 @@ let settingsDefault: Formb = {
 	isLoop: false,
 	objWidth: 0,
 	offset: 0,
-	rotCheck: true
+	rotCheck: true,
+	precision: 420
 }
 
 function UI() {
@@ -105,11 +109,11 @@ function UI() {
 						/>
 					</svg>
 					<p className="type type--pos-medium-bold">
-						{' '}
-						author: {manifest.author}{' '}
+						
+						author: {manifest.author}
 					</p>
 					<p className="type type--pos-medium-normal">
-						{' '}
+						
 						version {manifest.version}
 					</p>
 					<p className="flex type type--pos-medium-bold">
@@ -128,6 +132,20 @@ function UI() {
 							twitter
 						</a>
 					</p>
+					<div className="flex">
+						
+						<div className="col">
+						<div className="label">Increase Accuracy of Angles Calculation:</div>
+								<InputIcon
+									icon="icon icon--dist-horiz-spacing icon--black-3"
+									values={setting}
+									name="precision"
+									blur={e => { }}
+									setvalues={setSetting}
+									></InputIcon>
+						</div>
+						
+					</div>
 				</div>
 			</div>
 

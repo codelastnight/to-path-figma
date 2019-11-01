@@ -64,7 +64,7 @@ var place = function(
 		),
 		object.relativeTransform
 	)
-	console.log(object.relativeTransform)
+	//console.log(object.relativeTransform)
 }
 //  estimates and returns the point closest to where the object should be, based on horizontal length
 var object2Point = function(pointArr: Array<Point>, pass: Pass) {
