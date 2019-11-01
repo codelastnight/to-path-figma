@@ -3,6 +3,8 @@ import { Checkbox, InputIcon } from './Form'
 import { useState, useEffect } from 'react'
 import { checkPropTypes } from 'prop-types'
 
+let lastspacing=10;
+
 const selectCase = {
 	one: 'please select two things',
 	nothing: 'nothing selected',
@@ -198,10 +200,13 @@ function SelectOptions(props) {
 										copy = { ...copy, autoWidth: !copy.autoWidth }
 
 										if (copy.autoWidth) {
+											lastspacing = copy.spacing
 											const space = copy.isLoop
 												? copy.totalLength / copy.count - copy.objWidth
 												: copy.totalLength / (copy.count - 1) - copy.objWidth
 											copy = { ...copy, spacing: space, offset: 0 }
+										} else {
+											copy = { ...copy, spacing: lastspacing}
 										}
 										props.setForm(copy)
 									}}></div>

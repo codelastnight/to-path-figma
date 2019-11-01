@@ -74,11 +74,11 @@ var object2Point = function(pointArr: Array<Point>, pass: Pass) {
 	let estPoint: Point
 	for (pass.pointIndex; pass.pointIndex < pointArr.length; pass.pointIndex++) {
 		// find nearest point to the length of the word
-		if (pass.spacing <= pointArr[pass.pointIndex].totalDist) {
+		if (pass.spacing <= pointArr[pass.pointIndex + 1].totalDist) {
 			let nextpoint = pointArr[pass.pointIndex + 1]
 
 			const localDist = pass.spacing - pointArr[pass.pointIndex].totalDist
-			rotation = nextpoint.angle
+			rotation =pointArr[pass.pointIndex].angle
 
 			estPoint = pointBtwnByLength(
 				pointArr[pass.pointIndex],
@@ -95,6 +95,7 @@ var object2Point = function(pointArr: Array<Point>, pass: Pass) {
 		} else {
 		}
 	}
+	
 	return estPoint
 }
 //convert text into indivisual characters

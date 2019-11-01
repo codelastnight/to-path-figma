@@ -156,7 +156,7 @@ var pointOnCurve = function(
 	let finalarr = []
 
 	if (curve.length == 2) {
-		for (var t = 1; t < time; t++) {
+		for (var t = 0; t < time; t++) {
 			let arr1 = casteljau(curve, t, time, rotation)
 			let pointdata = arr1[0]
 
@@ -173,7 +173,7 @@ var pointOnCurve = function(
 			finalarr.push(pointdata)
 		}
 	} else {
-		for (var t = 1; t <= time; t++) {
+		for (var t = 0; t < time; t++) {
 			// let arr1 = casteljau(curve, t, time)
 			// let arr2 = casteljau(arr1, t, time)
 			// let arr3 = casteljau(arr2, t, time, rotation, )

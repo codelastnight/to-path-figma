@@ -63,7 +63,7 @@ async function main(options): Promise<string | undefined> {
 	let curve = selectCurve(selection)
 
 	// take the svg data of the curve and turn it into an array of points
-	const pointArr: Array<Point> = Curve.allPoints(curve.data, 300)
+	const pointArr: Array<Point> = Curve.allPoints(curve.data, 608)
 
 	if (curve.other.type === 'TEXT') {
 		//the font loading part
