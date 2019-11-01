@@ -1,13 +1,12 @@
 /* 
-	code for all the text handling functions
+	code for all the placing in the figma page
 	creater: last night
 	website: notsimon.space
 	version: im baby
 	github: https://github.com/codelastnight/to-path-figma
 */
 
-import { pointBtwnByLength } from './curve'
-import { multiply, move, rotate } from './helper'
+import { multiply, move, rotate,pointBtwnByLength  } from './helper'
 // case for handling spaces, becasue figma will auto them as 0 width; character 8197 isnt the best but you kno what... its good enough
 // this didn't need to be a function but like i already wrote so
 var safeSpace = function(c: string) {

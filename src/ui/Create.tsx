@@ -1,5 +1,6 @@
 import * as React from 'react'
 
+// enable create button only on valid types
 let disabled = true
 function Create(props) {
 	switch (props.value) {

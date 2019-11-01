@@ -1,5 +1,5 @@
 /* 
-	source code for text 2 curve for figma
+	source code for to path for figma
 	creater: last night
 	website: notsimon.space
 	version: im baby

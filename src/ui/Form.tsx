@@ -1,5 +1,6 @@
 import * as React from 'react'
 
+//checkbox component
 function Checkbox(props) {
 	function thecheck() {
 		props.setvalues({...props.values, rotCheck: !props.values.rotCheck})
@@ -60,6 +61,7 @@ function InputIcon(props) {
 				type="number"
 				className="input-icon__input"
 				name={props.name}
+				// not that great but its good enough.
 				value={Math.round(props.values[props.name]*100)/100}
 				onChange={handleChange}
 				onBlur={props.blur}

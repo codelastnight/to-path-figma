@@ -3,8 +3,11 @@ import { Checkbox, InputIcon } from './Form'
 import { useState, useEffect } from 'react'
 import { checkPropTypes } from 'prop-types'
 
+
+//save spacing infromation from autowidth (need to store this data later)
 let lastspacing=10;
 
+// information that appears in the panel
 const selectCase = {
 	one: 'please select two things',
 	nothing: 'nothing selected',
@@ -14,6 +17,8 @@ const selectCase = {
 	text: 'curve and text selected',
 	clone: 'curve and object selected'
 }
+// the info notification thingy
+
 function SelectVisual(props) {
 	switch (props.value) {
 		case 'nothing':
@@ -48,6 +53,8 @@ function SelectVisual(props) {
 // show different options depending on what is selected.
 // currently two: text to path and curve to path
 function SelectOptions(props) {
+	// check for invalid values when input loses focus
+
 	function onOffFocus(e) {
 		let copy
 
@@ -58,7 +65,7 @@ function SelectOptions(props) {
 		}
 		props.setForm(copy)
 	}
-
+	// update offset values 
 	function onOffset(align = 'right') {
 		if (!props.form.autoWidth) {
 			let copy: Formb = { ...props.form }
@@ -90,6 +97,8 @@ function SelectOptions(props) {
 			props.setForm(copy)
 		}
 	}
+
+	// show things based on what is selected
 	switch (props.value) {
 		case 'nothing':
 			return (

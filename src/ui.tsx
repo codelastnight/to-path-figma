@@ -24,7 +24,7 @@ let settingsDefault: Formb = {
 	rotCheck: true,
 	precision: 420
 }
-
+// main ui component
 function UI() {
 	const [selection, showselection] = useState('nothing')
 	const [about, showabout] = useState(false)

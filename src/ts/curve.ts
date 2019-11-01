@@ -5,107 +5,10 @@
 	version: im baby
 	github: https://github.com/codelastnight/to-path-figma
 */
-import { arrChunk } from './helper'
+import { distBtwn, pointBtwn, svg2Point } from './helper'
 
-//turn whatever the fuck svg code is into array of points grouped into 4 or 2 ( this is dependant on what type of bezier curve it is. look it up)
-// figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
 
-var svg2Arr = function(svgData: string) {
-	/*
-	svgData: the fucking shitty svg path data fuck 
-	i want it to end up like: [[point1,2,3,4],[4,5],[5,6,7,8]....]
-	i fucking hate this shit
-	*/
-	let test = svgData.split('M') //split if more then 1 section and gets rid of the extra array value at front
-	test.shift()
-	if (test.length > 1) {
-		// throw error if theres too many lines becasue im lazy
-		throw 'TOO MANY LINES!!!1111 this only supports one continous vector'
-		return
-	}
 
-	let cleanType = []
-	var poo = test[0].trim().split(/ L|C /) // splits string into the chunks of different lines
-	var splicein = []
-
-	for (var e in poo) {
-		//magic
-		var sad = arrChunk(poo[e].trim().split(' '), 2)
-
-		//this adds the last point from the previous array into the next one.
-		sad.unshift(splicein)
-		splicein = sad[sad.length - 1]
-		cleanType.push(sad)
-	}
-	cleanType.shift() // get rid of the extra empty array value
-
-	return cleanType
-}
-//cleans and typeifies the point data
-var svg2Point = function(svgData: string) {
-	const cleanArray = svg2Arr(svgData)
-	for (var each in cleanArray) {
-		for (var i in cleanArray[each]) {
-			const newpoint: Point = {
-				x: cleanArray[each][i][0],
-				y: cleanArray[each][i][1]
-			}
-			cleanArray[each][i] = newpoint
-		}
-	}
-	return cleanArray
-}
-
-//distance between points a and b
-var distBtwn = function(a: Point, b: Point) {
-	/*
-  a: [x1,y1]
-  b: [x2,y2]
-  */
-	// for (var c in a) {
-	// 	a[c] = Number(a[c])
-	// 	b[c] = Number(b[c])
-	// }
-	return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2)
-}
-
-//find point between two points a and b over time
-// in this case time is pixels
-var pointBtwn = function(a: Point, b: Point, t: number, time: number) {
-	/*
-  a: [x1,y1]
-  b: [x2,y2]
-  time: number
-  rotation: also return rotation if true
-  */
-
-	a.x = Number(a.x)
-	a.y = Number(a.y)
-	b.x = Number(b.x)
-	b.y = Number(b.y)
-	//find the unit  vector between points a and b
-	// not really unit vector in the math sense tho
-	const unitVector: Point = { x: (b.x - a.x) / time, y: (b.y - a.y) / time }
-	const pointbtwn: Point = {
-		x: a.x + unitVector.x * t,
-		y: a.y + unitVector.y * t
-	}
-
-	return pointbtwn
-}
-export var pointBtwnByLength = function(
-	a: Point,
-	b: Point,
-	dist: number,
-	totalDist: number, // length between the two known poiints
-	angle: number
-) {
-	// finds the x value of a point between two points given the magnitude of that point
-	const t: number = Math.cos((angle * Math.PI) / 180) * dist
-	const bruh = pointBtwn(a, b, t, totalDist)
-	bruh.angle = angle;
-	return bruh
-}
 var casteljau = function(
 	curve: Array<Point>,
 	t: number,
