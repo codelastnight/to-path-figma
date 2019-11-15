@@ -28,6 +28,9 @@ function InputIcon(props) {
 		} = e
 		let _test = { ...props.values, [name]: Number(value) }
 		switch (name) {
+			case 'offset':
+				if (value < 0) _test = { ...props.values, [name]: 0 }
+				break
 			case 'horizontalAlign':
 			case 'verticalAlign':
 				// limit input to min 0 and max 1

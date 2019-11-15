@@ -94,6 +94,8 @@ function SelectOptions(props) {
 						(props.value == 'clone' ? copy.objWidth / 2 : 0)
 					break
 			}
+			// no negative offset
+			if (copy.offset < 0 ) copy.offset=0
 			props.setForm(copy)
 		}
 	}
