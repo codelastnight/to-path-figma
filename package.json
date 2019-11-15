@@ -42,7 +42,12 @@
 		"webpack-cli": "^3.3.9"
 	},
 	"dependencies": {
+		"autoprefixer": "^9.7.1",
+		"chokidar-cli": "^2.1.0",
+		"node-sass-chokidar": "^1.4.0",
+		"npm-run-all": "^4.1.5",
 		"on-change": "^1.6.2",
+		"postcss-cli": "^6.1.3",
 		"react": "^16.10.2",
 		"react-dom": "^16.10.2"
 	}

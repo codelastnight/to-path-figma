@@ -123,16 +123,33 @@ function SelectOptions(props) {
 			return (
 				<div className="text">
 					<div className="section-title mt">Text to Path Options</div>
-					<div className="label">Vertical Alignment:</div>
-					<InputIcon
-						icon="icon icon--arrow-up-down icon--black-3"
-						values={props.form}
-						name="verticalAlign"
-						blur={e => onOffFocus(e)}
-						min={0}
-						max={1}
-						step={0.1}
-						setvalues={props.setForm}></InputIcon>
+					<div className="flex" >
+						<div className="col">
+						<div className="label">Vertical Alignment:</div>
+						<InputIcon
+							icon="icon icon--arrow-up-down icon--black-3"
+							values={props.form}
+							name="verticalAlign"
+							blur={e => onOffFocus(e)}
+							min={0}
+							max={1}
+							step={0.1}
+							setvalues={props.setForm}></InputIcon>
+						</div>
+						<div className="col">
+						<div className="label">Horizontal Alignment:</div>
+						<InputIcon
+							icon="icon icon--arrow-left-right icon--black-3"
+							values={props.form}
+							name="horizontalAlign"
+							blur={e => onOffFocus(e)}
+							min={0}
+							max={1}
+							step={0.1}
+							setvalues={props.setForm}></InputIcon>
+						</div>
+					</div>
+					
 					<div className="label">Offset(px):</div>
 					<div className="flex">
 						<InputIcon

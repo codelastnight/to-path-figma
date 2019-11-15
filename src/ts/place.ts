@@ -14,6 +14,7 @@ var safeSpace = function(c: string) {
 }
 
 //groups and puts things into view
+
 var groupView = function(curve: VectorNode, nodes, node) {
 	// copy the curve, and select everything
 
@@ -21,12 +22,11 @@ var groupView = function(curve: VectorNode, nodes, node) {
 	nodes.unshift(clone2)
 	curve.parent.appendChild(clone2)
 	clone2.visible = false
-	//figma.currentPage.selection = nodes
 	// group and scroll intoview
 
 	const group = [figma.group(nodes, node.parent)]
-	//figma.currentPage.selection = group
 }
+
 // place the objects on a point, based on user settings.
 var place = function(
 	object: SceneNode,
@@ -38,7 +38,7 @@ var place = function(
 
 	// find center of object
 	const center = {
-		x: 0 - (object.type == 'TEXT' ? 0 : object.width * options.horizontalAlign), // no horozonatal align on text, kerning gets fucked up
+		x: 0 -  object.width * options.horizontalAlign, // no horozonatal align on text, kerning gets fucked up
 		y: 0 - object.height * options.verticalAlign
 	}
 	//angle of object converted to degrees
@@ -119,7 +119,7 @@ export var text2Curve = function(
 
 	// disable spacing option in text mode
 	options.spacing = 0
-
+	let prevletter = 0;
 	for (let i = 0; i < charArr.length; i++) {
 		let letter = node.clone()
 		//copy settings
@@ -136,9 +136,11 @@ export var text2Curve = function(
 		letter.textAutoResize = 'WIDTH_AND_HEIGHT'
 
 		// put the object in the right place
+
+		pass.spacing = pass.spacing + letter.width*options.horizontalAlign + (prevletter*(1-options.horizontalAlign)) + options.spacing
+		prevletter = letter.width
 		let point = object2Point(pointArr, pass)
 
-		pass.spacing = pass.spacing + letter.width + options.spacing
 
 		// place the thing
 		place(letter, point, options, curve)
