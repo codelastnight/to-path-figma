@@ -24,7 +24,7 @@ Put any objects or text on a path!
 
 ## How it Works
 
-1. the plugin generates an array of points (280 for now) using castejau's algorithm  that follows the curve, also finding the angle of the tangent of each point. the length from the start of the curve to each point is also generated and stored (find out more here: https://javascript.info/bezier-curve)
+1. the plugin generates an array of points (420 between each point but you can also change this in the "about" menu) using castejau's algorithm  that follows the curve, also finding the angle of the tangent of each point. the length from the start of the curve to each point is also generated and stored (find out more here: https://javascript.info/bezier-curve)
 
 2. the nth's object's x position + object width + spacing is calculated
 3. the plugin compares the x position of the object with the array of points. 2 points with closest length is picked 
