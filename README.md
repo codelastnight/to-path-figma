@@ -14,6 +14,8 @@ Put any objects or text on a path!
 
 *not actually magic
 
+built with typscript, react, and my last braincell
+
 ### roadmap 
 
 -  [x] switch from polling to event calls for detecting selection change (when figma api updates)
