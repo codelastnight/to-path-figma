@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './figma-plugin-ds.min.css'
 import './scss/main.scss'
 import { SelectOptions, SelectVisual } from './ui/selectVisual'
@@ -11,7 +11,7 @@ const manifest = require('./../package.json')
 const logo = require('./logo.svg')
 
 // default settings
-let settingsDefault: Formb = {
+let settingsDefault: SettingData = {
 	verticalAlign: 0.5,
 	horizontalAlign: 0.5,
 	spacing: 20,
@@ -29,37 +29,54 @@ function UI() {
 	const [selection, showselection] = useState('nothing')
 	const [about, showabout] = useState(false)
 	const [setting, setSetting] = useState(settingsDefault)
+	const [link, setLink] = useState(false)
 
+	useEffect(() => {
+		// Update the document title using the browser API
+		if (link) {
+			parent.postMessage(
+				{
+					pluginMessage: {
+						type: 'do-the-thing',
+						options: setting
+					}
+				},
+				'*'
+			)
+		}
+	  });
+	
 	const onCreate = () => {
 		parent.postMessage(
 			{
 				pluginMessage: {
-					type: 'do-the-thing',
+					type: 'initial-link',
 					options: setting
 				}
 			},
 			'*'
 		)
-		//console.log(setting)
+	
 	}
 
 	onmessage = event => {
-		switch (event.data.pluginMessage.type) {
+		let eventData = event.data.pluginMessage
+		switch (eventData.type) {
 			case 'svg':
 			case 'selection':
-				const svgdata = event.data.pluginMessage.curve
-				let copy: Formb = { ...setting }
+				const svgdata = event.data.pluginMessage.svgdata
+				let copy: SettingData = { ...setting }
 
 				if (svgdata != null && svgdata != undefined) {
-					if (svgdata.data != null && svgdata.data != '') {
+					if (svgdata!= null && svgdata != '') {
 						const width = event.data.pluginMessage.width
 						let path = document.createElementNS(
 							'http://www.w3.org/2000/svg',
 							'path'
 						)
-						path.setAttribute('d', svgdata.data)
+						path.setAttribute('d', svgdata)
 
-						const isLoop: boolean = svgdata.data.toUpperCase().includes('Z')
+						const isLoop: boolean = svgdata.toUpperCase().includes('Z')
 
 						// use the builtin function getTotalLength() to calculate length
 						const svglength = path.getTotalLength()
@@ -80,14 +97,29 @@ function UI() {
 						}
 					}
 				}
-				if (event.data.pluginMessage.value === 'text') {
+				if (eventData.value === 'text') {
 					copy = { ...copy, autoWidth: false }
 				}
 				setSetting(copy)
+				
+				if (eventData.data.setting != null) {
+					setLink(true)
+				}
+
+				if (eventData.data.type === "text" ) {
+					showselection("text")
+		
+				} else {
+					showselection("clone")
+				}
+				break
+				default :
+				showselection(eventData.value)
+				setLink(false)
 
 				break
 		}
-		showselection(event.data.pluginMessage.value)
+		
 		//console.log(selection)
 	}
 
@@ -164,7 +196,7 @@ function UI() {
 							{about ? 'back ' : 'about'}
 						</button>
 					</div>
-					<Create value={selection} onClick={onCreate} />
+					<Create value={selection} isLink={link} onClick={onCreate} />
 				</div>
 			</div>
 		</div>

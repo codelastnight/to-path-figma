@@ -5,6 +5,63 @@
 	version: im baby
 	github: https://github.com/codelastnight/to-path-figma
 */
+const keyName: string = "pathData";
+var defaultSettings: SettingData = {
+	verticalAlign: 0.5,
+	horizontalAlign: 0.5,
+	spacing: 20,
+	count: 5,
+	autoWidth: true,
+	totalLength: 0,
+	isLoop: false,
+	objWidth: 0,
+	offset: 0,
+	rotCheck: true,
+	precision: 420
+}
+
+// check if basenode is a scene node
+// this is my first typeguard! praise me uwu
+var isSceneNode = function(node: BaseNode): node is SceneNode {
+	if((node as SceneNode).type){
+		return true
+	  }
+	  return false
+}
+
+
+// get data from an object
+var getLink = function(group: GroupNode ) {
+	// get data from plugin
+	var getData: string =  group.getSharedPluginData("topathfigma",keyName)
+	var outData: LinkedData = JSON.parse(getData)
+
+	// only id's are stored, becasue its a shallow copy. 
+	// get data from linked objects
+	var curve = figma.getNodeById(outData.curve.id)
+	var other = figma.getNodeById(outData.other.id)
+	if (curve == null || other == null) return null
+	if (curve.type == "VECTOR") outData.curve = curve
+	if(isSceneNode(other))  outData.other = other
+	return outData
+}
+
+export var isLinked =  function(group: GroupNode) {
+	var data: LinkedData
+	try {
+		data =  getLink(group)
+	} catch {
+		return null
+	}
+	return data;
+	
+}
+
+export var setLink = function(group: GroupNode, data: LinkedData) {
+	group.setSharedPluginData(data.namespace,keyName,JSON.stringify(data))
+}
+
+
 
 //turn whatever the fuck svg code is into array of points grouped into 4 or 2 ( this is dependant on what type of bezier curve it is. look it up)
 // figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
@@ -19,7 +76,7 @@ var svg2Arr = function(svgData: string) {
 	test.shift()
 	if (test.length > 1) {
 		// throw error if theres too many lines becasue im lazy
-		throw 'TOO MANY LINES!!!1111 this only supports one continous vector'
+		throw 'TOO MANY LINES! this only supports one continous vector'
 		return
 	}
 

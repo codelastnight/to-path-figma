@@ -1,3 +1,4 @@
+
 interface Point {
 	x: number
 	y: number
@@ -6,7 +7,7 @@ interface Point {
 	totalDist?: number //total length of curve up to this point
 }
 
-interface Formb {
+interface SettingData {
 	verticalAlign: number
 	horizontalAlign: number
 	spacing: number
@@ -19,7 +20,20 @@ interface Formb {
 	offset: number
 	precision: number
 }
+
 interface Pass {
 	spacing: number
 	pointIndex: number
 }
+
+type DataType = "clone" | "text"
+
+interface LinkedData {
+	readonly namespace: "topathfigma"
+	setting: SettingData
+	curve: VectorNode
+	other: SceneNode
+	curveCloneID?: string
+	readonly type: DataType
+}
+

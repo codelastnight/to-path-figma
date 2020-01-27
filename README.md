@@ -8,6 +8,9 @@
 
 Put any objects or text on a path! 
 
+[*EPIC NEW UPDATE!!*]
+LIVE PREVIEW IS HERE! now update and change your object and see it happen live!
+
 1. make a curve
 2. select an object, group, or text
 3. watch the magic* happen!
@@ -19,8 +22,8 @@ built with typscript, react, and my last braincell
 ### roadmap 
 
 -  [x] switch from polling to event calls for detecting selection change (when figma api updates)
--  [ ] live previewing
--  [ ] remember previous settings and reset to default
+-  [x] live previewing
+-  [x] remember previous settings and reset to default
 -  [ ] support for vector networks (maybe?)
 -  [ ] advanced settings (eg, increase size of object every time its cloned)
 

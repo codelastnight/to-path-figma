@@ -65,8 +65,8 @@ body {
 	}
 	.logo {
 		margin: 2em;
-		width: 100px;
-		height: 100px;
+		width: 70px;
+		height: 70px;
 		-webkit-filter: drop-shadow(0px 10px 30px rgba(0, 0, 0, 0.2));
 		filter: drop-shadow(0px 10px 30px rgba(0, 0, 0, 0));
 	}
@@ -87,5 +87,15 @@ body {
 	}
 	.col {
 		width: 100%;
+	}
+}
+
+.new-feature {
+	border: 1.5px  solid #18a0fb;
+	border-radius: 3px;
+
+	.icon {
+		fill:#18a0fb; 
+
 	}
 }

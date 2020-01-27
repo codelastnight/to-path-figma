@@ -10,19 +10,34 @@
 */
 import * as Curve from './ts/curve'
 import * as Place from './ts/place'
-import { isNullOrUndefined } from 'util'
+import * as Helper from './ts/helper'
 
-var selectCurve = function(selection) {
+
+let settingsDefault: SettingData = {
+	verticalAlign: 0.5,
+	horizontalAlign: 0.5,
+	spacing: 20,
+	count: 5,
+	autoWidth: true,
+	totalLength: 0,
+	isLoop: false,
+	objWidth: 0,
+	offset: 0,
+	rotCheck: true,
+	precision: 420
+}
+
+var selectCurve = function(selection: readonly SceneNode[],setting: SettingData ) {
 	let curve: VectorNode
 	let n
-	let other
-	let svgdata = null
+	let other: SceneNode
 	const filterselect = selection.filter(
 		n => n.type === 'VECTOR' || n.type === 'ELLIPSE'
 	)
+	let type: DataType = "clone"
 	// if two curves are selected, select one with bigger x or y
 	// im sure theres a way to make this code smaller but idk how
-
+	
 	if (filterselect.length == 2) {
 		if (
 			filterselect[0].width > filterselect[1].width ||
@@ -41,56 +56,59 @@ var selectCurve = function(selection) {
 			a => a.type !== 'VECTOR' && a.type !== 'ELLIPSE'
 		)[0]
 	}
-
+	if (other.type === 'TEXT') {
+		type = "text"
+	}
 	if (n.type == 'ELLIPSE') {
 		// flatten the ellipse so it is registered as a curve.
 		// this isn't ideal at all, but it reduces code.
 		curve = figma.flatten([n])
-		figma.currentPage.selection = [...figma.currentPage.selection, curve]
+		figma.currentPage.selection = [other, curve]
 	} else {
 		curve = n
-		svgdata = curve.vectorPaths[0].data
 	}
-
-	return { data: svgdata, curve: curve, other: other }
+	var returnData: LinkedData =  {
+		namespace: "topathfigma", 
+		curve: curve, 
+		other:  other,
+		setting: setting,
+		type: type
+	} 
+	return returnData
 }
+
 // main code
 //async required because figma api requires you to load fonts into the plugin to use them... honestly im really tempted to just hardcode a dumb font like swanky and moo moo instead
-async function main(options:Formb): Promise<string | undefined> {
-	const selection = figma.currentPage.selection
+async function main(group: GroupNode, data: LinkedData): Promise<string | undefined> {
 
 	// select the curve
-	let curve = selectCurve(selection)
-
 	// take the svg data of the curve and turn it into an array of points
-	const pointArr: Array<Point> = Curve.allPoints(curve.data, options.precision)
+	//idk if i should store this or not. its pretty fast to calculate so....
+	const pointArr: Array<Point> = Curve.allPoints(data.curve.vectorPaths[0].data, data.setting.precision)
 
-	if (curve.other.type === 'TEXT') {
+	// remove old stuff
+	if (data.other.type === 'TEXT') {
 		//the font loading part
-
-		let len = curve.other.characters.length
-
-		for (let i = 0; i < len; i++) {
-			await figma.loadFontAsync(curve.other.getRangeFontName(
-				i,
-				i + 1
-			) as FontName)
+		for (let i = 0; i < data.other.characters.length; i++) {
+			await figma.loadFontAsync(data.other.getRangeFontName(i,i + 1) as FontName)
 		}
-
 		if (
-			curve.other.width > pointArr[pointArr.length - 1].totalDist ||
+			data.other.width > pointArr[pointArr.length - 1].totalDist ||
 			figma.hasMissingFont == true
 		) {
 			figma.closePlugin(
-				'text path is too long!  please make it shorter than the curve!'
+				'either the text path is too long or the font has failed to load'
 			)
 		}
+
 		//place it on the thing
-		Place.text2Curve(curve.other, pointArr, curve.curve, options)
+		Place.deleteNodeinGroup(group,data.curveCloneID)
+		Place.text2Curve(data.other, pointArr, data, group)
 	} else {
+
 		// load fonts if selected object is a group or frame
-		if (curve.other.type === 'FRAME' || curve.other.type === 'GROUP') {
-			const textnode = curve.other.findAll(e => e.type === 'TEXT') as TextNode[]
+		if (data.other.type === 'FRAME' || data.other.type === 'GROUP') {
+			const textnode = data.other.findAll(e => e.type === 'TEXT') as TextNode[]
 
 			for (const find of textnode) {
 				for (let i = 0; i < find.characters.length; i++) {
@@ -98,45 +116,36 @@ async function main(options:Formb): Promise<string | undefined> {
 				}
 			}
 		}
-		Place.object2Curve(curve.other, pointArr, curve.curve, options)
+		Place.deleteNodeinGroup(group,data.curveCloneID)
+		Place.object2Curve(data.other, pointArr, data, group)
 	}
+	Helper.setLink(group,data)
 	return
 }
 
-// This shows the HTML page in "ui.html".
-figma.showUI(__html__, { width: 300, height: 450 })
-
-// Calls to "parent.postMessage" from within the HTML page will trigger this
-// callback. The callback will be passed the "pluginMessage" property of the
-// posted message.
-figma.ui.onmessage = async msg => {
-	if (msg.type === 'do-the-thing') {
-		console.log(msg.options)
-		main(msg.options)
-	}
-
-	// Make sure to close the plugin when you're done. Otherwise the plugin will
-	// keep running, which shows the cancel button at the bottom of the screen.
-
-	// what if i dont wanna lmao. default generated tutorial headass
-}
 
 //watches for updates on selection
 
 //update ui only when selection is updated
-var sendSelection = function(value: string, selection = null, width = 0) {
-	if (selection != null) {
-		const curve = selectCurve(selection)
-		if (curve.data.match(/M/g).length > 1) value = 'vectornetwork'
-		const width = curve.other.width
-		figma.ui.postMessage({ type: 'svg', curve, width, value })
+var sendSelection = function(value: string, selection = null, data:LinkedData = null) {
+	if (selection != null ) {
+		if(data == null) {
+			data = selectCurve(selection, null)
+		}
+		var svgdata = data.curve.vectorPaths[0].data 
+		if (data.curve.vectorPaths[0].data.match(/M/g).length > 1) value = 'vectornetwork'
+		const width = data.other.width
+		figma.ui.postMessage({ type: 'svg', width, value,  data, svgdata})
 	} else {
-		figma.ui.postMessage({ type: 'selection', value })
+		figma.ui.postMessage({ type: 'rest', value })
 	}
 }
+
+//do things on a selection change
 const watchSelection = function() {
 	const selection = figma.currentPage.selection
-	// oh my fuckin god case handling is torture
+
+	// case handling is torture
 	// check if theres anything selected
 	switch (selection.length) {
 		case 2:
@@ -156,7 +165,21 @@ const watchSelection = function() {
 			}
 			break
 		case 1:
-			sendSelection('one')
+			// if selecting a linked group
+
+			var selected = selection[0]
+			if (selected.type === 'GROUP') {
+				var groupData: LinkedData = Helper.isLinked(selected)
+
+				if (groupData == null) {
+					sendSelection('one')
+				} else {
+					// get the data from that.
+					sendSelection('linkedGroup',selection[0], groupData)
+				}
+			} else {
+				sendSelection('one')
+			}
 			break
 
 		case 0:
@@ -168,7 +191,63 @@ const watchSelection = function() {
 	}
 }
 
+// This shows the HTML page in "ui.html".
+figma.showUI(__html__, { width: 300, height: 450 })
+
+// Calls to "parent.postMessage" from within the HTML page will trigger this
+// callback. The callback will be passed the "pluginMessage" property of the
+// posted message.
+figma.ui.on('message', async msg => {
+	if (msg.type === 'do-the-thing') {
+		var data: LinkedData 
+		let group1 = figma.currentPage.selection.find(i => i.type === "GROUP")
+		if (group1.type === 'GROUP') {
+			data= Helper.isLinked(group1)
+			if (data ==null) sendSelection('linklost')
+			else {
+				data.setting = msg.options
+				await main(group1, data)
+			}
+			
+		} 
+	
+	}
+	 
+	// run when "link" button is hit
+	if (msg.type === 'initial-link') {
+		const selection: readonly SceneNode[] = figma.currentPage.selection
+		let data: LinkedData = selectCurve(selection, msg.options)
+
+		//rename paths
+		data.other.name = "[Linked] " + data.other.name.replace("[Linked] ", '')
+		data.curve.name = "[Linked] " + data.curve.name.replace('[Linked] ', '')
+		//clone curve selection to retain curve shape
+		let clone2: SceneNode = data.curve.clone()
+		clone2.visible = false
+		data.curveCloneID = clone2.id
+		data.curve.parent.appendChild(clone2)
+
+		// make a new group 
+		let group2: GroupNode = figma.group([clone2], data.curve.parent)
+		group2.name = "Linked Path Group"
+		figma.currentPage.selection = [group2]
+
+		// link custom data
+		Helper.setLink(group2,data)
+
+		await main(group2, data)
+
+	}
+
+	// Make sure to close the plugin when you're done. Otherwise the plugin will
+	// keep running, which shows the cancel button at the bottom of the screen.
+
+	// what if i dont wanna lmao. default generated tutorial headass
+})
+
+//checks for initial selection
 watchSelection()
+//watches for selecition change and notifies UI
 figma.on('selectionchange', function() {
 	watchSelection()
 })

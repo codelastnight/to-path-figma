@@ -15,7 +15,8 @@ const selectCase = {
 	nocurve: 'please select a curve',
 	toomany: 'please select only two things',
 	text: 'curve and text selected',
-	clone: 'curve and object selected'
+	clone: 'curve and object selected',
+	linklost: 'unable to find linked object(s)'
 }
 // the info notification thingy
 
@@ -68,7 +69,7 @@ function SelectOptions(props) {
 	// update offset values 
 	function onOffset(align = 'right') {
 		if (!props.form.autoWidth) {
-			let copy: Formb = { ...props.form }
+			let copy: SettingData = { ...props.form }
 			const count = copy.isLoop ? copy.count - 1 : copy.count
 			let length = 0
 
@@ -104,23 +105,48 @@ function SelectOptions(props) {
 	switch (props.value) {
 		case 'nothing':
 			return (
-				<div className="onboarding-tip">
+				<div>
+					<div className="onboarding-tip new-feature">
 					<div className="onboarding-tip__icon">
-						<div className="icon icon--visible"></div>
+						<div className="icon icon--star-on"></div>
 					</div>
 					<div className="onboarding-tip__msg">
-						Select a curve and an object to start.
-						<ul>
-							<li>select an object to have it repeat along a curve</li>
-							<li>select text to have the character follow the curve</li>
-						</ul>
-						<span className="type type--neg-medium-bold">Note:</span> if two
-						curves/ellipses are selected, the plugin will try to pick the one
-						that is bigger in either height or width.
+					<span className="type type--neg-medium-bold">NEW FEATURE: </span>
+						Live previews are here! changing the options will now update the object in real time! 
+					</div>
+					</div>
+					<div className="onboarding-tip">
+						<div className="onboarding-tip__icon">
+							<div className="icon icon--visible"></div>
+						</div>
+						<div className="onboarding-tip__msg">
+							Select a curve and an object to start.
+							<ul>
+								<li>select an object to have it repeat along a curve</li>
+								<li>select text to have the character follow the curve</li>
+							</ul>
+							<span className="type type--neg-medium-bold">WARNING:</span>
+							If you delete the objects with [Linked] in the name, 
+							you won't be able to make changes to that group anymore!
+						</div>
 					</div>
 				</div>
+				
 			)
 			break
+		case 'linklost':
+		return (
+			<div className="onboarding-tip">
+				<div className="onboarding-tip__icon">
+					<div className="icon icon--visible"></div>
+				</div>
+				<div className="onboarding-tip__msg">
+					Please make a new linked object!
+					
+				</div>
+			</div>
+		)
+		break
 		case 'text':
 			return (
 				<div className="text">
@@ -224,7 +250,7 @@ function SelectOptions(props) {
 									}
 									onClick={() => {
 										// clean up later. now it just needs to work lmao
-										let copy: Formb = { ...props.form }
+										let copy: SettingData = { ...props.form }
 										copy = { ...copy, autoWidth: !copy.autoWidth }
 
 										if (copy.autoWidth) {
