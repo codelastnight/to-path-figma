@@ -217,7 +217,6 @@ figma.ui.on('message', async msg => {
 		var selected = figma.currentPage.selection
 		var data: LinkedData 
 		let group1 = selected.find(i => i.type === "GROUP") as GroupNode
-		console.log(msg.options)
 
 		data= Helper.isLinked(group1)
 		if (data == null) { 

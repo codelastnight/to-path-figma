@@ -34,7 +34,6 @@ function UI() {
 
 	useEffect(() => {
 		// Update the document title using the browser API
-		console.log(setting)
 		if (link) {
 			parent.postMessage(
 				{
@@ -72,7 +71,6 @@ function UI() {
 				let copy: SettingData
 				if (eventData.data.setting != null) {
 					copy = { ...eventData.data.setting }
-					setLink(true)
 				} else {
 					copy = {...setting}
 				}
@@ -113,8 +111,9 @@ function UI() {
 					copy = { ...copy, autoWidth: false }
 				}
 				setSetting({...copy})
-
-				
+				if (eventData.data.setting != null) {
+					setLink(true)
+				}
 				if (eventData.data.type === "text" ) {
 					showselection("text")
 		
@@ -129,7 +128,6 @@ function UI() {
 				break
 		}
 		
-		//console.log(selection)
 	}
 
 	return (
