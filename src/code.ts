@@ -12,7 +12,8 @@ import * as Curve from './ts/curve'
 import * as Place from './ts/place'
 import * as Helper from './ts/helper'
 
-
+let firstRender: boolean = true;
+// default settings
 let settingsDefault: SettingData = {
 	verticalAlign: 0.5,
 	horizontalAlign: 0.5,
@@ -86,21 +87,23 @@ async function main(group: GroupNode, data: LinkedData): Promise<string | undefi
 	//idk if i should store this or not. its pretty fast to calculate so....
 	const pointArr: Array<Point> = Curve.allPoints(data.curve.vectorPaths[0].data, data.setting.precision)
 
-	// remove old stuff
 	if (data.other.type === 'TEXT') {
 		//the font loading part
-		for (let i = 0; i < data.other.characters.length; i++) {
-			await figma.loadFontAsync(data.other.getRangeFontName(i,i + 1) as FontName)
-		}
-		if (
-			data.other.width > pointArr[pointArr.length - 1].totalDist ||
-			figma.hasMissingFont == true
-		) {
-			figma.closePlugin(
-				'either the text path is too long or the font has failed to load'
-			)
+		if (firstRender) {
+			for (let i = 0; i < data.other.characters.length; i++) {
+				await figma.loadFontAsync(data.other.getRangeFontName(i,i + 1) as FontName)
+			}
+			if (
+				data.other.width > pointArr[pointArr.length - 1].totalDist ||
+				figma.hasMissingFont == true
+			) {
+				figma.closePlugin(
+					'either the text path is too long or the font has failed to load'
+				)
+			}
 		}
 
+			// remove old stuff
 		//place it on the thing
 		Place.deleteNodeinGroup(group,data.curveCloneID)
 		Place.text2Curve(data.other, pointArr, data, group)
@@ -108,11 +111,12 @@ async function main(group: GroupNode, data: LinkedData): Promise<string | undefi
 
 		// load fonts if selected object is a group or frame
 		if (data.other.type === 'FRAME' || data.other.type === 'GROUP') {
-			const textnode = data.other.findAll(e => e.type === 'TEXT') as TextNode[]
-
-			for (const find of textnode) {
-				for (let i = 0; i < find.characters.length; i++) {
-					await figma.loadFontAsync(find.getRangeFontName(i, i + 1) as FontName)
+			if (firstRender) {
+				const textnode = data.other.findAll(e => e.type === 'TEXT') as TextNode[]
+				for (const find of textnode) {
+					for (let i = 0; i < find.characters.length; i++) {
+						await figma.loadFontAsync(find.getRangeFontName(i, i + 1) as FontName)
+					}
 				}
 			}
 		}
@@ -177,7 +181,17 @@ const watchSelection = function() {
 					// get the data from that.
 					sendSelection('linkedGroup',selection[0], groupData)
 				}
-			} else {
+			} 
+			// if the child of a linked group is selected and is the friken curve
+			// else if (selected.parent.type === 'GROUP') {
+			// 	var groupData: LinkedData = Helper.isLinked(selected.parent)
+			// 	if (groupData == null) {
+			// 		sendSelection('one')
+			// 	} else {
+			// 		sendSelection('linkedGroup',selected.parent, groupData)
+			// 	}
+			// }
+			else {
 				sendSelection('one')
 			}
 			break
@@ -198,18 +212,26 @@ figma.showUI(__html__, { width: 300, height: 450 })
 // callback. The callback will be passed the "pluginMessage" property of the
 // posted message.
 figma.ui.on('message', async msg => {
+	
 	if (msg.type === 'do-the-thing') {
+		var selected = figma.currentPage.selection
 		var data: LinkedData 
-		let group1 = figma.currentPage.selection.find(i => i.type === "GROUP")
-		if (group1.type === 'GROUP') {
-			data= Helper.isLinked(group1)
-			if (data ==null) sendSelection('linklost')
-			else {
-				data.setting = msg.options
-				await main(group1, data)
-			}
-			
-		} 
+		let group1 = selected.find(i => i.type === "GROUP") as GroupNode
+		console.log(msg.options)
+
+		data= Helper.isLinked(group1)
+		if (data == null) { 
+			// if (selected[0].parent.type === 'GROUP') {
+			// 	data= Helper.isLinked(selected[0].parent)
+			// } else {
+				sendSelection('linklost')
+			// }
+		}
+		else {
+			data.setting = msg.options
+			await main(group1, data)
+			firstRender = false;
+		}
 	
 	}
 	 
@@ -222,8 +244,8 @@ figma.ui.on('message', async msg => {
 		data.other.name = "[Linked] " + data.other.name.replace("[Linked] ", '')
 		data.curve.name = "[Linked] " + data.curve.name.replace('[Linked] ', '')
 		//clone curve selection to retain curve shape
-		let clone2: SceneNode = data.curve.clone()
-		clone2.visible = false
+		let clone2: SceneNode = data.curve
+		//clone2.visible = false
 		data.curveCloneID = clone2.id
 		data.curve.parent.appendChild(clone2)
 
@@ -236,9 +258,10 @@ figma.ui.on('message', async msg => {
 		Helper.setLink(group2,data)
 
 		await main(group2, data)
+		firstRender = false;
+
 
 	}
-
 	// Make sure to close the plugin when you're done. Otherwise the plugin will
 	// keep running, which shows the cancel button at the bottom of the screen.
 
@@ -250,4 +273,5 @@ watchSelection()
 //watches for selecition change and notifies UI
 figma.on('selectionchange', function() {
 	watchSelection()
+	firstRender = true;
 })

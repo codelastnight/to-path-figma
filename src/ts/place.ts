@@ -13,22 +13,6 @@ var safeSpace = function(c: string) {
 	return c.replace(' ', String.fromCharCode(8197))
 }
 
-//groups and puts things into view
-
-
-// // depricated, remove
-// var groupView = function(curve: VectorNode, nodes, node) {
-// 	// copy the curve, and select everything
-
-// 	let clone2: SceneNode = curve.clone()
-// 	nodes.unshift(clone2)
-// 	curve.parent.appendChild(clone2)
-// 	clone2.visible = false
-// 	// group and scroll intoview
-
-// 	const group = [figma.group(nodes, node.parent)]
-// }
-
 // place the objects on a point, based on user settings.
 var place = function(
 	object: SceneNode,
@@ -36,8 +20,8 @@ var place = function(
 	options: SettingData,
 	curve: VectorNode
 ) {
-	//set locations
-
+	//set names
+	object.name = object.name.replace("[Linked] ", '[Copy] ')
 	// find center of object
 	const center = {
 		x: 0 -  object.width * options.horizontalAlign, // no horozonatal align on text, kerning gets fucked up
@@ -65,7 +49,6 @@ var place = function(
 		),
 		object.relativeTransform
 	)
-	//console.log(object.relativeTransform)
 }
 //  estimates and returns the point closest to where the object should be, based on horizontal length
 var object2Point = function(pointArr: Array<Point>, pass: Pass) {
@@ -79,7 +62,7 @@ var object2Point = function(pointArr: Array<Point>, pass: Pass) {
 			let nextpoint = pointArr[pass.pointIndex + 1]
 
 			const localDist = pass.spacing - pointArr[pass.pointIndex].totalDist
-			rotation =pointArr[pass.pointIndex].angle
+			rotation = pointArr[pass.pointIndex].angle
 
 			estPoint = pointBtwnByLength(
 				pointArr[pass.pointIndex],

@@ -141,7 +141,7 @@ function SelectOptions(props) {
 					<div className="icon icon--visible"></div>
 				</div>
 				<div className="onboarding-tip__msg">
-					Please make a new linked object!
+					Error trying to find linked object. try selecting a different group or re-linking
 					
 				</div>
 			</div>

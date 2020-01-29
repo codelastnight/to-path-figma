@@ -10,7 +10,6 @@ import { InputIcon } from './ui/Form'
 const manifest = require('./../package.json')
 const logo = require('./logo.svg')
 
-// default settings
 let settingsDefault: SettingData = {
 	verticalAlign: 0.5,
 	horizontalAlign: 0.5,
@@ -24,6 +23,8 @@ let settingsDefault: SettingData = {
 	rotCheck: true,
 	precision: 420
 }
+
+
 // main ui component
 function UI() {
 	const [selection, showselection] = useState('nothing')
@@ -33,6 +34,7 @@ function UI() {
 
 	useEffect(() => {
 		// Update the document title using the browser API
+		console.log(setting)
 		if (link) {
 			parent.postMessage(
 				{
@@ -44,7 +46,7 @@ function UI() {
 				'*'
 			)
 		}
-	  });
+	  }, [setting]);
 	
 	const onCreate = () => {
 		parent.postMessage(
@@ -64,8 +66,17 @@ function UI() {
 		switch (eventData.type) {
 			case 'svg':
 			case 'selection':
+				
 				const svgdata = event.data.pluginMessage.svgdata
-				let copy: SettingData = { ...setting }
+
+				let copy: SettingData
+				if (eventData.data.setting != null) {
+					copy = { ...eventData.data.setting }
+					setLink(true)
+				} else {
+					copy = {...setting}
+				}
+
 
 				if (svgdata != null && svgdata != undefined) {
 					if (svgdata!= null && svgdata != '') {
@@ -80,9 +91,9 @@ function UI() {
 
 						// use the builtin function getTotalLength() to calculate length
 						const svglength = path.getTotalLength()
-
 						// change the spacing number on "auto width" setting (space evenly thru whole thing)
 						if (svglength != 0 && setting.autoWidth) {
+							
 							const space = isLoop
 								? svglength / setting.count - width
 								: svglength / (setting.count - 1) - width
@@ -97,15 +108,13 @@ function UI() {
 						}
 					}
 				}
+
 				if (eventData.value === 'text') {
 					copy = { ...copy, autoWidth: false }
 				}
-				setSetting(copy)
-				
-				if (eventData.data.setting != null) {
-					setLink(true)
-				}
+				setSetting({...copy})
 
+				
 				if (eventData.data.type === "text" ) {
 					showselection("text")
 		

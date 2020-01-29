@@ -6,19 +6,6 @@
 	github: https://github.com/codelastnight/to-path-figma
 */
 const keyName: string = "pathData";
-var defaultSettings: SettingData = {
-	verticalAlign: 0.5,
-	horizontalAlign: 0.5,
-	spacing: 20,
-	count: 5,
-	autoWidth: true,
-	totalLength: 0,
-	isLoop: false,
-	objWidth: 0,
-	offset: 0,
-	rotCheck: true,
-	precision: 420
-}
 
 // check if basenode is a scene node
 // this is my first typeguard! praise me uwu
@@ -38,11 +25,9 @@ var getLink = function(group: GroupNode ) {
 
 	// only id's are stored, becasue its a shallow copy. 
 	// get data from linked objects
-	var curve = figma.getNodeById(outData.curve.id)
-	var other = figma.getNodeById(outData.other.id)
-	if (curve == null || other == null) return null
-	if (curve.type == "VECTOR") outData.curve = curve
-	if(isSceneNode(other))  outData.other = other
+	outData.curve = figma.getNodeById(outData.curve.id) as VectorNode
+	outData.other  = figma.getNodeById(outData.other.id) as SceneNode
+	if (outData.curve == null || outData.other == null) return null
 	return outData
 }
 
