@@ -13,22 +13,13 @@ import * as Place from './ts/place'
 import * as Helper from './ts/helper'
 
 let firstRender: boolean = true;
-// default settings
-let settingsDefault: SettingData = {
-	verticalAlign: 0.5,
-	horizontalAlign: 0.5,
-	spacing: 20,
-	count: 5,
-	autoWidth: true,
-	totalLength: 0,
-	isLoop: false,
-	objWidth: 0,
-	offset: 0,
-	rotCheck: true,
-	precision: 420
-}
 
-var selectCurve = function(selection: readonly SceneNode[],setting: SettingData ) {
+/**
+ * select which one is the curve and which is the object
+ * @param selection 
+ * @param setting 
+ */
+const selectCurve = (selection: readonly SceneNode[],setting: SettingData ): LinkedData => {
 	let curve: VectorNode
 	let n
 	let other: SceneNode
@@ -36,9 +27,9 @@ var selectCurve = function(selection: readonly SceneNode[],setting: SettingData 
 		n => n.type === 'VECTOR' || n.type === 'ELLIPSE'
 	)
 	let type: DataType = "clone"
+
 	// if two curves are selected, select one with bigger x or y
 	// im sure theres a way to make this code smaller but idk how
-	
 	if (filterselect.length == 2) {
 		if (
 			filterselect[0].width > filterselect[1].width ||
@@ -51,36 +42,42 @@ var selectCurve = function(selection: readonly SceneNode[],setting: SettingData 
 			other = filterselect[0]
 		}
 	} else {
+		// this case, only one in filterselect so select default.
 		n = filterselect[0]
-
+		// select the other one.
 		other = selection.filter(
 			a => a.type !== 'VECTOR' && a.type !== 'ELLIPSE'
 		)[0]
 	}
-	if (other.type === 'TEXT') {
-		type = "text"
-	}
+	
+	if (other.type === 'TEXT') type = "text"
+
+
+	// if eclipse, flatten the ellipse so it is registered as a curve.
+	// this isn't ideal at all, but it reduces code.
 	if (n.type == 'ELLIPSE') {
-		// flatten the ellipse so it is registered as a curve.
-		// this isn't ideal at all, but it reduces code.
 		curve = figma.flatten([n])
 		figma.currentPage.selection = [other, curve]
 	} else {
 		curve = n
 	}
-	var returnData: LinkedData =  {
+	 
+	return {
 		namespace: "topathfigma", 
 		curve: curve, 
 		other:  other,
 		setting: setting,
 		type: type
 	} 
-	return returnData
 }
 
-// main code
-//async required because figma api requires you to load fonts into the plugin to use them... honestly im really tempted to just hardcode a dumb font like swanky and moo moo instead
-async function main(group: GroupNode, data: LinkedData): Promise<string | undefined> {
+/**
+ * main code
+ * * async required because figma api requires you to load fonts into the plugin to use them... honestly im really tempted to just hardcode a dumb font like swanky and moo moo instead
+ * @param group 
+ * @param data 
+ */
+const main = async (group: GroupNode, data: LinkedData): Promise<string | undefined> => {
 
 	// select the curve
 	// take the svg data of the curve and turn it into an array of points
@@ -128,10 +125,14 @@ async function main(group: GroupNode, data: LinkedData): Promise<string | undefi
 }
 
 
-//watches for updates on selection
 
-//update ui only when selection is updated
-var sendSelection = function(value: string, selection = null, data:LinkedData = null) {
+/**
+ * update ui only when selection is changed
+ * @param value 
+ * @param selection 
+ * @param data 
+ */
+const sendSelection = (value: string, selection = null, data:LinkedData = null) => {
 	if (selection != null ) {
 		if(data == null) {
 			data = selectCurve(selection, null)
@@ -146,7 +147,7 @@ var sendSelection = function(value: string, selection = null, data:LinkedData = 
 }
 
 //do things on a selection change
-const watchSelection = function() {
+const watchSelection = () => {
 	const selection = figma.currentPage.selection
 
 	// case handling is torture
@@ -269,8 +270,9 @@ figma.ui.on('message', async msg => {
 
 //checks for initial selection
 watchSelection()
+
 //watches for selecition change and notifies UI
-figma.on('selectionchange', function() {
+figma.on('selectionchange', () => {
 	watchSelection()
-	firstRender = true;
+	if (!firstRender) firstRender = true;
 })

@@ -5,20 +5,27 @@
 	version: im baby
 	github: https://github.com/codelastnight/to-path-figma
 */
-import { distBtwn, pointBtwn, svg2Point } from './helper'
+import { distBtwn, pointBtwn, parseSVG } from './helper'
 
 
-
-var casteljau = function(
+/**
+ * calculate point on a curve at time t from 2 or 4 points 
+ * * De Casteljau’s algorithm  https://javascript.info/bezier-curve
+ * @param curve 
+ * @param t current time
+ * @param time total time
+ * @param rotation boolean should calculate rotation?
+ */
+const casteljau = (
 	curve: Array<Point>,
 	t: number,
 	time: number,
 	rotation: boolean = false
-) {
-	let arr = []
+): Point[] => {
+	let arr:Point[] = []
 
 	for (var c = 0; c < curve.length - 1; c++) {
-		const dist = distBtwn(curve[c], curve[c + 1])
+		//const dist = distBtwn(curve[c], curve[c + 1])
 
 		let point = pointBtwn(curve[c], curve[c + 1], t, time)
 
@@ -26,13 +33,13 @@ var casteljau = function(
 
 		if (rotation) {
 			//figma wants this number to be in degrees becasue fuck you i guess
-
 			let angle =
 				Math.atan(
 					(curve[c + 1].x - curve[c].x) / (curve[c + 1].y - curve[c].y)
 				) *
 				(180 / Math.PI)
-
+			
+			// flip angle calculations based on if going left or right
 			angle = 90 + angle
 			if (curve[c + 1].y - curve[c].y < 0) {
 				angle = 180 + angle
@@ -43,21 +50,24 @@ var casteljau = function(
 	return arr
 }
 
-//calculate De Casteljau’s algorithm from 2 or 4 points  https://javascript.info/bezier-curve
-// basically turns 4 points on a beizer into a curve
-var pointOnCurve = function(
+/**
+ * basically turns 4 points on a beizer into a curve
+ * * utalizes the casteljau function 
+ * @param curve [point1, point2, point3, point4]
+ * @param time total time steps
+ * @param rotation 
+ * @param totalDist 
+ */
+const pointOnCurve = (
 	curve: Array<Point>,
 	time: number = 100,
 	rotation: boolean = false,
 	totalDist: number
-) {
-	/*
-  curve [point1, point2, point3, point4]
-     - each point: [x,y]
-  */
+): Point[] => {
 
-	let finalarr = []
+	let finalarr: Point[] = []
 
+	// if straight line, do this
 	if (curve.length == 2) {
 		for (var t = 0; t < time; t++) {
 			let arr1 = casteljau(curve, t, time, rotation)
@@ -75,7 +85,9 @@ var pointOnCurve = function(
 			}
 			finalarr.push(pointdata)
 		}
-	} else {
+	} 
+	// if curved line, do this
+	else {
 		for (var t = 0; t < time; t++) {
 			// let arr1 = casteljau(curve, t, time)
 			// let arr2 = casteljau(arr1, t, time)
@@ -109,14 +121,19 @@ var pointOnCurve = function(
 	return finalarr
 }
 
-// calculate point data for all curves
-export var allPoints = function(
+/**
+ * calculate all points on the parsed svg data
+ * @param svgData 
+ * @param resolution 
+ * @param rotation 
+ */
+export const allPoints = (
 	svgData: string,
 	resolution: number = 100,
 	rotation: boolean = true
-) {
-	let pointArr: Array<Point> = []
-	let vectors = svg2Point(svgData)
+):Point[] => {
+	let pointArr: Point[] = []
+	let vectors = parseSVG(svgData)
 	let totalDist = 0
 
 	for (var curve in vectors) {

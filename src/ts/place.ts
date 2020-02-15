@@ -7,19 +7,21 @@
 */
 
 import { multiply, move, rotate,pointBtwnByLength  } from './helper'
-// case for handling spaces, becasue figma will auto them as 0 width; character 8197 isnt the best but you kno what... its good enough
-// this didn't need to be a function but like i already wrote so
-var safeSpace = function(c: string) {
-	return c.replace(' ', String.fromCharCode(8197))
-}
 
-// place the objects on a point, based on user settings.
-var place = function(
+
+/**
+ * place the objects on a point, based on user settings.
+ * @param object 
+ * @param point 
+ * @param options 
+ * @param curve 
+ */
+const place = (
 	object: SceneNode,
 	point: Point,
 	options: SettingData,
 	curve: VectorNode
-) {
+) => {
 	//set names
 	object.name = object.name.replace("[Linked] ", '[Copy] ')
 	// find center of object
@@ -50,8 +52,13 @@ var place = function(
 		object.relativeTransform
 	)
 }
-//  estimates and returns the point closest to where the object should be, based on horizontal length
-var object2Point = function(pointArr: Array<Point>, pass: Pass) {
+
+/**
+ * estimates and returns the point closest to where the object should be, based on horizontal length
+ * @param pointArr 
+ * @param pass 
+ */
+const object2Point = (pointArr: Array<Point>, pass: Pass): Point => {
 	//
 	let rotation
 
@@ -76,21 +83,26 @@ var object2Point = function(pointArr: Array<Point>, pass: Pass) {
 			} else {
 				break
 			}
-		} else {
-		}
+		} 
 	}
 	
 	return estPoint
 }
-//convert text into indivisual characters
 
-export var text2Curve = function(
+/**
+ * convert text into indivisual characters, then put those on a curve
+ * @param node 
+ * @param pointArr 
+ * @param data 
+ * @param group 
+ */
+export const text2Curve = (
 	node: TextNode,
 	pointArr: Array<Point>,
 	data: LinkedData,
 	group: GroupNode
 
-) {
+) => {
 	const newNodes: SceneNode[] = []
 	var options: SettingData = data.setting
 	//convert text into each letter indivusally
@@ -146,12 +158,19 @@ export var text2Curve = function(
 	return
 }
 
-export var object2Curve = function(
+/**
+ * clones the objects x amount of times to curve
+ * @param node 
+ * @param pointArr 
+ * @param data 
+ * @param group 
+ */
+export const object2Curve = (
 	node: SceneNode,
 	pointArr: Array<Point>,
 	data: LinkedData,
 	group: GroupNode
-) {
+) => {
 	const newNodes: SceneNode[] = []
 	var options: SettingData = data.setting
 	// values needed to pass between each objects
@@ -198,11 +217,20 @@ export var object2Curve = function(
 	return
 }
 
-//remove all nodes in a group besides the curve node
-export var deleteNodeinGroup = function(group:GroupNode, curveID: string) {
-	group.children.forEach(i => {
-		if (i.id !== curveID) {
-			i.remove() 
-		}
-	})
+/**
+ * remove all nodes in a group besides the curve node
+ * @param group group object to look through
+ * @param curveID the object id to NOT delete
+ */
+export const deleteNodeinGroup = (group:GroupNode, curveID: string) => {
+	group.children.forEach(i => {if(i.id !== curveID) i.remove()})
+}
+
+// this didn't need to be a function but like i already wrote so
+/**
+ * case for handling spaces, becasue figma will auto them as 0 width; character 8197 isnt the best but you kno what... its good enough
+ * @param c input string
+ */
+const safeSpace = (c: string): string => {
+	return c.replace(' ', String.fromCharCode(8197))
 }
