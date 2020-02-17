@@ -9,15 +9,6 @@
 //plugin data key name
 const keyName: string = "pathData";
 
-// // check if basenode is a scene node
-// // this is my first typeguard! praise me uwu
-// const isSceneNode = function(node: BaseNode): node is SceneNode {
-// 	if((node as SceneNode).type){
-// 		return true
-// 	  }
-// 	  return false
-// }
-
 
 /**
  * get data from an object
@@ -66,30 +57,35 @@ export var setLink = (group: GroupNode, data: LinkedData) => {
  * @param svgData svg path data bruh moment
  * @returns array of array of points, eg [[point1,2,3,4],[4,5],[5,6,7,8]....]
  */
-const svg2Arr = (svgData: string): Point[][] => {
+export const parseSVG = (svgData: string): Point[][] => {
 	/*
 		i fucking hate this shit
 	*/
-	let test = svgData.split('M').shift() //split if more then 1 section and gets rid of the extra array value at front
-	//test.shift()
+	const test = svgData.split('M') //split if more then 1 section and gets rid of the extra array value at front
+	test.shift()
+
 	if (test.length > 1) {
 		// throw error if theres too many lines becasue im lazy
 		throw 'TOO MANY LINES! this plugin only supports one continous vector'
 	}
-	let cleanType = []
+	//let cleanType: Point[][] = []
 	const bezierChunks = test[0].trim().split(/ L|C /) // splits string into the chunks of different lines
-	let splicein = []
-
-	for (var e in bezierChunks) {
+	let splicein: string[] = []
+	let cleanType: Point[][] = bezierChunks.map(e => {
 		//split each string in the chunk into points
-		var splitPoints = arrChunk(bezierChunks[e].trim().split(' '), 2)
+		const splitPoints = arrChunk(e.trim().split(' '), 2)
 
 		//this adds the last point from the previous array into the next one.
 		splitPoints.unshift(splicein)
 		splicein = splitPoints[splitPoints.length - 1]
-		cleanType.push(splitPoints)
-	}
-	
+		const typedPoints: Point[] = splitPoints.map((point: string[]) => {
+			return {
+				x: Number(point[0]),
+				y: Number(point[1])
+			}
+		})
+		return typedPoints
+	})
 	cleanType.shift() // get rid of the extra empty array value
 
 	return cleanType
@@ -99,19 +95,19 @@ const svg2Arr = (svgData: string): Point[][] => {
  * cleans and typifies data, probably should depreciate this into the above function
  * @param svgData svg path string
  */
-export const parseSVG = (svgData: string): Point[][] => {
-	const cleanArray = svg2Arr(svgData)
-	for (var each in cleanArray) {
-		for (var i in cleanArray[each]) {
-			const newpoint: Point = {
-				x: cleanArray[each][i][0],
-				y: cleanArray[each][i][1]
-			}
-			cleanArray[each][i] = newpoint
-		}
-	}
-	return cleanArray
-}
+// export const parseSVG_old = (svgData: string): Point[][] => {
+// 	const cleanArray = svg2Arr(svgData)
+// 	for (var each in cleanArray) {
+// 		for (var i in cleanArray[each]) {
+// 			const newpoint: Point = {
+// 				x: cleanArray[each][i][0],
+// 				y: cleanArray[each][i][1]
+// 			}
+// 			cleanArray[each][i] = newpoint
+// 		}
+// 	}
+// 	return cleanArray
+// }
 
 /**
  * distance between points a and b

@@ -73,7 +73,8 @@ const selectCurve = (selection: readonly SceneNode[],setting: SettingData ): Lin
 
 /**
  * main code
- * * async required because figma api requires you to load fonts into the plugin to use them... honestly im really tempted to just hardcode a dumb font like swanky and moo moo instead
+ * * async required because figma api requires you to load fonts into the plugin to use them... 
+ * honestly im really tempted to just hardcode a dumb font like swanky and moo moo instead
  * @param group 
  * @param data 
  */
@@ -83,6 +84,7 @@ const main = async (group: GroupNode, data: LinkedData): Promise<string | undefi
 	// take the svg data of the curve and turn it into an array of points
 	//idk if i should store this or not. its pretty fast to calculate so....
 	const pointArr: Array<Point> = Curve.allPoints(data.curve.vectorPaths[0].data, data.setting.precision)
+	//console.log(pointArr)
 
 	if (data.other.type === 'TEXT') {
 		//the font loading part
@@ -149,16 +151,12 @@ const sendSelection = (value: string, selection = null, data:LinkedData = null) 
 //do things on a selection change
 const watchSelection = () => {
 	const selection = figma.currentPage.selection
-
 	// case handling is torture
 	// check if theres anything selected
 	switch (selection.length) {
 		case 2:
 			//check if a curve is selected
-			if (
-				selection.filter(node => node.type === 'VECTOR').length > 0 ||
-				selection.filter(node => node.type === 'ELLIPSE').length > 0
-			) {
+			if (selection.filter(node => node.type === 'VECTOR' || node.type === 'ELLIPSE').length > 0) {
 				// if its a text or somethin else
 				if (selection.filter(node => node.type === 'TEXT').length == 1) {
 					sendSelection('text', selection)
@@ -171,8 +169,7 @@ const watchSelection = () => {
 			break
 		case 1:
 			// if selecting a linked group
-
-			var selected = selection[0]
+			const selected = selection[0]
 			if (selected.type === 'GROUP') {
 				var groupData: LinkedData = Helper.isLinked(selected)
 
@@ -180,7 +177,7 @@ const watchSelection = () => {
 					sendSelection('one')
 				} else {
 					// get the data from that.
-					sendSelection('linkedGroup',selection[0], groupData)
+					sendSelection('linkedGroup',selected, groupData)
 				}
 			} 
 			// if the child of a linked group is selected and is the friken curve
@@ -221,11 +218,7 @@ figma.ui.on('message', async msg => {
 
 		data= Helper.isLinked(group1)
 		if (data == null) { 
-			// if (selected[0].parent.type === 'GROUP') {
-			// 	data= Helper.isLinked(selected[0].parent)
-			// } else {
 				sendSelection('linklost')
-			// }
 		}
 		else {
 			data.setting = msg.options
@@ -238,13 +231,13 @@ figma.ui.on('message', async msg => {
 	// run when "link" button is hit
 	if (msg.type === 'initial-link') {
 		const selection: readonly SceneNode[] = figma.currentPage.selection
-		let data: LinkedData = selectCurve(selection, msg.options)
+		const data: LinkedData = selectCurve(selection, msg.options)
 
 		//rename paths
 		data.other.name = "[Linked] " + data.other.name.replace("[Linked] ", '')
 		data.curve.name = "[Linked] " + data.curve.name.replace('[Linked] ', '')
 		//clone curve selection to retain curve shape
-		let clone2: SceneNode = data.curve
+		const clone2: SceneNode = data.curve
 		//clone2.visible = false
 		data.curveCloneID = clone2.id
 		data.curve.parent.appendChild(clone2)
@@ -259,7 +252,6 @@ figma.ui.on('message', async msg => {
 
 		await main(group2, data)
 		firstRender = false;
-
 
 	}
 	// Make sure to close the plugin when you're done. Otherwise the plugin will

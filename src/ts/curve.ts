@@ -133,9 +133,8 @@ export const allPoints = (
 	rotation: boolean = true
 ):Point[] => {
 	let pointArr: Point[] = []
-	let vectors = parseSVG(svgData)
+	const vectors = parseSVG(svgData)
 	let totalDist = 0
-
 	for (var curve in vectors) {
 		pointArr.push(
 			...pointOnCurve(vectors[curve], resolution, rotation, totalDist)
