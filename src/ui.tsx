@@ -166,7 +166,7 @@ function UI() {
 
 						<a
 							className="type type--pos-medium-bold"
-							href="https://twitter.com/art_last_night"
+							href="https://twitter.com/artlastnight"
 							target="_blank">
 							twitter
 						</a>
@@ -174,7 +174,7 @@ function UI() {
 					<div className="flex">
 						
 						<div className="col">
-						<div className="label">Increase Accuracy of Angles Calculation:</div>
+						<div className="label">Accuracy of Angles Calculations:</div>
 								<InputIcon
 									icon="icon icon--dist-horiz-spacing icon--black-3"
 									values={setting}
