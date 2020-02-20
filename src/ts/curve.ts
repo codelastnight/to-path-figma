@@ -23,7 +23,7 @@ const casteljau = (
 	rotation: boolean = false
 ): Point[] => {
 	let arr:Point[] = []
-
+	// using a for loop here becasue i need to access the next curve from the current one
 	for (var c = 0; c < curve.length - 1; c++) {
 		//const dist = distBtwn(curve[c], curve[c + 1])
 
@@ -40,11 +40,10 @@ const casteljau = (
 				(180 / Math.PI)
 			
 			// flip angle calculations based on if going left or right
-			angle = 90 + angle
 			if (curve[c + 1].y - curve[c].y < 0) {
 				angle = 180 + angle
 			}
-			point.angle = angle
+			point.angle = 90 + angle
 		}
 	}
 	return arr

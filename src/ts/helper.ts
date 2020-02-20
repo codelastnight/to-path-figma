@@ -14,7 +14,7 @@ const keyName: string = "pathData";
  * get data from an object
  * @param group the group object to look into
  */
-const getLink = (group: GroupNode ) => {
+const getLink = (group: GroupNode) => {
 	// get data from plugin
 	var getData: string =  group.getSharedPluginData("topathfigma",keyName)
 	var outData: LinkedData = JSON.parse(getData)
@@ -32,13 +32,13 @@ const getLink = (group: GroupNode ) => {
  * @param group the group object to check
  */
 export const isLinked =  (group: GroupNode) => {
-	var data: LinkedData
 	try {
-		data =  getLink(group)
+		var data: LinkedData =  getLink(group)
+		return data
+
 	} catch {
 		return null
 	}
-	return data;
 	
 }
 
@@ -52,25 +52,22 @@ export var setLink = (group: GroupNode, data: LinkedData) => {
 }
 
 /**
- * turn whatever the fuck svg code is into array of points grouped into 4 or 2 ( this is dependant on what type of bezier curve it is. look it up)
+ * turn whatever svg code is into array of points grouped into 4 or 2 ( this is dependant on what type of bezier curve it is. look it up)
  *  * note: figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
  * @param svgData svg path data bruh moment
  * @returns array of array of points, eg [[point1,2,3,4],[4,5],[5,6,7,8]....]
  */
 export const parseSVG = (svgData: string): Point[][] => {
-	/*
-		i fucking hate this shit
-	*/
+
 	const test = svgData.split('M') //split if more then 1 section and gets rid of the extra array value at front
 	test.shift()
-
-	if (test.length > 1) {
-		// throw error if theres too many lines becasue im lazy
-		throw 'TOO MANY LINES! this plugin only supports one continous vector'
-	}
-	//let cleanType: Point[][] = []
+	// throw error if theres too many lines becasue im lazy
+	if (test.length > 1) throw 'TOO MANY LINES! this plugin only supports one continous vector'
+	
 	const bezierChunks = test[0].trim().split(/ L|C /) // splits string into the chunks of different lines
+	// the point to splice into the next curve
 	let splicein: string[] = []
+	// the output group of curves (which is a group of points)
 	let cleanType: Point[][] = bezierChunks.map(e => {
 		//split each string in the chunk into points
 		const splitPoints = arrChunk(e.trim().split(' '), 2)
@@ -91,23 +88,6 @@ export const parseSVG = (svgData: string): Point[][] => {
 	return cleanType
 }
 
-/**
- * cleans and typifies data, probably should depreciate this into the above function
- * @param svgData svg path string
- */
-// export const parseSVG_old = (svgData: string): Point[][] => {
-// 	const cleanArray = svg2Arr(svgData)
-// 	for (var each in cleanArray) {
-// 		for (var i in cleanArray[each]) {
-// 			const newpoint: Point = {
-// 				x: cleanArray[each][i][0],
-// 				y: cleanArray[each][i][1]
-// 			}
-// 			cleanArray[each][i] = newpoint
-// 		}
-// 	}
-// 	return cleanArray
-// }
 
 /**
  * distance between points a and b
@@ -127,21 +107,15 @@ export const distBtwn = (a: Point, b: Point): number => {
  * @param t current time
  * @param time total time
  */
-export const pointBtwn = (a: Point, b: Point, t: number, time: number) => {
+export const pointBtwn = (a: Point, b: Point, t: number, time: number): Point => {
 
-	a.x = Number(a.x)
-	a.y = Number(a.y)
-	b.x = Number(b.x)
-	b.y = Number(b.y)
 	//find the unit  vector between points a and b
 	// not really unit vector in the math sense tho
-	const unitVector: Point = { x: (b.x - a.x) / time, y: (b.y - a.y) / time }
-	const pointbtwn: Point = {
-		x: a.x + unitVector.x * t,
-		y: a.y + unitVector.y * t
+	//const unitVector: Point = { x: , y: (} 
+	return  {
+		x: a.x + ((b.x - a.x) / time) * t,
+		y: a.y + ((b.y - a.y) / time ) * t
 	}
-
-	return pointbtwn
 }
 
 //
