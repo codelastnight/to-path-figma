@@ -223,6 +223,7 @@ figma.ui.on('message', async msg => {
 		else {
 			data.setting = msg.options
 			await main(group1, data)
+			group1.setRelaunchData({ relaunch: 'Edit with To Path' })
 			firstRender = false;
 		}
 	
@@ -251,6 +252,7 @@ figma.ui.on('message', async msg => {
 		Helper.setLink(group2,data)
 
 		await main(group2, data)
+		group2.setRelaunchData({ relaunch: 'Edit with To Path' })
 		firstRender = false;
 
 	}
