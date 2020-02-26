@@ -1,6 +1,6 @@
 {
 	"name": "to-path-figma",
-	"version": "1.4.3",
+	"version": "1.4.4",
 	"description": "plugin that puts things on paths in figma design tool",
 	"main": "code.js",
 	"scripts": {
