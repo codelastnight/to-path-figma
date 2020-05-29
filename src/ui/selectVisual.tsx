@@ -215,6 +215,10 @@ function SelectOptions(props) {
 					<Checkbox id="rotCheck" values={props.form} setvalues={props.setForm}>
 						characters follow curve rotation
 					</Checkbox>
+					
+					<Checkbox id="reverse" values={props.form} setvalues={props.setForm}>
+						reverse direction of text
+					</Checkbox>
 				</div>
 			)
 			break
@@ -330,6 +334,9 @@ function SelectOptions(props) {
 
 					<Checkbox id="rotCheck" values={props.form} setvalues={props.setForm}>
 						objects follow curve rotation
+					</Checkbox>
+					<Checkbox id="reverse" values={props.form} setvalues={props.setForm}>
+						reverse direction 
 					</Checkbox>
 				</div>
 			)

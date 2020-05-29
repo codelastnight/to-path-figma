@@ -19,6 +19,7 @@ interface SettingData {
 	objWidth?: number
 	offset: number
 	precision: number
+	reverse: boolean
 }
 
 interface Pass {

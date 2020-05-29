@@ -83,8 +83,9 @@ const main = async (group: GroupNode, data: LinkedData): Promise<string | undefi
 	// select the curve
 	// take the svg data of the curve and turn it into an array of points
 	//idk if i should store this or not. its pretty fast to calculate so....
-	const pointArr: Array<Point> = Curve.allPoints(data.curve.vectorPaths[0].data, data.setting.precision)
-	//console.log(pointArr)
+	let vectors = data.curve.vectorPaths[0].data
+	const pointArr: Array<Point> = Curve.allPoints(data.curve.vectorPaths[0].data, data.setting)
+	
 
 	if (data.other.type === 'TEXT') {
 		//the font loading part
@@ -180,15 +181,7 @@ const watchSelection = () => {
 					sendSelection('linkedGroup',selected, groupData)
 				}
 			} 
-			// if the child of a linked group is selected and is the friken curve
-			// else if (selected.parent.type === 'GROUP') {
-			// 	var groupData: LinkedData = Helper.isLinked(selected.parent)
-			// 	if (groupData == null) {
-			// 		sendSelection('one')
-			// 	} else {
-			// 		sendSelection('linkedGroup',selected.parent, groupData)
-			// 	}
-			// }
+
 			else {
 				sendSelection('one')
 			}
@@ -213,18 +206,16 @@ figma.ui.on('message', async msg => {
 	
 	if (msg.type === 'do-the-thing') {
 		var selected = figma.currentPage.selection
-		var data: LinkedData 
-		let group1 = selected.find(i => i.type === "GROUP") as GroupNode
-
-		data= Helper.isLinked(group1)
-		if (data == null) { 
-				sendSelection('linklost')
+		let group = selected.find(i => i.type === "GROUP") as GroupNode
+		var data: LinkedData = Helper.isLinked(group)
+		if (data != null) {
+			data.setting = msg.options
+			await main(group, data)
+			group.setRelaunchData({ relaunch: 'Edit with To Path' })
+			firstRender = false 
 		}
 		else {
-			data.setting = msg.options
-			await main(group1, data)
-			group1.setRelaunchData({ relaunch: 'Edit with To Path' })
-			firstRender = false;
+			sendSelection('linklost')
 		}
 	
 	}

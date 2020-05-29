@@ -3,7 +3,7 @@ import * as React from 'react'
 //checkbox component
 function Checkbox(props) {
 	function thecheck() {
-		props.setvalues({...props.values, rotCheck: !props.values.rotCheck})
+		props.setvalues({...props.values, [props.id]: !props.values[props.id]})
 	}
 	return (
 		
@@ -12,7 +12,7 @@ function Checkbox(props) {
 				className="checkbox__box"
 				type="checkbox"
 				id={props.id}
-				checked={props.values.rotCheck}
+				checked={props.values[props.id]}
 				onChange={thecheck}
 				
 			/>

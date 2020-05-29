@@ -53,14 +53,12 @@ const casteljau = (
  * basically turns 4 points on a beizer into a curve
  * * utalizes the casteljau function 
  * @param curve [point1, point2, point3, point4]
- * @param time total time steps
- * @param rotation 
+ * @param setting options data
  * @param totalDist 
  */
 const pointOnCurve = (
 	curve: Array<Point>,
-	time: number = 100,
-	rotation: boolean = false,
+	setting: SettingData,
 	totalDist: number
 ): Point[] => {
 
@@ -68,8 +66,10 @@ const pointOnCurve = (
 
 	// if straight line, do this
 	if (curve.length == 2) {
-		for (var t = 0; t < time; t++) {
-			let arr1 = casteljau(curve, t, time, rotation)
+		for (var t = 0; t < setting.precision; t++) {
+			
+			let arr1 = casteljau(curve, t, setting.precision, setting.rotCheck)
+			if (setting.reverse) arr1.reverse()
 			let pointdata = arr1[0]
 
 			if (finalarr.length > 0) {
@@ -87,20 +87,19 @@ const pointOnCurve = (
 	} 
 	// if curved line, do this
 	else {
-		for (var t = 0; t < time; t++) {
-			// let arr1 = casteljau(curve, t, time)
-			// let arr2 = casteljau(arr1, t, time)
-			// let arr3 = casteljau(arr2, t, time, rotation, )
+		for (var t = 0; t < setting.precision; t++) {
 			//could i use recursive? yea. am i gonna? no that sounds like work
 
 			let arr1 = casteljau(
-				casteljau(casteljau(curve, t, time), t, time),
+				casteljau(casteljau(curve, t, setting.precision), t, setting.precision),
 				t,
-				time,
-				rotation
+				setting.precision,
+				setting.rotCheck
 			)
 			// get rid of the extra bracket
+			if (setting.reverse) arr1.reverse()
 			let pointdata = arr1[0]
+
 			// calculate the distance between entirepoints to estimate the distance at that specific point
 			if (finalarr.length > 0) {
 				const addDist = distBtwn(finalarr[finalarr.length - 1], pointdata)
@@ -123,20 +122,22 @@ const pointOnCurve = (
 /**
  * calculate all points on the parsed svg data
  * @param svgData 
- * @param resolution 
+ * @param setting 
  * @param rotation 
  */
 export const allPoints = (
 	svgData: string,
-	resolution: number = 100,
-	rotation: boolean = true
-):Point[] => {
+	setting: SettingData
+	):Point[] => {
 	let pointArr: Point[] = []
-	const vectors = parseSVG(svgData)
+	let vectors = parseSVG(svgData)
+	
+	if (setting.reverse) vectors.reverse()
+
 	let totalDist = 0
 	for (var curve in vectors) {
 		pointArr.push(
-			...pointOnCurve(vectors[curve], resolution, rotation, totalDist)
+			...pointOnCurve(vectors[curve], setting, totalDist)
 		)
 		totalDist = pointArr[pointArr.length - 1].totalDist
 	}
