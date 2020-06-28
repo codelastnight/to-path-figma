@@ -8,9 +8,6 @@
 
 Put any objects or text on a path! 
 
-[*EPIC NEW UPDATE!!*]
-LIVE PREVIEW IS HERE! now update and change your object and see it happen live!
-
 1. make a curve
 2. select an object, group, or text
 3. watch the magic* happen!
