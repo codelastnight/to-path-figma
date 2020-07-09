@@ -5,8 +5,7 @@
 	version: im baby
 	github: https://github.com/codelastnight/to-path-figma
 */
-import { distBtwn, pointBtwn, parseSVG } from './helper'
-
+import { distBtwn, pointBtwn, parseSVG, reversestr } from './helper'
 
 /**
  * calculate point on a curve at time t from 2 or 4 points 
@@ -19,19 +18,19 @@ import { distBtwn, pointBtwn, parseSVG } from './helper'
 const casteljau = (
 	curve: Array<Point>,
 	t: number,
-	time: number,
-	rotation: boolean = false
+	setting: SettingData,
+	calcRot: boolean = false
 ): Point[] => {
 	let arr:Point[] = []
+
 	// using a for loop here becasue i need to access the next curve from the current one
 	for (var c = 0; c < curve.length - 1; c++) {
-		//const dist = distBtwn(curve[c], curve[c + 1])
 
-		let point = pointBtwn(curve[c], curve[c + 1], t, time)
+		let point = pointBtwn(curve[c], curve[c + 1], t, setting.precision)
 
 		arr.push(point)
 
-		if (rotation) {
+		if (calcRot && setting.rotCheck) {
 			//figma wants this number to be in degrees becasue fuck you i guess
 			let angle =
 				Math.atan(
@@ -50,7 +49,7 @@ const casteljau = (
 }
 
 /**
- * basically turns 4 points on a beizer into a curve
+ * basically turns 4 points on a bezier into a curve
  * * utalizes the casteljau function 
  * @param curve [point1, point2, point3, point4]
  * @param setting options data
@@ -63,59 +62,38 @@ const pointOnCurve = (
 ): Point[] => {
 
 	let finalarr: Point[] = []
-
-	// if straight line, do this
-	if (curve.length == 2) {
-		for (var t = 0; t < setting.precision; t++) {
-			
-			let arr1 = casteljau(curve, t, setting.precision, setting.rotCheck)
-			if (setting.reverse) arr1.reverse()
-			let pointdata = arr1[0]
-
-			if (finalarr.length > 0) {
-				const addDist = distBtwn(finalarr[finalarr.length - 1], pointdata)
-
-				pointdata.dist = addDist
-				pointdata.totalDist = addDist + finalarr[finalarr.length - 1].totalDist
-				totalDist = pointdata.totalDist
-			} else {
-				pointdata.dist = 0
-				pointdata.totalDist = totalDist
-			}
-			finalarr.push(pointdata)
-		}
-	} 
-	// if curved line, do this
-	else {
-		for (var t = 0; t < setting.precision; t++) {
-			//could i use recursive? yea. am i gonna? no that sounds like work
-
-			let arr1 = casteljau(
-				casteljau(casteljau(curve, t, setting.precision), t, setting.precision),
+	for (var t = 0; t < setting.precision; t++) {
+		//could i use recursive? yea. am i gonna? no that sounds like work
+		// if straight line, do this
+		let arr1 = []
+		if (curve.length == 2) {
+			arr1 = casteljau(curve, t, setting,true)
+		} 
+		// if curved line, do this
+		else {
+			arr1 = casteljau(
+				casteljau(casteljau(curve, t, setting), t, setting),
 				t,
-				setting.precision,
-				setting.rotCheck
+				setting,
+				true
 			)
-			// get rid of the extra bracket
-			if (setting.reverse) arr1.reverse()
-			let pointdata = arr1[0]
-
-			// calculate the distance between entirepoints to estimate the distance at that specific point
-			if (finalarr.length > 0) {
-				const addDist = distBtwn(finalarr[finalarr.length - 1], pointdata)
-
-				pointdata.dist = addDist
-				pointdata.totalDist = addDist + finalarr[finalarr.length - 1].totalDist
-				totalDist = pointdata.totalDist
-			} else {
-				pointdata.dist = 0
-				pointdata.totalDist = totalDist
-			}
-
-			finalarr.push(pointdata)
 		}
-	}
+		// get rid of the extra bracket
+		let pointdata = arr1[0]
 
+		// calculate the distance between entirepoints to estimate the distance at that specific point
+		if (finalarr.length > 0) {
+			const addDist = distBtwn(finalarr[finalarr.length - 1], pointdata)
+
+			pointdata.dist = addDist
+			pointdata.totalDist = addDist + finalarr[finalarr.length - 1].totalDist
+			totalDist = pointdata.totalDist
+		} else {
+			pointdata.dist = 0
+			pointdata.totalDist = totalDist
+		}
+		finalarr.push(pointdata)
+	}
 	return finalarr
 }
 
@@ -131,9 +109,13 @@ export const allPoints = (
 	):Point[] => {
 	let pointArr: Point[] = []
 	let vectors = parseSVG(svgData)
+	if (setting.reverse) {
+		vectors = vectors.map(curve => {
+			return curve.reverse()
+		} ).reverse()
+	}
+	console.log(vectors)
 	
-	if (setting.reverse) vectors.reverse()
-
 	let totalDist = 0
 	for (var curve in vectors) {
 		pointArr.push(

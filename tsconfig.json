@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "jsx": "react"
+    "jsx": "react",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules/@figma"
+    ]
   }
 }

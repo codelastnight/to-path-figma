@@ -67,7 +67,9 @@ export const parseSVG = (svgData: string): Point[][] => {
 	const bezierChunks = test[0].trim().split(/ L|C /) // splits string into the chunks of different lines
 	// the point to splice into the next curve
 	let splicein: string[] = []
+
 	// the output group of curves (which is a group of points)
+	// imma be honest i dont know how i made this work its magic 
 	let cleanType: Point[][] = bezierChunks.map(e => {
 		//split each string in the chunk into points
 		const splitPoints = arrChunk(e.trim().split(' '), 2)
@@ -210,3 +212,10 @@ export const rotate = (theta) => {
 		[-Math.sin(theta), Math.cos(theta), 0]
 	] as [[number, number, number], [number, number, number]]
 }
+
+/**
+ * reverse a string
+ */
+export const reversestr = (str) => {
+	return [...str].reverse().join('');
+  }

@@ -93,14 +93,13 @@ const main = async (group: GroupNode, data: LinkedData): Promise<string | undefi
 			for (let i = 0; i < data.other.characters.length; i++) {
 				await figma.loadFontAsync(data.other.getRangeFontName(i,i + 1) as FontName)
 			}
-			if (
-				data.other.width > pointArr[pointArr.length - 1].totalDist ||
-				figma.hasMissingFont == true
-			) {
-				figma.closePlugin(
-					'either the text path is too long or the font has failed to load'
-				)
-			}
+			// if (
+			// 	data.other.width > pointArr[pointArr.length - 1].totalDist 
+			// ) {
+			// 	figma.closePlugin(
+			// 		' the text path is longer then the path'
+			// 	)
+			// }
 		}
 
 			// remove old stuff
