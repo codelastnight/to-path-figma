@@ -13,7 +13,7 @@ import {isLinked} from './helper'
  * @param selection 
  * @param setting 
  */
-export const Decide = (selection: readonly SceneNode[], setting: SettingData ): LinkedData => {
+export const decide = (selection: readonly SceneNode[], setting: SettingData ): LinkedData => {
 	let curve: VectorNode
 	let n: any
 	let other: SceneNode
@@ -66,8 +66,10 @@ export const Decide = (selection: readonly SceneNode[], setting: SettingData ): 
 	} 
 }
 
-//do things on a selection change
-export const OnChange = () => {
+/**
+ * do things on a selection change
+ */
+export const onChange = () => {
 	const selection = figma.currentPage.selection
 	// case handling is torture
 	// check if theres anything selected
@@ -97,9 +99,7 @@ export const OnChange = () => {
 					// get the data from that.
 					send('linkedGroup',selected, groupData)
 				}
-			} 
-
-			else {
+			} else {
 				send('one')
 			}
 			break
@@ -122,11 +122,13 @@ export const OnChange = () => {
 export const send = (value: string, selection = null, data:LinkedData = null) => {
 	if (selection != null ) {
 		if(data == null) {
-			data = Decide(selection, null)
+			data = decide(selection, null)
 		}
-		var svgdata = data.curve.vectorPaths[0].data 
+        var svgdata = data.curve.vectorPaths[0].data 
+        
 		if (data.curve.vectorPaths[0].data.match(/M/g).length > 1) value = 'vectornetwork'
-		const width = data.other.width
+        const width = data.other.width
+        
 		figma.ui.postMessage({ type: 'svg', width, value,  data, svgdata})
 	} else {
 		figma.ui.postMessage({ type: 'rest', value })

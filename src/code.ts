@@ -102,7 +102,7 @@ figma.ui.on('message', async msg => {
 	// run when "link" button is hit
 	if (msg.type === 'initial-link') {
 		const selection: readonly SceneNode[] = figma.currentPage.selection
-		const data: LinkedData = Select.Decide(selection, msg.options)
+		const data: LinkedData = Select.decide(selection, msg.options)
 
 		//rename paths
 		data.other.name = "[Linked] " + data.other.name.replace("[Linked] ", '')
@@ -135,10 +135,10 @@ figma.ui.on('message', async msg => {
 
 
 //checks for initial selection
-Select.OnChange()
+Select.onChange()
 
 //watches for selecition change and notifies UI
 figma.on('selectionchange', () => {
-	Select.OnChange()
+	Select.onChange()
 	if (!firstRender) firstRender = true;
 })

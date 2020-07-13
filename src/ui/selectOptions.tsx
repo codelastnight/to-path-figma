@@ -73,9 +73,8 @@ function SelectOptions(props: SelectOptionsProps) {
 				<div>
 					 
 					<div className="onboarding-center">
-						<p className="type type--neg-medium-bold">
-                        ✨ Lets Get Started ✨
-                        </p>
+					
+						<p>⭐<span className="type type--neg-medium-bold"> Lets Get Started </span>⭐</p>
                         <p className="type type--neg-small-normal"> 
                             Select both a curve and any object to have it repeat along the curve. 
                         </p>
@@ -87,6 +86,9 @@ function SelectOptions(props: SelectOptionsProps) {
 							onClick={() => props.showTutorial(true)}>
 							Tutorial
 						</button>
+						<p className="">
+						°.✩—∘*-✨-*—∘✩.°
+						</p>
 					</div>
 				</div>
 				
