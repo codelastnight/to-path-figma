@@ -78,8 +78,9 @@ const object2Point = (pointArr: Array<Point>, pass: Pass): Point => {
 				nextpoint.dist,
 				rotation
 			)
-
-			if (estPoint.x === Infinity) {
+			
+			if (estPoint.x === Infinity || isNaN(estPoint.x)) {
+				console.log(estPoint.x)
 			} else {
 				break
 			}
@@ -196,8 +197,8 @@ export const object2Curve = (
 		group.appendChild(object)
 		// kill loop early if the objects are longer then the curve
 		// replace later with a better thing
-
 		if (pass.spacing >= pointArr[pointArr.length - 1].totalDist) {
+			
 			break
 		}
 	}

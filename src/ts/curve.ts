@@ -109,7 +109,6 @@ export const allPoints = (
 	):Point[] => {
 	let pointArr: Point[] = []
 	let vectors = parseSVG(svgData)
-	console.log(svgData)
 
 	// reverse the points if the settings say so
 	if (setting.reverse) {
@@ -117,7 +116,7 @@ export const allPoints = (
 			return curve.reverse()
 		} ).reverse()
 	}
-	
+
 	let totalDist = 0
 	for (var curve in vectors) {
 		pointArr.push(
@@ -125,5 +124,6 @@ export const allPoints = (
 		)
 		totalDist = pointArr[pointArr.length - 1].totalDist
 	}
+
 	return pointArr
 }
