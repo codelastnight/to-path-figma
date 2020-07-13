@@ -2,9 +2,13 @@ import * as React from 'react'
 
 // enable create button only on valid types
 let disabled = true
-let isLink = false
 let text = "Link"
-function Create(props) {
+interface CreateProps {
+value: string
+isLink: boolean
+onClick: () => void
+}
+function Create(props: CreateProps) {
 	switch (props.value) {
 		case 'text':
 		case 'clone':
@@ -16,7 +20,7 @@ function Create(props) {
 	}
 	if (props.isLink == true ){
 		text = "Linked!"
-		disabled = true
+		disabled = props.isLink
 	} else {
 		text = "Link"
 

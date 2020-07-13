@@ -1,7 +1,14 @@
 import * as React from 'react'
 
+interface CheckboxProps {
+	id: string
+	values: SettingData
+	setvalues: React.Dispatch<React.SetStateAction<SettingData>>
+	children: React.ReactNode
+}
+
 //checkbox component
-function Checkbox(props) {
+function Checkbox(props: CheckboxProps) {
 	function thecheck() {
 		props.setvalues({...props.values, [props.id]: !props.values[props.id]})
 	}
@@ -20,8 +27,20 @@ function Checkbox(props) {
 		</div>
 	)
 }
+
+interface InputIconProps {
+	icon: string
+	values: SettingData
+	name: string
+	blur: (e:any) => void
+	setvalues: React.Dispatch<React.SetStateAction<SettingData>>
+	disabled?: boolean
+	min?: number
+	max?: number
+	step?: number
+}
 // input component
-function InputIcon(props) {
+function InputIcon(props: InputIconProps) {
 	const handleChange = e => {
 		const {
 			target: { name, value }

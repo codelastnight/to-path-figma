@@ -3,10 +3,12 @@ import * as ReactDOM from 'react-dom'
 import { useState, useEffect } from 'react'
 import './figma-plugin-ds.min.css'
 import './scss/main.scss'
-import { SelectOptions, SelectVisual } from './ui/selectVisual'
+import { SelectVisual } from './ui/selectVisual'
+import {SelectOptions} from './ui/selectOptions'
 import Create from './ui/Create'
 import { InputIcon } from './ui/Form'
 import About from './ui/about';
+import Tutorial from './ui/tutorial'
 
 let settingsDefault: SettingData = {
 	verticalAlign: 0.5,
@@ -26,10 +28,15 @@ let settingsDefault: SettingData = {
 
 // main ui component
 function UI() {
+	
+	// lol if it works it works
 	const [selection, showselection] = useState('nothing')
-	const [about, showabout] = useState(false)
 	const [setting, setSetting] = useState(settingsDefault)
+
+	const [about, showabout] = useState(false)
 	const [link, setLink] = useState(false)
+	const [tutorial, showTutorial] = useState(false)
+
 
 	useEffect(() => {
 		// Update the document title using the browser API
@@ -134,15 +141,19 @@ function UI() {
 			<div className={about === true ? 'about' : 'about hidden'}>
 				<About></About>
 			</div>
-
+			<div className={tutorial === true ? 'about' : 'about hidden'}>
+				<Tutorial showTutorial={showTutorial} ></Tutorial>
+			</div>
 			<div className="main">
-				<SelectVisual value={selection} />
-				<SelectOptions value={selection} form={setting} setForm={setSetting} />
+				<div className="section-custom ">
+					<SelectVisual value={selection} />
+				</div>
+				<SelectOptions value={selection} form={setting} setForm={setSetting} showTutorial={showTutorial} />
 			</div>
 
 			<div className="footer">
 				<div className="divider"></div>
-				<div className="flex">
+				<div className="section-custom flex">
 					<div className="help">
 						<button
 							className="button button--secondary link"

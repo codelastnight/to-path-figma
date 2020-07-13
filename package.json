@@ -47,6 +47,7 @@
 	},
 	"dependencies": {
 		"autoprefixer": "^9.7.4",
+		"figma-plugin-ds": "^0.1.8",
 		"npm-run-all": "^4.1.5",
 		"on-change": "^1.6.2",
 		"react": "^16.12.0",

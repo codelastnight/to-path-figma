@@ -148,55 +148,10 @@ const sendSelection = (value: string, selection = null, data:LinkedData = null) 
 	}
 }
 
-//do things on a selection change
-const watchSelection = () => {
-	const selection = figma.currentPage.selection
-	// case handling is torture
-	// check if theres anything selected
-	switch (selection.length) {
-		case 2:
-			//check if a curve is selected
-			if (selection.filter(node => node.type === 'VECTOR' || node.type === 'ELLIPSE').length > 0) {
-				// if its a text or somethin else
-				if (selection.filter(node => node.type === 'TEXT').length == 1) {
-					sendSelection('text', selection)
-				} else {
-					sendSelection('clone', selection)
-				}
-			} else {
-				sendSelection('nocurve')
-			}
-			break
-		case 1:
-			// if selecting a linked group
-			const selected = selection[0]
-			if (selected.type === 'GROUP') {
-				var groupData: LinkedData = Helper.isLinked(selected)
 
-				if (groupData == null) {
-					sendSelection('one')
-				} else {
-					// get the data from that.
-					sendSelection('linkedGroup',selected, groupData)
-				}
-			} 
-
-			else {
-				sendSelection('one')
-			}
-			break
-
-		case 0:
-			sendSelection('nothing')
-			break
-
-		default:
-			sendSelection('toomany')
-	}
-}
 
 // This shows the HTML page in "ui.html".
-figma.showUI(__html__, { width: 300, height: 450 })
+figma.showUI(__html__, { width: 280, height: 480 })
 
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the
@@ -251,6 +206,53 @@ figma.ui.on('message', async msg => {
 
 	// what if i dont wanna lmao. default generated tutorial headass
 })
+
+//do things on a selection change
+const watchSelection = () => {
+	const selection = figma.currentPage.selection
+	// case handling is torture
+	// check if theres anything selected
+	switch (selection.length) {
+		case 2:
+			//check if a curve is selected
+			if (selection.filter(node => node.type === 'VECTOR' || node.type === 'ELLIPSE').length > 0) {
+				// if its a text or somethin else
+				if (selection.filter(node => node.type === 'TEXT').length == 1) {
+					sendSelection('text', selection)
+				} else {
+					sendSelection('clone', selection)
+				}
+			} else {
+				sendSelection('nocurve')
+			}
+			break
+		case 1:
+			// if selecting a linked group
+			const selected = selection[0]
+			if (selected.type === 'GROUP') {
+				var groupData: LinkedData = Helper.isLinked(selected)
+
+				if (groupData == null) {
+					sendSelection('one')
+				} else {
+					// get the data from that.
+					sendSelection('linkedGroup',selected, groupData)
+				}
+			} 
+
+			else {
+				sendSelection('one')
+			}
+			break
+
+		case 0:
+			sendSelection('nothing')
+			break
+
+		default:
+			sendSelection('toomany')
+	}
+}
 
 //checks for initial selection
 watchSelection()

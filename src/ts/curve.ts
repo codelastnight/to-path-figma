@@ -5,7 +5,7 @@
 	version: im baby
 	github: https://github.com/codelastnight/to-path-figma
 */
-import { distBtwn, pointBtwn, parseSVG, reversestr } from './helper'
+import { distBtwn, pointBtwn, parseSVG } from './helper'
 
 /**
  * calculate point on a curve at time t from 2 or 4 points 
@@ -53,7 +53,7 @@ const casteljau = (
  * * utalizes the casteljau function 
  * @param curve [point1, point2, point3, point4]
  * @param setting options data
- * @param totalDist 
+ * @param totalDist total length of the curve up to that point
  */
 const pointOnCurve = (
 	curve: Array<Point>,
@@ -109,12 +109,14 @@ export const allPoints = (
 	):Point[] => {
 	let pointArr: Point[] = []
 	let vectors = parseSVG(svgData)
+	console.log(svgData)
+
+	// reverse the points if the settings say so
 	if (setting.reverse) {
 		vectors = vectors.map(curve => {
 			return curve.reverse()
 		} ).reverse()
 	}
-	console.log(vectors)
 	
 	let totalDist = 0
 	for (var curve in vectors) {

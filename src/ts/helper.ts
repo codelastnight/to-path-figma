@@ -59,7 +59,7 @@ export var setLink = (group: GroupNode, data: LinkedData) => {
  */
 export const parseSVG = (svgData: string): Point[][] => {
 
-	const test = svgData.split('M') //split if more then 1 section and gets rid of the extra array value at front
+	const test = svgData.replace('Z', '').split('M') //split if more then 1 section and gets rid of the extra array value at front
 	test.shift()
 	// throw error if theres too many lines becasue im lazy
 	if (test.length > 1) throw 'TOO MANY LINES! this plugin only supports one continous vector'
@@ -213,9 +213,3 @@ export const rotate = (theta) => {
 	] as [[number, number, number], [number, number, number]]
 }
 
-/**
- * reverse a string
- */
-export const reversestr = (str) => {
-	return [...str].reverse().join('');
-  }
