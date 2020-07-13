@@ -11,65 +11,10 @@
 import * as Curve from './ts/curve'
 import * as Place from './ts/place'
 import * as Helper from './ts/helper'
+import * as Select from './ts/selection'
 
 let firstRender: boolean = true;
 
-/**
- * select which one is the curve and which is the object
- * @param selection 
- * @param setting 
- */
-const selectCurve = (selection: readonly SceneNode[],setting: SettingData ): LinkedData => {
-	let curve: VectorNode
-	let n
-	let other: SceneNode
-	const filterselect = selection.filter(
-		n => n.type === 'VECTOR' || n.type === 'ELLIPSE'
-	)
-	let type: DataType = "clone"
-
-	// if two curves are selected, select one with bigger x or y
-	// im sure theres a way to make this code smaller but idk how
-	if (filterselect.length == 2) {
-		if (
-			filterselect[0].width > filterselect[1].width ||
-			filterselect[0].height > filterselect[1].height
-		) {
-			n = filterselect[0]
-			other = filterselect[1]
-		} else {
-			n = filterselect[1]
-			other = filterselect[0]
-		}
-	} else {
-		// this case, only one in filterselect so select default.
-		n = filterselect[0]
-		// select the other one.
-		other = selection.filter(
-			a => a.type !== 'VECTOR' && a.type !== 'ELLIPSE'
-		)[0]
-	}
-	
-	if (other.type === 'TEXT') type = "text"
-
-
-	// if eclipse, flatten the ellipse so it is registered as a curve.
-	// this isn't ideal at all, but it reduces code.
-	if (n.type == 'ELLIPSE') {
-		curve = figma.flatten([n])
-		figma.currentPage.selection = [other, curve]
-	} else {
-		curve = n
-	}
-	 
-	return {
-		namespace: "topathfigma", 
-		curve: curve, 
-		other:  other,
-		setting: setting,
-		type: type
-	} 
-}
 
 /**
  * main code
@@ -128,26 +73,6 @@ const main = async (group: GroupNode, data: LinkedData): Promise<string | undefi
 
 
 
-/**
- * update ui only when selection is changed
- * @param value 
- * @param selection 
- * @param data 
- */
-const sendSelection = (value: string, selection = null, data:LinkedData = null) => {
-	if (selection != null ) {
-		if(data == null) {
-			data = selectCurve(selection, null)
-		}
-		var svgdata = data.curve.vectorPaths[0].data 
-		if (data.curve.vectorPaths[0].data.match(/M/g).length > 1) value = 'vectornetwork'
-		const width = data.other.width
-		figma.ui.postMessage({ type: 'svg', width, value,  data, svgdata})
-	} else {
-		figma.ui.postMessage({ type: 'rest', value })
-	}
-}
-
 
 
 // This shows the HTML page in "ui.html".
@@ -169,7 +94,7 @@ figma.ui.on('message', async msg => {
 			firstRender = false 
 		}
 		else {
-			sendSelection('linklost')
+			Select.send('linklost')
 		}
 	
 	}
@@ -177,7 +102,7 @@ figma.ui.on('message', async msg => {
 	// run when "link" button is hit
 	if (msg.type === 'initial-link') {
 		const selection: readonly SceneNode[] = figma.currentPage.selection
-		const data: LinkedData = selectCurve(selection, msg.options)
+		const data: LinkedData = Select.Decide(selection, msg.options)
 
 		//rename paths
 		data.other.name = "[Linked] " + data.other.name.replace("[Linked] ", '')
@@ -207,58 +132,13 @@ figma.ui.on('message', async msg => {
 	// what if i dont wanna lmao. default generated tutorial headass
 })
 
-//do things on a selection change
-const watchSelection = () => {
-	const selection = figma.currentPage.selection
-	// case handling is torture
-	// check if theres anything selected
-	switch (selection.length) {
-		case 2:
-			//check if a curve is selected
-			if (selection.filter(node => node.type === 'VECTOR' || node.type === 'ELLIPSE').length > 0) {
-				// if its a text or somethin else
-				if (selection.filter(node => node.type === 'TEXT').length == 1) {
-					sendSelection('text', selection)
-				} else {
-					sendSelection('clone', selection)
-				}
-			} else {
-				sendSelection('nocurve')
-			}
-			break
-		case 1:
-			// if selecting a linked group
-			const selected = selection[0]
-			if (selected.type === 'GROUP') {
-				var groupData: LinkedData = Helper.isLinked(selected)
 
-				if (groupData == null) {
-					sendSelection('one')
-				} else {
-					// get the data from that.
-					sendSelection('linkedGroup',selected, groupData)
-				}
-			} 
-
-			else {
-				sendSelection('one')
-			}
-			break
-
-		case 0:
-			sendSelection('nothing')
-			break
-
-		default:
-			sendSelection('toomany')
-	}
-}
 
 //checks for initial selection
-watchSelection()
+Select.OnChange()
 
 //watches for selecition change and notifies UI
 figma.on('selectionchange', () => {
-	watchSelection()
+	Select.OnChange()
 	if (!firstRender) firstRender = true;
 })

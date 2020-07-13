@@ -60,7 +60,7 @@ const place = (
  */
 const object2Point = (pointArr: Array<Point>, pass: Pass): Point => {
 	//
-	let rotation
+	//let rotation
 
 	let estPoint: Point
 	for (pass.pointIndex; pass.pointIndex < pointArr.length; pass.pointIndex++) {
@@ -68,20 +68,20 @@ const object2Point = (pointArr: Array<Point>, pass: Pass): Point => {
 		if (pass.spacing <= pointArr[pass.pointIndex + 1].totalDist) {
 			let nextpoint = pointArr[pass.pointIndex + 1]
 
-			const localDist = pass.spacing - pointArr[pass.pointIndex].totalDist
-			rotation = pointArr[pass.pointIndex].angle
 
 			estPoint = pointBtwnByLength(
 				pointArr[pass.pointIndex],
 				nextpoint,
-				localDist,
+				(pass.spacing - pointArr[pass.pointIndex].totalDist), // the length between the current point and the next point
 				nextpoint.dist,
-				rotation
+				pointArr[pass.pointIndex].angle //rotation
 			)
-			
+
+			// skip over points with inifinity or NaN
 			if (estPoint.x === Infinity || isNaN(estPoint.x)) {
-				console.log(estPoint.x)
-			} else {
+			}
+			// stop calculating and return the current point 
+			else {
 				break
 			}
 		} 
