@@ -39,7 +39,7 @@ function UI() {
 
 
 	useEffect(() => {
-		// Update the document title using the browser API
+		// Update the object every time setting is changed
 		if (link) {
 			parent.postMessage(
 				{
@@ -81,45 +81,43 @@ function UI() {
 					copy = {...setting}
 				}
 
+				if (svgdata != null && svgdata != undefined && svgdata != '') {
 
-				if (svgdata != null && svgdata != undefined) {
-					if (svgdata!= null && svgdata != '') {
-						const width = event.data.pluginMessage.width
-						let path = document.createElementNS(
-							'http://www.w3.org/2000/svg',
-							'path'
-						)
-						path.setAttribute('d', svgdata)
+					const width = event.data.pluginMessage.width
+					let path = document.createElementNS('http://www.w3.org/2000/svg','path')
+					path.setAttribute('d', svgdata)
+					const isLoop: boolean = svgdata.toUpperCase().includes('Z')
 
-						const isLoop: boolean = svgdata.toUpperCase().includes('Z')
+					// use the builtin function getTotalLength() to calculate length
+					const svglength = path.getTotalLength()
 
-						// use the builtin function getTotalLength() to calculate length
-						const svglength = path.getTotalLength()
-						// change the spacing number on "auto width" setting (space evenly thru whole thing)
-						if (svglength != 0 && setting.autoWidth) {
-							
-							const space = isLoop
-								? svglength / setting.count - width
-								: svglength / (setting.count - 1) - width
+					// change the spacing number on "auto width" setting (space evenly thru whole thing)
+					if (svglength != 0 && setting.autoWidth) {
+						
+						const space = isLoop
+							? svglength / setting.count - width
+							: svglength / (setting.count - 1) - width
 
-							copy = { ...copy, spacing: space }
-						}
-						copy = {
-							...copy,
-							totalLength: svglength,
-							isLoop: isLoop,
-							objWidth: width
-						}
+						copy = { ...copy, spacing: space }
 					}
+					copy = {
+						...copy,
+						totalLength: svglength,
+						isLoop: isLoop,
+						objWidth: width
+					}
+					
 				}
-
+				if (eventData.data.setting != null) {
+					setLink(true)
+				}
 				if (eventData.value === 'text') {
 					copy = { ...copy, autoWidth: false }
 				}
 				setSetting({...copy})
-				if (eventData.data.setting != null) {
-					setLink(true)
-				}
+				
+				console.log("bruh")
+				
 				if (eventData.data.type === "text" ) {
 					showselection("text")
 		
@@ -127,7 +125,8 @@ function UI() {
 					showselection("clone")
 				}
 				break
-				default :
+
+			default :
 				showselection(eventData.value)
 				setLink(false)
 

@@ -24,6 +24,12 @@ body {
 
 .link {
 	border-color: transparent;
+	color:  #868686;
+
+	font-weight: 400;
+	&:hover {
+		color:  #000;
+	}
 }
 
 // pages

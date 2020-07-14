@@ -14,9 +14,9 @@ const keyName: string = "pathData";
  * get data from an object
  * @param group the group object to look into
  */
-const getLink = (group: GroupNode) => {
+const getLink = (group: GroupNode, key = keyName) => {
 	// get data from plugin
-	var getData: string =  group.getSharedPluginData("topathfigma",keyName)
+	var getData: string =  group.getSharedPluginData("topathfigma",key)
 	var outData: LinkedData = JSON.parse(getData)
 
 	// only id's are stored, becasue its a shallow copy. 
@@ -47,8 +47,8 @@ export const isLinked =  (group: GroupNode) => {
  * @param group target group object
  * @param data data to set into object
  */
-export var setLink = (group: GroupNode, data: LinkedData) => {
-	group.setSharedPluginData(data.namespace,keyName,JSON.stringify(data))
+export var setLink = ( group: GroupNode, data: LinkedData, key = keyName) => {
+	group.setSharedPluginData(data.namespace,key,JSON.stringify(data))
 }
 
 /**

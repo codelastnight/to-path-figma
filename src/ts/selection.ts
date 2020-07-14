@@ -91,7 +91,7 @@ export const onChange = () => {
 			// if selecting a linked group
 			const selected = selection[0]
 			if (selected.type === 'GROUP') {
-				var groupData: LinkedData = isLinked(selected)
+				const groupData: LinkedData = isLinked(selected)
 
 				if (groupData == null) {
 					send('one')
@@ -100,7 +100,15 @@ export const onChange = () => {
 					send('linkedGroup',selected, groupData)
 				}
 			} else {
-				send('one')
+				const groupId = selected.getPluginData("linkedID")
+				if (groupId != null) {
+					const groupNode: GroupNode = figma.getNodeById(groupId) as GroupNode
+					const groupData: LinkedData = isLinked(groupNode)
+					send('linkedGroup',groupNode, groupData)
+				} else {
+					send('one')
+				}
+
 			}
 			break
 
@@ -111,6 +119,7 @@ export const onChange = () => {
 		default:
 			send('toomany')
 	}
+	return selection
 }
 
 /**

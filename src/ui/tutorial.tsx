@@ -12,7 +12,7 @@ const tutorialList: tutorialData[] = [
         },
         { 
             "img": "https://i.imgur.com/wNxR7WC.gif",
-            "text": "Just like before, select a curve and then a line of text. Then, simply click the 'Link' button."
+            "text": "Use the same process for text, select both acurve and a line of text. Then, simply click the 'Link' button."
          },
          { 
             "img": "https://i.imgur.com/lfXSeMQ.gif",
