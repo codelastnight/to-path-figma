@@ -39,9 +39,9 @@ const place = (
 	// more code taken from jyc, the god himself https://github.com/jyc http://jyc.eqv.io
 	// Rotate the object.
 	object.rotation = 0
-	if (options.rotCheck) {
+	
 		object.relativeTransform = multiply(rotate(angle), object.relativeTransform)
-	}
+	
 	//move the object
 
 	object.relativeTransform = multiply(
@@ -67,6 +67,7 @@ const object2Point = (pointArr: Array<Point>, pass: Pass): Point => {
 		// find nearest point to the length of the word
 		if (pass.spacing <= pointArr[pass.pointIndex + 1].totalDist) {
 			let nextpoint = pointArr[pass.pointIndex + 1]
+			let angle = pointArr[pass.pointIndex].angle ? pointArr[pass.pointIndex].angle : pass.defaultRot
 
 
 			estPoint = pointBtwnByLength(
@@ -74,7 +75,7 @@ const object2Point = (pointArr: Array<Point>, pass: Pass): Point => {
 				nextpoint,
 				(pass.spacing - pointArr[pass.pointIndex].totalDist), // the length between the current point and the next point
 				nextpoint.dist,
-				pointArr[pass.pointIndex].angle //rotation
+				angle //rotation
 			)
 
 			// skip over points with inifinity or NaN
@@ -113,15 +114,16 @@ export const text2Curve = (
 	// values needed to pass between each objects
 	let pass: Pass = {
 		spacing: 0 + options.offset,
-		pointIndex: 0
+		pointIndex: 0,
+		defaultRot: node.rotation
 	}
-
 	// disable spacing option in text mode
 	options.spacing = 0
 	let prevletter = 0;
 	for (let i = 0; i < charArr.length; i++) {
 		let letter = node.clone()
 		//copy settings
+		letter.setPluginData("linkedID", "" )
 
 		letter.fontName = node.getRangeFontName(i, i + 1)
 		letter.fontSize = node.getRangeFontSize(i, i + 1)
@@ -174,22 +176,27 @@ export const object2Curve = (
 ) => {
 	const newNodes: SceneNode[] = []
 	var options: SettingData = data.setting
+	
 	// values needed to pass between each objects
 	let pass: Pass = {
 		spacing: 0 + options.offset,
-		pointIndex: 0
+		pointIndex: 0,
+		defaultRot: node.rotation
+
 	}
-	
+	console.log(pass.defaultRot)
+
 	for (let i = 0; i < options.count; i++) {
 		//copy object
 		let object
-		if (node.type === 'COMPONENT') object = node.createInstance()
-		else object = node.clone()
+
+		node.type === 'COMPONENT' ? object = node.createInstance() :  object = node.clone()
 
 		// find the position where object should go
 		let point = object2Point(pointArr, pass)
-
 		pass.spacing = pass.spacing + object.width + options.spacing
+		object.setPluginData("linkedID", "" )
+
 		// place the thing
 		place(object, point, options, data.curve)
 		//append that shit
@@ -206,10 +213,14 @@ export const object2Curve = (
 	// if autowidth put object at very last point
 	if (!options.isLoop && options.autoWidth) {
 		let object
-		if (node.type === 'COMPONENT') object = node.createInstance()
-		else object = node.clone()
+		node.type === 'COMPONENT' ? object = node.createInstance() :  object = node.clone()
+		object.setPluginData("linkedID", "" )
+
 
 		const point = pointArr[pointArr.length - 1]
+		if (!options.rotCheck) {
+			point.angle = node.rotation
+		}
 		place(object, point, options, data.curve)
 		newNodes.push(object)
 		group.appendChild(object)

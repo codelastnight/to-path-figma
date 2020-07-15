@@ -6,6 +6,8 @@
 	github: https://github.com/codelastnight/to-path-figma
 */
 
+export let isLinkedObject = false;
+
 import {isLinked} from './helper'
 
 /**
@@ -71,6 +73,7 @@ export const decide = (selection: readonly SceneNode[], setting: SettingData ): 
  */
 export const onChange = () => {
 	const selection = figma.currentPage.selection
+	isLinkedObject = false;	
 	// case handling is torture
 	// check if theres anything selected
 	switch (selection.length) {
@@ -90,25 +93,22 @@ export const onChange = () => {
 		case 1:
 			// if selecting a linked group
 			const selected = selection[0]
+			const groupId = selected.getPluginData("linkedID")
+			
 			if (selected.type === 'GROUP') {
 				const groupData: LinkedData = isLinked(selected)
 
-				if (groupData == null) {
-					send('one')
-				} else {
-					// get the data from that.
+				if (groupData) {
 					send('linkedGroup',selected, groupData)
-				}
-			} else {
-				const groupId = selected.getPluginData("linkedID")
-				if (groupId != null) {
-					const groupNode: GroupNode = figma.getNodeById(groupId) as GroupNode
-					const groupData: LinkedData = isLinked(groupNode)
-					send('linkedGroup',groupNode, groupData)
 				} else {
 					send('one')
+					// get the data from that.
 				}
-
+			} else if ( groupId) {
+				isLinkedObject = true;	
+				
+			} else {
+				send('one')
 			}
 			break
 
@@ -143,3 +143,5 @@ export const send = (value: string, selection = null, data:LinkedData = null) =>
 		figma.ui.postMessage({ type: 'rest', value })
 	}
 }
+
+

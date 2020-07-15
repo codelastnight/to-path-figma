@@ -12,11 +12,19 @@ import * as Curve from './ts/curve'
 import * as Place from './ts/place'
 import * as Helper from './ts/helper'
 import * as Select from './ts/selection'
-import { SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG } from 'constants';
 
 let firstRender: boolean = true;
 
+
 let selection: readonly SceneNode[] = [];
+
+interface prevDataSpec {
+	curve?: SceneNode   
+	other?: SceneNode
+	setting?: SettingData
+}
+
+let prevData: prevDataSpec = {}
 
 /**
  * main code
@@ -33,43 +41,27 @@ const main = async (group: GroupNode, data: LinkedData): Promise<string | undefi
 	let vectors = data.curve.vectorPaths[0].data
 	const pointArr: Array<Point> = Curve.allPoints(data.curve.vectorPaths[0].data, data.setting)	
 
-	if (data.other.type === 'TEXT') {
-		//the font loading part
-		if (firstRender) {
-			for (let i = 0; i < data.other.characters.length; i++) {
-				await figma.loadFontAsync(data.other.getRangeFontName(i,i + 1) as FontName)
-			}
-			if (data.other.hasMissingFont) {
-				figma.closePlugin('Text contains a missing font, please install the font first!')
-			}
-	
-		}
-
-			// remove old stuff
-		//place it on the thing
-		Place.deleteNodeinGroup(group,data.curveCloneID)
-		Place.text2Curve(data.other, pointArr, data, group)
-	} else {
-
-		// load fonts if selected object is a group or frame
-		if (data.other.type === 'FRAME' || data.other.type === 'GROUP') {
+		// load all fonts in selected object if group or frame or text  
+		if (data.other.type === 'TEXT' || data.other.type === 'FRAME' || data.other.type === 'GROUP') {
 			if (firstRender) {
-				const textnode = data.other.findAll(e => e.type === 'TEXT') as TextNode[]
+				let textnode: TextNode[] = data.other.type === 'TEXT' ? [data.other] : data.other.findAll(e => e.type === 'TEXT') as TextNode[]
+				
 				for (const find of textnode) {
 					for (let i = 0; i < find.characters.length; i++) {
 						await figma.loadFontAsync(find.getRangeFontName(i, i + 1) as FontName)
-						if (textnode[i].hasMissingFont) {
+						if (find.hasMissingFont) {
 							figma.closePlugin('Text contains a missing font, please install the font first!')
 						}
 					}
-					
 				}
-				
 			}
 		}
+	
 		Place.deleteNodeinGroup(group,data.curveCloneID)
-		Place.object2Curve(data.other, pointArr, data, group)
-	}
+		data.other.type === 'TEXT' ? Place.text2Curve(data.other, pointArr, data, group) : Place.object2Curve(data.other, pointArr, data, group)
+		
+	
+		
 	Helper.setLink(group,data)
 	return
 }
@@ -86,15 +78,14 @@ figma.ui.on('message', async msg => {
 		let group:GroupNode
 
 		const groupId = selection[0].getPluginData("linkedID")
-		console.log(groupId)
-		if (groupId != "") {
+		if (groupId) {
 			group = figma.getNodeById(groupId) as GroupNode
 		} else {
 			group = selection.find(i => i.type === "GROUP") as GroupNode
 		}
 		 
 		var data: LinkedData = Helper.isLinked(group)
-		if (data != null) {
+		if (data) {
 			data.setting = msg.options
 			await main(group, data)
 			group.setRelaunchData({ relaunch: 'Edit with To Path' })
@@ -125,6 +116,7 @@ figma.ui.on('message', async msg => {
 
 		// link custom data
 		Helper.setLink(group,data)
+		data.curve.setPluginData("linkedID",group.id)
 		data.other.setPluginData("linkedID",group.id)
 
 		await main(group, data)
@@ -139,6 +131,11 @@ figma.ui.on('message', async msg => {
 })
 
 
+let pluginClose = false
+
+figma.on('close', () => {
+	pluginClose = true
+})
 
 //checks for initial selection
 selection = Select.onChange()
@@ -148,3 +145,27 @@ figma.on('selectionchange', () => {
 	selection = Select.onChange()
 	if (!firstRender) firstRender = true;
 })
+
+
+const timerWatch = () => {
+	
+	setTimeout(function () {
+	if (!pluginClose) {
+		if (Select.isLinkedObject) { 
+			const groupId = selection[0].getPluginData("linkedID")
+			const groupNode: GroupNode = figma.getNodeById(groupId) as GroupNode
+			const groupData: LinkedData = Helper.isLinked(groupNode)
+			Select.send('linkedGroup',groupNode, groupData)
+		}
+
+		timerWatch();
+	} 
+	return
+	}, 1000);
+	
+}
+timerWatch();
+
+
+
+

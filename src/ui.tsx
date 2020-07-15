@@ -115,9 +115,7 @@ function UI() {
 					copy = { ...copy, autoWidth: false }
 				}
 				setSetting({...copy})
-				
-				console.log("bruh")
-				
+
 				if (eventData.data.type === "text" ) {
 					showselection("text")
 		

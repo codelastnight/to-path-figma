@@ -25,6 +25,7 @@ interface SettingData {
 interface Pass {
 	spacing: number
 	pointIndex: number
+	defaultRot: number
 }
 
 type DataType = "clone" | "text"
