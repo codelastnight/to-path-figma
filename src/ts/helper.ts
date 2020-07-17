@@ -14,15 +14,24 @@ const keyName: string = "pathData";
  * get data from an object
  * @param group the group object to look into
  */
-const getLink = (group: GroupNode, key = keyName) => {
+const getLink = (group: GroupNode, updateOtherId  = "", key = keyName) => {
 	// get data from plugin
 	var getData: string =  group.getSharedPluginData("topathfigma",key)
-	var outData: LinkedData = JSON.parse(getData)
+	let outData: LinkedData = JSON.parse(getData)
 
+	// handle edge case where object changes type, in which case id updates
+	// why figma why
+	let otherId  = outData.other.id
+	if (updateOtherId && updateOtherId != outData.other.id) {
+		otherId = updateOtherId
+	}
 	// only id's are stored, becasue its a shallow copy. 
 	// get data from linked objects
+	
 	outData.curve = figma.getNodeById(outData.curve.id) as VectorNode
-	outData.other  = figma.getNodeById(outData.other.id) as SceneNode
+	outData.other  = figma.getNodeById(otherId) as SceneNode
+	setLink(group,outData)
+
 	if (outData.curve == null || outData.other == null) return null
 	return outData
 }
@@ -31,12 +40,13 @@ const getLink = (group: GroupNode, key = keyName) => {
  * check if a group object is in linked state
  * @param group the group object to check
  */
-export const isLinked =  (group: GroupNode) => {
+export const isLinked =  (group: GroupNode,  updateOtherId  = "") => {
 	try {
-		var data: LinkedData =  getLink(group)
+		var data: LinkedData =  getLink(group, updateOtherId)
+
 		return data
 
-	} catch {
+	} catch  {
 		return null
 	}
 	
@@ -213,3 +223,36 @@ export const rotate = (theta) => {
 	] as [[number, number, number], [number, number, number]]
 }
 
+/**
+ * deep copy but exclude children
+ * @param theta 
+ */
+export const deepCopy = (inObject) => {
+	let outObject, value, key
+
+	if (typeof inObject == 'function') {
+		return ""
+	}
+  
+	if (typeof inObject !== "object" || inObject === null) {
+	  return inObject // Return the value if inObject is not an object
+	}
+  
+	// Create an array or object to hold the values
+	outObject = Array.isArray(inObject) ? [] : {}
+  
+	for (key in inObject) {
+
+	  if (key != "children" && key != "parent") {
+		value = inObject[key]
+  
+		// Recursively (deep) copy for nested objects, including arrays
+		outObject[key] = deepCopy(value)
+	  } else {
+		  value = "" 
+	  }
+
+	}
+  
+	return outObject
+  }

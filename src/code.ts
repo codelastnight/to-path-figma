@@ -16,15 +16,9 @@ import * as Select from './ts/selection'
 let firstRender: boolean = true;
 
 
-let selection: readonly SceneNode[] = [];
+let Selection: readonly SceneNode[] = [];
 
-interface prevDataSpec {
-	curve?: SceneNode   
-	other?: SceneNode
-	setting?: SettingData
-}
 
-let prevData: prevDataSpec = {}
 
 /**
  * main code
@@ -38,31 +32,28 @@ const main = async (group: GroupNode, data: LinkedData): Promise<string | undefi
 	// select the curve
 	// take the svg data of the curve and turn it into an array of points
 	//idk if i should store this or not. its pretty fast to calculate so....
-	let vectors = data.curve.vectorPaths[0].data
 	const pointArr: Array<Point> = Curve.allPoints(data.curve.vectorPaths[0].data, data.setting)	
 
-		// load all fonts in selected object if group or frame or text  
-		if (data.other.type === 'TEXT' || data.other.type === 'FRAME' || data.other.type === 'GROUP') {
-			if (firstRender) {
-				let textnode: TextNode[] = data.other.type === 'TEXT' ? [data.other] : data.other.findAll(e => e.type === 'TEXT') as TextNode[]
-				
-				for (const find of textnode) {
-					for (let i = 0; i < find.characters.length; i++) {
-						await figma.loadFontAsync(find.getRangeFontName(i, i + 1) as FontName)
-						if (find.hasMissingFont) {
-							figma.closePlugin('Text contains a missing font, please install the font first!')
-						}
+	// load all fonts in selected object if group or frame or text  
+	if (data.other.type === 'TEXT' || data.other.type === 'FRAME' || data.other.type === 'GROUP') {
+		if (firstRender) {
+			let textnode: TextNode[] = data.other.type === 'TEXT' ? [data.other] : data.other.findAll(e => e.type === 'TEXT') as TextNode[]
+			
+			for (const find of textnode) {
+				for (let i = 0; i < find.characters.length; i++) {
+					await figma.loadFontAsync(find.getRangeFontName(i, i + 1) as FontName)
+					if (find.hasMissingFont) {
+						figma.closePlugin('Text contains a missing font, please install the font first!')
 					}
 				}
 			}
 		}
-	
-		Place.deleteNodeinGroup(group,data.curveCloneID)
-		data.other.type === 'TEXT' ? Place.text2Curve(data.other, pointArr, data, group) : Place.object2Curve(data.other, pointArr, data, group)
-		
-	
-		
+	}
+	Place.deleteNodeinGroup(group,data.curveCloneID)
+	data.other.type === 'TEXT' ? Place.text2Curve(data.other, pointArr, data, group) : Place.object2Curve(data.other, pointArr, data, group)
 	Helper.setLink(group,data)
+
+		
 	return
 }
 
@@ -77,11 +68,11 @@ figma.ui.on('message', async msg => {
 	if (msg.type === 'do-the-thing') {
 		let group:GroupNode
 
-		const groupId = selection[0].getPluginData("linkedID")
+		const groupId = Selection[0].getPluginData("linkedID")
 		if (groupId) {
 			group = figma.getNodeById(groupId) as GroupNode
 		} else {
-			group = selection.find(i => i.type === "GROUP") as GroupNode
+			group = Selection.find(i => i.type === "GROUP") as GroupNode
 		}
 		 
 		var data: LinkedData = Helper.isLinked(group)
@@ -99,12 +90,12 @@ figma.ui.on('message', async msg => {
 	 
 	// run when "link" button is hit
 	if (msg.type === 'initial-link') {
-		const data: LinkedData = Select.decide(selection, msg.options)
+		const data: LinkedData = Select.decide(Selection, msg.options)
 
 		//rename paths
 		data.other.name = "[Linked] " + data.other.name.replace("[Linked] ", '')
 		data.curve.name = "[Linked] " + data.curve.name.replace('[Linked] ', '')
-		//clone curve selection to retain curve shape
+		//clone curve Selection to retain curve shape
 		const clone2: SceneNode = data.curve
 		data.curveCloneID = clone2.id
 		data.curve.parent.appendChild(clone2)
@@ -137,31 +128,42 @@ figma.on('close', () => {
 	pluginClose = true
 })
 
-//checks for initial selection
-selection = Select.onChange()
+//checks for initial Selection
+Selection = Select.onChange()
 
 //watches for selecition change and notifies UI
 figma.on('selectionchange', () => {
-	selection = Select.onChange()
+	Selection = Select.onChange()
 	if (!firstRender) firstRender = true;
 })
 
-
+/**
+ * watch every set seconds, if certain objects are selected, watch for changes
+ */
 const timerWatch = () => {
 	
 	setTimeout(function () {
 	if (!pluginClose) {
 		if (Select.isLinkedObject) { 
-			const groupId = selection[0].getPluginData("linkedID")
-			const groupNode: GroupNode = figma.getNodeById(groupId) as GroupNode
-			const groupData: LinkedData = Helper.isLinked(groupNode)
-			Select.send('linkedGroup',groupNode, groupData)
+			let localselection = figma.currentPage.selection
+			const groupId = localselection[0].getPluginData("linkedID")
+			// deepcopy to get unlinked copy
+			const data = JSON.stringify(Helper.deepCopy(localselection[0]))
+			// compare current object with prevData (previously rendered data)
+			if (Select.prevData != data) {
+				const groupNode: GroupNode = figma.getNodeById(groupId) as GroupNode
+				const groupData: LinkedData = Helper.isLinked(groupNode, localselection[0].id)
+				Select.send('linkedGroup',groupNode, groupData)
+				Select.prevDataChange(data)
+
+			}
+			
 		}
 
 		timerWatch();
 	} 
 	return
-	}, 1000);
+	}, 300);
 	
 }
 timerWatch();

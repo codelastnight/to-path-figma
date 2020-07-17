@@ -67,7 +67,6 @@ function InputIcon(props: InputIconProps) {
 						: _test.totalLength / (_test.count -1) - _test.objWidth
 					_test = { ..._test, spacing: space }
 				}
-				//console.log(props.values)
 				break
 			default:
 				break

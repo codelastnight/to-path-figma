@@ -22,6 +22,12 @@ const place = (
 	options: SettingData,
 	curve: VectorNode
 ) => {
+	// if point returns null, just delete
+	if (!point) {
+
+		object.remove()
+		return
+	}
 	//set names
 	object.name = object.name.replace("[Linked] ", '[Copy] ')
 	// find center of object
@@ -32,6 +38,7 @@ const place = (
 	//angle of object converted to degrees
 	let angle = ((point.angle - 180) * Math.PI) / 180
 
+	
 	// zero it
 	//spaceing them
 	object.relativeTransform = move(center.x, center.y)
@@ -40,7 +47,7 @@ const place = (
 	// Rotate the object.
 	object.rotation = 0
 	
-		object.relativeTransform = multiply(rotate(angle), object.relativeTransform)
+	object.relativeTransform = multiply(rotate(angle), object.relativeTransform)
 	
 	//move the object
 
@@ -63,7 +70,7 @@ const object2Point = (pointArr: Array<Point>, pass: Pass): Point => {
 	//let rotation
 
 	let estPoint: Point
-	for (pass.pointIndex; pass.pointIndex < pointArr.length; pass.pointIndex++) {
+	for (pass.pointIndex; pass.pointIndex + 1 < pointArr.length; pass.pointIndex++) {
 		// find nearest point to the length of the word
 		if (pass.spacing <= pointArr[pass.pointIndex + 1].totalDist) {
 			let nextpoint = pointArr[pass.pointIndex + 1]
@@ -115,7 +122,7 @@ export const text2Curve = (
 	let pass: Pass = {
 		spacing: 0 + options.offset,
 		pointIndex: 0,
-		defaultRot: node.rotation
+		defaultRot: node.rotation + 180
 	}
 	// disable spacing option in text mode
 	options.spacing = 0
@@ -152,6 +159,7 @@ export const text2Curve = (
 		// kill loop early if the objects are longer then the curve
 		// replace later with a better thing
 		if (pass.spacing >= pointArr[pointArr.length - 1].totalDist) {
+			letter.remove()
 			break
 		}
 	}
@@ -176,19 +184,18 @@ export const object2Curve = (
 ) => {
 	const newNodes: SceneNode[] = []
 	var options: SettingData = data.setting
-	
+
 	// values needed to pass between each objects
 	let pass: Pass = {
 		spacing: 0 + options.offset,
 		pointIndex: 0,
-		defaultRot: node.rotation
+		defaultRot: node.rotation + 180
 
 	}
-	console.log(pass.defaultRot)
 
 	for (let i = 0; i < options.count; i++) {
 		//copy object
-		let object
+		let object: SceneNode
 
 		node.type === 'COMPONENT' ? object = node.createInstance() :  object = node.clone()
 
@@ -197,6 +204,7 @@ export const object2Curve = (
 		pass.spacing = pass.spacing + object.width + options.spacing
 		object.setPluginData("linkedID", "" )
 
+		
 		// place the thing
 		place(object, point, options, data.curve)
 		//append that shit
@@ -205,21 +213,21 @@ export const object2Curve = (
 		// kill loop early if the objects are longer then the curve
 		// replace later with a better thing
 		if (pass.spacing >= pointArr[pointArr.length - 1].totalDist) {
-			
+			//object.remove()
 			break
 		}
 	}
 
 	// if autowidth put object at very last point
 	if (!options.isLoop && options.autoWidth) {
-		let object
+		let object: SceneNode
 		node.type === 'COMPONENT' ? object = node.createInstance() :  object = node.clone()
 		object.setPluginData("linkedID", "" )
 
 
 		const point = pointArr[pointArr.length - 1]
 		if (!options.rotCheck) {
-			point.angle = node.rotation
+			point.angle = node.rotation - 180
 		}
 		place(object, point, options, data.curve)
 		newNodes.push(object)

@@ -5,10 +5,17 @@
 	version: im baby
 	github: https://github.com/codelastnight/to-path-figma
 */
-
-export let isLinkedObject = false;
-
 import {isLinked} from './helper'
+
+export let isLinkedObject = false 
+
+
+export let prevData: string = "";
+
+export const prevDataChange = (setData):string => {
+	return prevData = setData
+}
+
 
 /**
  * decide which one in the selected is the curve and which is the object
@@ -25,13 +32,13 @@ export const decide = (selection: readonly SceneNode[], setting: SettingData ): 
 		n => n.type === 'VECTOR' || n.type === 'ELLIPSE'
 	)
 
-	const object1 = filterselect[0]
-	const object2 = filterselect[1]
 	// if two curves are selected, select one with bigger x or y
 	// im sure theres a way to make this code smaller but idk how
 	if (filterselect.length == 2) {
+		const object1 = filterselect[0]
+		const object2 = filterselect[1]
 	
-		if (object1.width > object2.width || object1.height > object2.height ) {
+		if (object1.width + object1.height > object2.width + object2.height ) {
 			n = object1
 			other = object2
 		} else {
@@ -39,6 +46,7 @@ export const decide = (selection: readonly SceneNode[], setting: SettingData ): 
 			other = object1
 		}
 	} else {
+		const object1 = filterselect[0]
 		// this case, only one in filterselect so select default.
 		n = object1
 		// select the other one.
@@ -73,7 +81,8 @@ export const decide = (selection: readonly SceneNode[], setting: SettingData ): 
  */
 export const onChange = () => {
 	const selection = figma.currentPage.selection
-	isLinkedObject = false;	
+	isLinkedObject = false;
+	prevDataChange("") 	
 	// case handling is torture
 	// check if theres anything selected
 	switch (selection.length) {
@@ -95,7 +104,10 @@ export const onChange = () => {
 			const selected = selection[0]
 			const groupId = selected.getPluginData("linkedID")
 			
-			if (selected.type === 'GROUP') {
+			if ( groupId) {
+				isLinkedObject = true;	
+				
+			} else if (selected.type === 'GROUP') {
 				const groupData: LinkedData = isLinked(selected)
 
 				if (groupData) {
@@ -104,9 +116,6 @@ export const onChange = () => {
 					send('one')
 					// get the data from that.
 				}
-			} else if ( groupId) {
-				isLinkedObject = true;	
-				
 			} else {
 				send('one')
 			}
