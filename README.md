@@ -4,25 +4,36 @@
 ![version badge](https://img.shields.io/badge/dynamic/json?color=ff69b4&label=version&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fcodelastnight%2Fto-path-figma%2Fmaster%2Fpackage.json?style=flat-square)
 
 
-![logo and info image](wallpaper.png)
+![logo and info image](info.png)
 
-Put any objects or text on a path! 
+✨ 𝙋𝙪𝙩 𝙖𝙣𝙮 𝙤𝙗𝙟𝙚𝙘𝙩𝙨 𝙤𝙧 𝙩𝙚𝙭𝙩 𝙤𝙣 𝙖 𝙥𝙖𝙩𝙝!✨
 
-1. make a curve
+1. select a curve
 2. select an object, group, or text
-3. watch the magic* happen!
+3. hit "link" and watch the magic* happen
 
-*not actually magic
+*Its janky code and its not actually magic 
 
-built with typscript, react, and my last braincell
+╭┈─────── ೄྀ࿐ ˊˎ-
+╰┈➤ 𝙄𝙈𝙋𝙊𝙍𝙏𝘼𝙉𝙏
+Version 1.5.0 and higher's revamped live updates WILL NOT 
+work on previous linked paths made by this plugin! 
+You must create a new linked path group!
 
-### roadmap 
+☆゜・。。・゜゜・。。・゜★
 
--  [x] switch from polling to event calls for detecting selection change (when figma api updates)
--  [x] live previewing
--  [x] remember previous settings and reset to default
--  [ ] support for vector networks (maybe?)
--  [ ] advanced settings (eg, increase size of object every time its cloned)
+🌙 𝙄𝙨𝙨𝙪𝙚𝙨 𝙤𝙧 𝙁𝙚𝙖𝙩𝙪𝙧𝙚 𝙍𝙚𝙦𝙪𝙚𝙨𝙩𝙨🌙 
+Open an issue on the github:
+https://github.com/codelastnight/to-path-figma
+
+☆゜・。。・゜゜・。。・゜★
+
+❤️ 𝙇𝙞𝙠𝙚 𝙬𝙝𝙖𝙩 𝙄 𝙙𝙤? ❤️
+consider buying me a coffee :)
+https://ko-fi.com/lastnight
+
+─────────✧❁✧─────────
+˚ 　　　　　 　 ⊹ 　 　 　　　 　 ·　 * 　　 ✧　　　 ⋆ 　　 · * . · . 　      　 · ·　 　　　　　..  　  . . 　 　　　 · + 　　　 　 ·　 * ✫ 　　 *                   ⊹ * ˚ 　　　 　. .  　　　 　　· 　 ⋆ 　　　　　　 * 　　 　 　 . 　　 　　 　　 * . 　 　 . ·　 . 　 · 　　　 . 　 　 　 　 　 *　 · 　　　 　 . · 　 · + 　. 　 　　　　 · ** ˚ 　　　 　. . + 　　　 　　· 　 ⋆ 　　　　　　 * 　　 　 　 . 　　 　　 　　 * . 　 　 . ·　 . 　 · 　　　 . 　 　 　 　 　 *
 
 ## How it Works
 
