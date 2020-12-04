@@ -1,9 +1,14 @@
 import * as React from 'react'
+import { InputIcon } from './Form'
 
 const manifest = require('./../../package.json')
 const logo = require('./../logo.svg')
 
-function About(props) {
+interface AboutProps{
+    form: SettingData
+    setForm: React.Dispatch<React.SetStateAction<SettingData>>
+}
+function About(props: AboutProps) {
 	return (
 		<div className="flex-about">
 					<img src={logo} className="logo"></img>
@@ -43,20 +48,20 @@ function About(props) {
 							twitter
 						</a>
 					</p>
-					{/* <div className="flex">
+					<div className="flex">
 						
 						<div className="col">
-						<div className="label">Accuracy of Angles Calculations:</div>
+						<div className="label space-top ">Calculation Precision:</div>
 								<InputIcon
 									icon="icon icon--dist-horiz-spacing icon--black-3"
-									values={setting}
+									values={props.form}
 									name="precision"
 									blur={e => { }}
-									setvalues={setSetting}
+									setvalues={props.setForm}
 									></InputIcon>
 						</div>
 						
-					</div> */}
+					</div>
 				</div>
 	)
 }

@@ -108,6 +108,9 @@ function UI() {
 					}
 					
 				}
+
+				//if it works it works
+				
 				if (eventData.data.setting != null) {
 					setLink(true)
 				}
@@ -136,7 +139,7 @@ function UI() {
 	return (
 		<div>
 			<div className={about === true ? 'about' : 'about hidden'}>
-				<About></About>
+				<About form={setting} setForm={setSetting}></About>
 			</div>
 			<div className={tutorial === true ? 'about' : 'about hidden'}>
 				<Tutorial showTutorial={showTutorial} ></Tutorial>

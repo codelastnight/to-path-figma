@@ -12,7 +12,6 @@ import { distBtwn, pointBtwn, parseSVG } from './helper'
  * * De Casteljau’s algorithm  https://javascript.info/bezier-curve
  * @param curve 
  * @param t current time
- * @param time total time
  * @param rotation boolean should calculate rotation?
  */
 const casteljau = (

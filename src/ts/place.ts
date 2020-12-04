@@ -138,7 +138,7 @@ export const text2Curve = (
 		letter.fontName = node.getRangeFontName(i, i + 1)
 		letter.fontSize = node.getRangeFontSize(i, i + 1)
 		letter.characters = safeSpace(charArr[i]) + ' '
-
+		if (node.textCase === "TITLE") letter.textCase = "ORIGINAL";
 		letter.letterSpacing = node.getRangeLetterSpacing(i, i + 1)
 
 		// center the letters
