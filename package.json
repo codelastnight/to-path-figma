@@ -26,31 +26,31 @@
 	},
 	"homepage": "https://github.com/codelastnight/to-path-figma#readme",
 	"devDependencies": {
-		"@figma/plugin-typings": "^1.15.0",
-		"@types/node": "^12.12.25",
-		"@types/react": "^16.9.19",
-		"@types/react-dom": "^16.9.5",
+		"@figma/plugin-typings": "^1.19.0",
+		"@types/node": "^12.19.8",
+		"@types/react": "^16.14.2",
+		"@types/react-dom": "^16.9.10",
 		"chokidar-cli": "^2.1.0",
-		"css-loader": "^3.4.2",
+		"css-loader": "^3.6.0",
 		"html-webpack-inline-source-plugin": "0.0.10",
 		"html-webpack-plugin": "^3.2.0",
 		"node-sass": "^4.14.1",
 		"node-sass-chokidar": "^1.5.0",
-		"postcss-cli": "^7.1.1",
+		"postcss-cli": "^7.1.2",
 		"sass-loader": "^8.0.2",
-		"style-loader": "^1.1.3",
-		"ts-loader": "^6.2.1",
-		"typescript": "^3.7.5",
+		"style-loader": "^1.3.0",
+		"ts-loader": "^6.2.2",
+		"typescript": "^3.9.7",
 		"url-loader": "^2.3.0",
-		"webpack": "^4.41.5",
-		"webpack-cli": "^3.3.10"
+		"webpack": "^4.44.2",
+		"webpack-cli": "^3.3.12"
 	},
 	"dependencies": {
-		"autoprefixer": "^9.7.4",
+		"autoprefixer": "^9.8.6",
 		"figma-plugin-ds": "^0.1.8",
 		"npm-run-all": "^4.1.5",
-		"on-change": "^1.6.2",
-		"react": "^16.12.0",
-		"react-dom": "^16.12.0"
+		"on-change": "^1.8.1",
+		"react": "^16.14.0",
+		"react-dom": "^16.14.0"
 	}
 }

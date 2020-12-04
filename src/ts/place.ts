@@ -6,7 +6,7 @@
 	github: https://github.com/codelastnight/to-path-figma
 */
 
-import { multiply, move, rotate,pointBtwnByLength  } from './helper'
+import { multiply, move, rotate,pointBtwnByLength, titleCase  } from './helper'
 
 
 /**
@@ -117,7 +117,8 @@ export const text2Curve = (
 	//convert text into each letter indivusally
 	node.textAutoResize = 'WIDTH_AND_HEIGHT'
 
-	const charArr = [...node.characters]
+	// if title case, then fix the text to fit title case
+	const charArr = [...(node.textCase == "TITLE" ? titleCase(node.characters) : node.characters)]
 	// values needed to pass between each objects
 	let pass: Pass = {
 		spacing: 0 + options.offset,
@@ -125,8 +126,10 @@ export const text2Curve = (
 		defaultRot: node.rotation + 180
 	}
 	// disable spacing option in text mode
-	options.spacing = 0
+	options.spacing = 0;
 	let prevletter = 0;
+
+
 	for (let i = 0; i < charArr.length; i++) {
 		let letter = node.clone()
 		//copy settings
@@ -163,9 +166,6 @@ export const text2Curve = (
 			break
 		}
 	}
-	// group things and scroll into view
-	
-
 	return
 }
 

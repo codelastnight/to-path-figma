@@ -255,4 +255,14 @@ export const deepCopy = (inObject) => {
 	}
   
 	return outObject
-  }
+}
+
+/**
+ * returns the string in title case
+ * @param str input text string
+ */
+export const titleCase = (str) => {
+return str.toLowerCase().split(' ').map(function(word) {
+	return word.replace(word[0], word[0].toUpperCase());
+}).join(' ');
+}
