@@ -5,17 +5,34 @@
 	version: im baby
 	github: https://github.com/codelastnight/to-path-figma
 */
-import {isLinked} from './helper'
+import * as helper from './helper'
 
+/**
+ * bool of whether or not currently selected is already a linked object
+ */
 export let isLinkedObject = false 
 
-
+/**
+ * 
+ */
 export let prevData: string = "";
 
+/**
+ * i forgot what this does. fix later
+ * @param setData 
+ */
 export const prevDataChange = (setData):string => {
 	return prevData = setData
 }
 
+/**
+ * bool state of whether or not plugin is closed
+ */
+let pluginClose: boolean = false
+
+export const setPluginClose = (state: boolean) => {
+	pluginClose = state
+}
 
 /**
  * decide which one in the selected is the curve and which is the object
@@ -108,7 +125,7 @@ export const onChange = () => {
 				isLinkedObject = true;	
 				
 			} else if (selected.type === 'GROUP') {
-				const groupData: LinkedData = isLinked(selected)
+				const groupData: LinkedData = helper.isLinked(selected)
 
 				if (groupData) {
 					send('linkedGroup',selected, groupData)
@@ -151,6 +168,36 @@ export const send = (value: string, selection = null, data:LinkedData = null) =>
 	} else {
 		figma.ui.postMessage({ type: 'rest', value })
 	}
+}
+
+ 
+/**
+ * watch every set 300 milliseconds, if certain objects are selected, watch for changes
+ */
+export const timerWatch = () => {
+	setTimeout(function () {
+	if (!pluginClose) {
+		if (isLinkedObject) { 
+			let localselection = figma.currentPage.selection
+			const groupId = localselection[0].getPluginData("linkedID")
+			// deepcopy to get unlinked copy
+			const data = JSON.stringify(helper.deepCopy(localselection[0]))
+			// compare current object with prevData (previously rendered data)
+			if (prevData != data) {
+				const groupNode: GroupNode = figma.getNodeById(groupId) as GroupNode
+				const groupData: LinkedData = helper.isLinked(groupNode, localselection[0].id)
+				send('linkedGroup',groupNode, groupData)
+				prevDataChange(data)
+
+			}
+			
+		}
+
+		timerWatch();
+	} 
+	return
+	}, 300);
+	
 }
 
 

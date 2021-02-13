@@ -1,5 +1,5 @@
 /* 
-	source code for to path for figma
+	source code for "to path", a plugin for figma
 	creater: last night
 	website: notsimon.space
 	version: im baby
@@ -8,15 +8,20 @@
 	disclaimer:
 	i dont know how to code
 */
-import * as Curve from './ts/curve'
-import * as Place from './ts/place'
-import * as Helper from './ts/helper'
-import * as Select from './ts/selection'
+import * as curve from './ts/curve';
+import * as place from './ts/place';
+import * as helper from './ts/helper';
+import * as selection from './ts/selection';
 
+/**
+ * checks if the code is initially run after an object is selected.
+ */
 let firstRender: boolean = true;
 
-
-let Selection: readonly SceneNode[] = [];
+/**
+ * current selection stored so its accessible later
+ */
+let SelectionNodes: readonly SceneNode[] = [];
 
 
 
@@ -32,7 +37,7 @@ const main = async (group: GroupNode, data: LinkedData): Promise<string | undefi
 	// select the curve
 	// take the svg data of the curve and turn it into an array of points
 	//idk if i should store this or not. its pretty fast to calculate so....
-	const pointArr: Array<Point> = Curve.allPoints(data.curve.vectorPaths[0].data, data.setting)	
+	const pointArr: Array<Point> = curve.allPoints(data.curve.vectorPaths[0].data, data.setting)	
 
 	// load all fonts in selected object if group or frame or text  
 	if (data.other.type === 'TEXT' || data.other.type === 'FRAME' || data.other.type === 'GROUP') {
@@ -49,16 +54,13 @@ const main = async (group: GroupNode, data: LinkedData): Promise<string | undefi
 			}
 		}
 	}
-	Place.deleteNodeinGroup(group,data.curveCloneID)
-	data.other.type === 'TEXT' ? Place.text2Curve(data.other, pointArr, data, group) : Place.object2Curve(data.other, pointArr, data, group)
-	Helper.setLink(group,data)
+	place.deleteNodeinGroup(group,data.curveCloneID)
+	data.other.type === 'TEXT' ? place.text2Curve(data.other, pointArr, data, group) : place.object2Curve(data.other, pointArr, data, group)
+	helper.setLink(group,data)
 
 		
 	return
 }
-
-// This shows the HTML page in "ui.html".
-figma.showUI(__html__, { width: 280, height: 480 })
 
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the
@@ -68,14 +70,14 @@ figma.ui.on('message', async msg => {
 	if (msg.type === 'do-the-thing') {
 		let group:GroupNode
 
-		const groupId = Selection[0].getPluginData("linkedID")
+		const groupId = SelectionNodes[0].getPluginData("linkedID")
 		if (groupId) {
 			group = figma.getNodeById(groupId) as GroupNode
 		} else {
-			group = Selection.find(i => i.type === "GROUP") as GroupNode
+			group = SelectionNodes.find(i => i.type === "GROUP") as GroupNode
 		}
 		 
-		var data: LinkedData = Helper.isLinked(group)
+		var data: LinkedData = helper.isLinked(group)
 		if (data) {
 			data.setting = msg.options
 			await main(group, data)
@@ -83,14 +85,14 @@ figma.ui.on('message', async msg => {
 			firstRender = false 
 		}
 		else {
-			Select.send('linklost')
+			selection.send('linklost')
 		}
 	
 	}
-	 
-	// run when "link" button is hit
+	
+	// initial run when "link" button is hit
 	if (msg.type === 'initial-link') {
-		const data: LinkedData = Select.decide(Selection, msg.options)
+		const data: LinkedData = selection.decide(SelectionNodes, msg.options)
 
 		//rename paths
 		data.other.name = "[Linked] " + data.other.name.replace("[Linked] ", '')
@@ -106,7 +108,7 @@ figma.ui.on('message', async msg => {
 		figma.currentPage.selection = [group]
 
 		// link custom data
-		Helper.setLink(group,data)
+		helper.setLink(group,data)
 		data.curve.setPluginData("linkedID",group.id)
 		data.other.setPluginData("linkedID",group.id)
 
@@ -118,55 +120,34 @@ figma.ui.on('message', async msg => {
 	// Make sure to close the plugin when you're done. Otherwise the plugin will
 	// keep running, which shows the cancel button at the bottom of the screen.
 
-	// what if i dont wanna lmao. default generated tutorial headass
+	// what if i dont wanna lmao
 })
 
-
-let pluginClose = false
-
-figma.on('close', () => {
-	pluginClose = true
-})
-
-//checks for initial Selection
-Selection = Select.onChange()
 
 //watches for selecition change and notifies UI
 figma.on('selectionchange', () => {
-	Selection = Select.onChange()
+	SelectionNodes = selection.onChange()
 	if (!firstRender) firstRender = true;
 })
 
-/**
- * watch every set seconds, if certain objects are selected, watch for changes
- */
-const timerWatch = () => {
-	
-	setTimeout(function () {
-	if (!pluginClose) {
-		if (Select.isLinkedObject) { 
-			let localselection = figma.currentPage.selection
-			const groupId = localselection[0].getPluginData("linkedID")
-			// deepcopy to get unlinked copy
-			const data = JSON.stringify(Helper.deepCopy(localselection[0]))
-			// compare current object with prevData (previously rendered data)
-			if (Select.prevData != data) {
-				const groupNode: GroupNode = figma.getNodeById(groupId) as GroupNode
-				const groupData: LinkedData = Helper.isLinked(groupNode, localselection[0].id)
-				Select.send('linkedGroup',groupNode, groupData)
-				Select.prevDataChange(data)
+figma.on('close', () => {
+	selection.setPluginClose(true);
+})
 
-			}
-			
-		}
 
-		timerWatch();
-	} 
-	return
-	}, 300);
-	
-}
-timerWatch();
+// run things initially
+
+// This shows the HTML page in "ui.html".
+figma.showUI(__html__, { width: 280, height: 480 })
+
+//checks for initial Selection
+SelectionNodes = selection.onChange()
+
+// run timerwatch when plugin starts
+selection.timerWatch();
+
+
+
 
 
 
