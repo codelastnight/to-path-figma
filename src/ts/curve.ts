@@ -97,6 +97,55 @@ const pointOnCurve = (
 }
 
 /**
+ * basically turns 4 points on a bezier into a curve
+ * * utalizes the casteljau function 
+ * @param curve [point1, point2, point3, point4]
+ * @param setting options data
+ * @param totalDist total length of the curve up to that point
+ */
+ const getPointFromCurve = (
+	curve: Array<Point>,
+	setting: SettingData,
+	totalDist: number
+): Point[] => {
+
+	let finalarr: Point[] = []
+	for (var t = 0; t < setting.precision; t++) {
+		//could i use recursive? yea. am i gonna? no that sounds like work
+		// if straight line, do this
+		let arr1 = []
+		if (curve.length == 2) {
+			arr1 = casteljau(curve, t, setting,true)
+		} 
+		// if curved line, do this
+		else {
+			arr1 = casteljau(
+				casteljau(casteljau(curve, t, setting), t, setting),
+				t,
+				setting,
+				true
+			)
+		}
+		// get rid of the extra bracket
+		let pointdata = arr1[0]
+
+		// calculate the distance between entirepoints to estimate the distance at that specific point
+		if (finalarr.length > 0) {
+			const addDist = distBtwn(finalarr[finalarr.length - 1], pointdata)
+
+			pointdata.dist = addDist
+			pointdata.totalDist = addDist + finalarr[finalarr.length - 1].totalDist
+			totalDist = pointdata.totalDist
+		} else {
+			pointdata.dist = 0
+			pointdata.totalDist = totalDist
+		}
+		finalarr.push(pointdata)
+	}
+	return finalarr
+}
+
+/**
  * calculate all points on the parsed svg data
  * @param svgData 
  * @param setting 

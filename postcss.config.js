@@ -1,9 +1,10 @@
-const autoprefixer = require('autoprefixer');
-const tailwindcss = require('tailwindcss');
 module.exports = {
-    plugins: [
-        'postcss-preset-env',
-        tailwindcss,
-        autoprefixer,
-    ],
+    plugins: {
+        'postcss-preset-env': {},
+
+        'tailwindcss/nesting': 'postcss-nesting',
+        tailwindcss: {},
+        autoprefixer: {},
+        cssnano: {}
+    },
 };
