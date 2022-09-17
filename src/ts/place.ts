@@ -45,7 +45,7 @@ const place = (
 
 	// more code taken from jyc, the god himself https://github.com/jyc http://jyc.eqv.io
 	// Rotate the object.
-	object.rotation = 0
+	//object.rotation = 0
 	
 	object.relativeTransform = multiply(rotate(angle), object.relativeTransform)
 	
