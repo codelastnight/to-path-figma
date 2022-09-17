@@ -21,6 +21,7 @@ specifiers:
   react-dom: ^18.2.0
   style-loader: ^3.3.1
   tailwindcss: ^3.1.8
+  transformation-matrix: ^2.12.0
   ts-loader: ^9.3.1
   typescript: ^4.8.3
   webpack: ^5.74.0
@@ -31,6 +32,7 @@ dependencies:
   figma-plugin-ds: 1.0.1
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
+  transformation-matrix: 2.12.0
 
 devDependencies:
   '@figma/plugin-typings': 1.51.0
@@ -3209,6 +3211,10 @@ packages:
     dependencies:
       is-number: 7.0.0
     dev: true
+
+  /transformation-matrix/2.12.0:
+    resolution: {integrity: sha512-BbzXM7el7rNwIr1s87m8tcffH5qgY+HYROLn3BStRU9Y6vYTL37YZKadfNPEvGbP813iA1h8qflo4pa2TomkyQ==}
+    dev: false
 
   /ts-loader/9.3.1_kb3egcnme7w23lfa5xodfjfhge:
     resolution: {integrity: sha512-OkyShkcZTsTwyS3Kt7a4rsT/t2qvEVQuKCTg4LJmpj9fhFR7ukGdZwV6Qq3tRUkqcXtfGpPR7+hFKHCG/0d3Lw==}

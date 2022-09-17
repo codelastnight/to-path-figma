@@ -42,8 +42,8 @@
 		"postcss-preset-env": "^7.8.2",
 		"react-dev-utils": "^12.0.1",
 		"style-loader": "^3.3.1",
-		"ts-loader": "^9.3.1",
 		"tailwindcss": "^3.1.8",
+		"ts-loader": "^9.3.1",
 		"typescript": "^4.8.3",
 		"webpack": "^5.74.0",
 		"webpack-cli": "^4.10.0"
@@ -52,6 +52,7 @@
 		"bezier-js": "^6.1.0",
 		"figma-plugin-ds": "^1.0.1",
 		"react": "^18.2.0",
-		"react-dom": "^18.2.0"
+		"react-dom": "^18.2.0",
+		"transformation-matrix": "^2.12.0"
 	}
 }
