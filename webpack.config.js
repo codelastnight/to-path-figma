@@ -10,8 +10,8 @@ module.exports = (env, argv) => ({
   devtool: argv.mode === 'production' ? false : 'inline-source-map',
 
   entry: {
-    ui: './src/ui.tsx', // The entry point for your UI code
-    code: './src/code.ts', // The entry point for your plugin code
+    ui: './src_old/ui.tsx', // The entry point for your UI code
+    code: './src_old/code.ts', // The entry point for your plugin code
   },
 
   module: {
@@ -42,7 +42,7 @@ module.exports = (env, argv) => ({
 
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, 'dist'), // Compile into a folder called "dist"
+    path: path.resolve(__dirname, 'dist_old'), // Compile into a folder called "dist"
   },
 
   // Tells Webpack to generate "ui.html" and to inline "ui.ts" into it
@@ -52,7 +52,7 @@ module.exports = (env, argv) => ({
     }),
     new HtmlWebpackPlugin({
       inject: "body",
-      template: './src/ui.html',
+      template: './src_old/ui.html',
       filename: 'ui.html',
       chunks: ['ui']
     }),
