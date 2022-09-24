@@ -74,6 +74,7 @@ export default [{
 		name: 'code'
 	},
 	plugins: [
+		resolve(),
 		typescript(),
 		commonjs(),
 		production && terser()

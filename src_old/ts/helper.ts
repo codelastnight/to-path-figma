@@ -5,6 +5,7 @@
 	version: im baby
 	github: https://github.com/codelastnight/to-path-figma
 */
+import { Bezier, Line } from "bezier-js";
 
 //plugin data key name
 const keyName: string = "pathData";
