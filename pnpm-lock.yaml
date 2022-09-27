@@ -6,6 +6,7 @@ specifiers:
   '@rollup/plugin-image': ^2.1.1
   '@rollup/plugin-node-resolve': ^14.1.0
   '@rollup/plugin-typescript': ^8.5.0
+  '@tsconfig/svelte': ^3.0.0
   '@types/bezier-js': ^4.1.0
   '@types/node': ^18.7.19
   '@types/react': ^18.0.21
@@ -58,6 +59,7 @@ devDependencies:
   '@rollup/plugin-image': 2.1.1_rollup@2.79.1
   '@rollup/plugin-node-resolve': 14.1.0_rollup@2.79.1
   '@rollup/plugin-typescript': 8.5.0_jm3lfwhp2n3nxb4wwf6zz565he
+  '@tsconfig/svelte': 3.0.0
   '@types/bezier-js': 4.1.0
   '@types/node': 18.7.19
   '@types/react': 18.0.21
@@ -414,6 +416,10 @@ packages:
   /@trysound/sax/0.2.0:
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
     engines: {node: '>=10.13.0'}
+    dev: true
+
+  /@tsconfig/svelte/3.0.0:
+    resolution: {integrity: sha512-pYrtLtOwku/7r1i9AMONsJMVYAtk3hzOfiGNekhtq5tYBGA7unMve8RvUclKLMT3PrihvJqUmzsRGh0RP84hKg==}
     dev: true
 
   /@types/bezier-js/4.1.0:

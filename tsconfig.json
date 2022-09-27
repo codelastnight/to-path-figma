@@ -1,7 +1,7 @@
 {
+  "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
     "target": "es6",
-    "module": "commonjs",
     "jsx": "react",
     "typeRoots": [
       "./node_modules/@types",

@@ -41,8 +41,9 @@ export default [{
 		commonjs(),
 		svg(),
 		postcss({
-			extensions: ['.css'],
-			plugins: [cssnano()]
+			config: {
+				path: './postcss.config.js'
+			}
 		}),
 		htmlBundle({
 			template: 'src/template.html',
