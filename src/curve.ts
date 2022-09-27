@@ -4,11 +4,14 @@ interface LineInfo {
 	type: "LINE";
 	points: Point[];
 	length: number;
+	cumulative: number;
+	angle: number;
 }
 interface BezierInfo {
 	type: "CUBIC";
 	bezier: Bezier;
 	length: number;
+	cumulative: number;
 	
 }
 export type BezierObject = (BezierInfo | LineInfo)[];
@@ -28,31 +31,37 @@ export type BezierObject = (BezierInfo | LineInfo)[];
 
 	// the point to splice into the next curve
 	let splicein: string[] = bezierChunks[0].trim().split(' ')
-
+	
+	// var for cumulative;
+	let cumulative = 0;
 	// the output group of curves (which is a group of points)
 	let bezierArray: (BezierInfo | LineInfo)[] = bezierChunks.splice(1).map(e => {
-		//split each string in the chunk into points
-		const splitPoints = [...splicein,...e.trim().split(' ')];
 		
-		//this adds the last point from the previous array into the next one.
-		splicein = [splitPoints[splitPoints.length - 2],splitPoints[splitPoints.length - 2]]
-		// turn string into numbers
+		const splitPoints = [...splicein,...e.trim().split(' ')]; 		//split each string in the chunk into points
+		splicein = [splitPoints[splitPoints.length - 2],splitPoints[splitPoints.length - 2]] 		//this adds the last point from the previous array into the next one.
+		
 		const numberPoints = splitPoints.map((value:string)=> {return parseFloat(value)})
-
 		if (numberPoints.length == 8) {
 			const curve = new Bezier(numberPoints) // clean this up later, typedpoints is redundant.
+			cumulative+=curve.length();
+
 			const data:BezierInfo = {
 				type: 'CUBIC',
 				bezier: curve,
-				length: curve.length()
+				length: curve.length(),
+				cumulative: cumulative
 			}
 			return data;
 		} else if (numberPoints.length == 4) {
 			const linePoints = [{x:numberPoints[0], y:numberPoints[1]},{x:numberPoints[1], y:numberPoints[2]}]
+			const length = distBtwn(linePoints[0],linePoints[1]);
+			cumulative+=length;
 			const data:LineInfo = {
 				type: "LINE",
 				points: linePoints,
-				length: distBtwn(linePoints[0],linePoints[1])
+				length: length,
+				cumulative: cumulative,
+				angle: Math.atan2(linePoints[1].y - linePoints[0].y, linePoints[1].x - linePoints[0].x)
 			}
 			return data;
 		} else {
