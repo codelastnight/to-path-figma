@@ -1,4 +1,3 @@
-import { BezierObject } from "./curve";
 import {
   scale,
   rotate,
@@ -6,6 +5,8 @@ import {
   compose,
   Matrix,
 } from "transformation-matrix";
+import type { BezierObject } from "./curve";
+
 
 export const place = (
   node: SceneNode, // to clone
