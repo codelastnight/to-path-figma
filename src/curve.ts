@@ -14,7 +14,7 @@ interface BezierInfo {
 	cumulative: number;
 	
 }
-export type BezierObject = (BezierInfo | LineInfo)[];
+export type BezierObject = BezierInfo | LineInfo;
 
 /**
  * turn whatever svg code is into array of bezier objects
@@ -22,7 +22,7 @@ export type BezierObject = (BezierInfo | LineInfo)[];
  * @param svgData svg path data bruh moment
  * @returns array of array of points, eg [[point1,2,3,4],[4,5],[5,6,7,8]....]
  */
- export const svgToBezier = (svgData: string): BezierObject => {
+ export const svgToBezier = (svgData: string): BezierObject[] => {
 	const path = svgData.replace('Z', '').split('M').slice(1) //split if more then 1 section and gets rid of the extra array value at front
 	// throw error if theres too many lines becasue im lazy
 	if (path.length > 1) throw 'This plugin only supports one continous vector!'

@@ -74,6 +74,6 @@
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"sirv-cli": "^2.0.2",
-		"transformation-matrix": "2.12.0"
+		"transformation-matrix": "^2.13.0"
 	}
 }

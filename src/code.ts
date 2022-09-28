@@ -26,6 +26,12 @@ figma.on('selectionchange', () => {
 
 	const vector = selection[0];
 	if (vector.type === 'VECTOR') {
-		console.log(svgToBezier(vector.vectorPaths[0].data)) 
+		const curve = svgToBezier(vector.vectorPaths[0].data)
+		console.log(curve) 
+		console.log(figma.getNodeById(vector.parent.id))
+		let totalLength = curve.reduce((accumulator, curValue) => {
+			return accumulator + curValue.length;
+		  }, 0);
+		console.log(totalLength)
 	}
 })

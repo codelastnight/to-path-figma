@@ -3,6 +3,8 @@
   "compilerOptions": {
     "target": "es6",
     "jsx": "react",
+    "sourceMap": false,
+    "moduleResolution": "Node",
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/@figma"

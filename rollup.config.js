@@ -8,7 +8,6 @@ import typescript from '@rollup/plugin-typescript';
 
 /* Post CSS */
 import postcss from 'rollup-plugin-postcss';
-import cssnano from 'cssnano';
 
 /* Inline to single html */
 import htmlBundle from 'rollup-plugin-html-bundle';
@@ -18,6 +17,7 @@ const production = !process.env.ROLLUP_WATCH;
 export default [{
 	input: 'src/main.js',
 	output: {
+		sourcemap: true,
 		format: 'iife',
 		name: 'ui',
 		file: 'src/build/bundle.js'
@@ -70,6 +70,7 @@ export default [{
 {
 	input: 'src/code.ts',
 	output: {
+		sourcemap: true,
 		file: 'public/code.js',
 		format: 'cjs',
 		name: 'code'
