@@ -21,7 +21,6 @@ figma.ui.onmessage = msg => {
 //watches for selecition change and notifies UI
 figma.on('selectionchange', () => {
 	const selection = figma.currentPage.selection
-	console.log("test")
 	if (selection.length == 0) return;
 
 	const vector = selection[0];
@@ -33,5 +32,7 @@ figma.on('selectionchange', () => {
 			return accumulator + curValue.length;
 		  }, 0);
 		console.log(totalLength)
+	} else if (vector.type==='TEXT') {
+		console.log(vector.fills)
 	}
 })

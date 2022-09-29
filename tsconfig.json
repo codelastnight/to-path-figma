@@ -1,11 +1,9 @@
 {
   //"extends": "@tsconfig/svelte/tsconfig.json",
-  "include": ["src/**/*"],
+ // "include": ["src/**/*","./node_modules/@figma"],
   "compilerOptions": {
     "target": "es6",
     "jsx": "react",
-    "module": "NodeNext",
-    "sourceMap": false,
     "moduleResolution": "Node",
     "typeRoots": [
       "./node_modules/@types",
