@@ -1,4 +1,5 @@
 import {Bezier} from 'bezier-js';
+import {SVGPathData, SVGPathDataTransformer, encodeSVGPath, SVGPathDataParser} from 'svg-pathdata';
 
 interface LineInfo {
 	type: "LINE";
@@ -20,7 +21,7 @@ export type BezierObject = BezierInfo | LineInfo;
  * turn whatever svg code is into array of bezier objects
  *  * note: figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
  * @param svgData svg path data bruh moment
- * @returns array of array of points, eg [[point1,2,3,4],[4,5],[5,6,7,8]....]
+ * @returns array of lines and bezier objects
  */
  export const svgToBezier = (svgData: string): BezierObject[] => {
 	const path = svgData.replace('Z', '').split('M').slice(1) //split if more then 1 section and gets rid of the extra array value at front
@@ -41,7 +42,7 @@ export type BezierObject = BezierInfo | LineInfo;
 		splicein = [splitPoints[splitPoints.length - 2],splitPoints[splitPoints.length - 2]] 		//this adds the last point from the previous array into the next one.
 		
 		const numberPoints = splitPoints.map((value:string)=> {return parseFloat(value)})
-		if (numberPoints.length == 8) {
+		if (numberPoints.length === 8) {
 			const curve = new Bezier(numberPoints) // clean this up later, typedpoints is redundant.
 			cumulative+=curve.length();
 
@@ -52,7 +53,7 @@ export type BezierObject = BezierInfo | LineInfo;
 				cumulative: cumulative
 			}
 			return data;
-		} else if (numberPoints.length == 4) {
+		} else if (numberPoints.length === 4) {
 			const linePoints = [{x:numberPoints[0], y:numberPoints[1]},{x:numberPoints[1], y:numberPoints[2]}]
 			const length = distBtwn(linePoints[0],linePoints[1]);
 			cumulative+=length;
@@ -78,4 +79,25 @@ export type BezierObject = BezierInfo | LineInfo;
  */
  export const distBtwn = (a: Point, b: Point): number => { 
 	return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2) 
+}
+
+/**
+ * turn whatever svg code is into array of bezier objects
+ *  * note: figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
+ * @param svgData svg path data bruh moment
+ * @returns array of lines and bezier objects
+ */
+ export const svgToPoints = (svgData: string)  => {
+	const paths = svgData.split('Z')
+	
+	const newpaths = paths.map((path)=> {
+		path +="Z"; //put this guy back
+		const replace = new SVGPathData(path);
+		
+	})
+
+
+	
+	return;
+
 }
