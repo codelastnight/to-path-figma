@@ -33,7 +33,6 @@ let SelectionNodes: readonly SceneNode[] = [];
  * @param data 
  */
 const main = async (group: GroupNode, data: LinkedData): Promise<string | undefined> => {
-
 	// select the curve
 	// take the svg data of the curve and turn it into an array of points
 	//idk if i should store this or not. its pretty fast to calculate so....
@@ -92,6 +91,7 @@ figma.ui.on('message', async msg => {
 	
 	// initial run when "link" button is hit
 	if (msg.type === 'initial-link') {
+		
 		const data: LinkedData = selection.decide(SelectionNodes, msg.options)
 
 		//rename paths
@@ -111,7 +111,7 @@ figma.ui.on('message', async msg => {
 		helper.setLink(group,data)
 		data.curve.setPluginData("linkedID",group.id)
 		data.other.setPluginData("linkedID",group.id)
-
+		console.log(Date.now())
 		await main(group, data)
 		group.setRelaunchData({ relaunch: 'Edit with To Path' })
 		firstRender = false

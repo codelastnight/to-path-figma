@@ -1,4 +1,25 @@
+import test from 'node:test';
+import { text } from 'stream/consumers';
 import {svgToBezier} from './curve';
+import {textToPoints} from './text';
+import * as Things from './things';
+
+const defaultSettings:SettingData = {
+	verticalAlign: 0.5,
+	horizontalAlign: 0.5,
+	spacing: 20,
+	count: 5,
+	autoWidth: true,
+	totalLength: 0,
+	isLoop: false,
+	objWidth: 0,
+	offset: 0,
+	rotCheck: true,
+	precision: 420,
+	reverse: false
+}
+let currentPreview:VectorNode[] =[];
+let isCalculating = false;
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__, {themeColors: true, width: 232, height: 208});
 
@@ -21,18 +42,50 @@ figma.ui.onmessage = msg => {
 //watches for selecition change and notifies UI
 figma.on('selectionchange', () => {
 	const selection = figma.currentPage.selection
-	if (selection.length == 0) return;
+	if (selection.length == 0) {
+		if (currentPreview.length === 0 ) return;
+		currentPreview.forEach((previewNode)=> {
+			if(previewNode.removed) return;
+			previewNode.remove();
+			return;
+		})
+		currentPreview = [];
+		isCalculating = false;
+		return;
+
+	}
 
 	const vector = selection[0];
 	if (vector.type === 'VECTOR') {
-		const curve = svgToBezier(vector.vectorPaths[0].data)
-		console.log(curve) 
-		console.log(figma.getNodeById(vector.parent.id))
-		let totalLength = curve.reduce((accumulator, curValue) => {
-			return accumulator + curValue.length;
-		  }, 0);
-		console.log(totalLength)
+		isCalculating = true;
+		const curve = svgToBezier(vector.vectorPaths[0].data);
+		const square = figma.createRectangle();
+		vector.parent.appendChild(square);
+		async function test(square,vector,curve,defaultSettings,isCalculating) {
+			const preview = Things.place(square,vector,curve,defaultSettings,isCalculating);
+			currentPreview = [preview,...currentPreview];
+			//figma.currentPage.selection = selection;
+			square.remove();
+		}
+		
+		test(square,vector,curve,defaultSettings,isCalculating);
+		
+		
 	} else if (vector.type==='TEXT') {
-		console.log(vector.fills)
+		textToPoints(vector.fillGeometry[0].data);
+		
 	}
+})
+
+figma.on('close', () => {
+	console.log()
+	if (currentPreview.length === 0) return;
+	currentPreview.forEach((previewNode)=> {
+		if(previewNode.removed) return;
+		previewNode.remove();
+		return;
+	})
+	
+	isCalculating = false;
+	return;
 })

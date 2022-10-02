@@ -6,13 +6,15 @@ import {
 } from "transformation-matrix";
 import type { Matrix }from "transformation-matrix"
 import type { BezierObject } from "./curve";
+import {clone} from './helper';
 
 export const place = (
   node: SceneNode, // to clone
   curveNode:VectorNode,
-  groupNode: GroupNode = undefined,
   curve: BezierObject[],
   options: SettingData,
+  isCalculating: boolean,
+  groupNode: GroupNode = undefined,
   position = 0
 ) => {
   let totalLength = curve[curve.length -1].cumulative
@@ -20,8 +22,9 @@ export const place = (
   const spacing = options.autoWidth
     ? totalLength / options.count
     : options.spacing;
-
+  let clonedNodes=[];
   for (var count = position; count < options.count; count++) {
+    if (!isCalculating) return; // kill function if user cancels selection;
     // select curve based on spacing
     if (spacing * count > curve[curvePos].cumulative) curvePos += 1;
     const current = curve[curvePos];
@@ -33,20 +36,32 @@ export const place = (
 
     let object =
       node.type === "COMPONENT" ? node.createInstance() : node.clone();
+    curveNode.parent.appendChild(object);
     const center: Point = {
       x: 0 - object.width * options.horizontalAlign, // no horozonatal align on text, kerning gets fucked up
       y: 0 - object.height * options.verticalAlign,
     };
+
     const baseMatrix = FigmaMatrixToObj(curveNode.relativeTransform);
-    
     const matrix = compose(
-		baseMatrix,    
-    translate(center.x,center.y),
-    rotate(angle),
+    baseMatrix,    
     translate(point.x,point.y),
+    rotate(angle),
+    translate(center.x,center.y),
 	  );
+
     object.relativeTransform = ObjToFigmaMatrix(matrix);
+    clonedNodes = [...clonedNodes,object];
   }
+  if (!isCalculating) return; // kill function if user cancels selection;
+  const group = figma.flatten(clonedNodes,curveNode.parent);
+  group.opacity = 0.2;
+  group.locked = true;
+  const fills = clone(group.fills);
+  fills[0].color = {r:0.051,g:0.6,b:1};
+  group.fills = fills;
+  
+  return group;
 };
 
 /**
@@ -55,11 +70,10 @@ export const place = (
 const getPointfromCurve =(current: BezierObject, t: number): {angle:number,point:Point}=> {
   if (current.type === "CUBIC") {
     //position in % of that boolean
-    const normal = current.bezier.normal(t);
 
+    const normal = current.bezier.normal(t === 0 ? 0.001 : t);  // t=0 returns NaN
     const angle = Math.atan2(normal.y, normal.x);
     const point = current.bezier.get(t);
-
     return {angle,point}
 
   } else if (current.type === "LINE") {
@@ -70,7 +84,6 @@ const getPointfromCurve =(current: BezierObject, t: number): {angle:number,point
       current.length
     );
     const angle = current.angle;
-
     return {angle,point}
 
   }
@@ -122,7 +135,7 @@ export const pointBtwn = (
 ): Point => {
   //find the unit  vector between points a and b
   // not really unit vector in the math sense tho
-  //const unitVector: Point = { x: , y: (}
+  //const unitVector: Point = { x: , y: }
   return {
     x: a.x + ((b.x - a.x) / dist) * t,
     y: a.y + ((b.y - a.y) / dist) * t,

@@ -1,5 +1,4 @@
 import {Bezier} from 'bezier-js';
-import {SVGPathData, SVGPathDataTransformer, encodeSVGPath, SVGPathDataParser} from 'svg-pathdata';
 
 interface LineInfo {
 	type: "LINE";
@@ -41,7 +40,7 @@ export type BezierObject = BezierInfo | LineInfo;
 		const splitPoints = [...splicein,...e.trim().split(' ')]; 		//split each string in the chunk into points
 		splicein = [splitPoints[splitPoints.length - 2],splitPoints[splitPoints.length - 2]] 		//this adds the last point from the previous array into the next one.
 		
-		const numberPoints = splitPoints.map((value:string)=> {return parseFloat(value)})
+		const numberPoints = splitPoints.map((value)=> {return parseFloat(value)})
 		if (numberPoints.length === 8) {
 			const curve = new Bezier(numberPoints) // clean this up later, typedpoints is redundant.
 			cumulative+=curve.length();
@@ -81,23 +80,3 @@ export type BezierObject = BezierInfo | LineInfo;
 	return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2) 
 }
 
-/**
- * turn whatever svg code is into array of bezier objects
- *  * note: figma doesnt have the 3 point bezier curve in vector mode, only 4 or 2.
- * @param svgData svg path data bruh moment
- * @returns array of lines and bezier objects
- */
- export const svgToPoints = (svgData: string)  => {
-	const paths = svgData.split('Z')
-	
-	const newpaths = paths.map((path)=> {
-		path +="Z"; //put this guy back
-		const replace = new SVGPathData(path);
-		
-	})
-
-
-	
-	return;
-
-}
