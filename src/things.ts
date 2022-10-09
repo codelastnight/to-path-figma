@@ -2,7 +2,8 @@ import {
   scale,
   rotate,
   translate,
-  compose
+  compose,
+  rotateDEG
 } from "transformation-matrix";
 import type { Matrix }from "transformation-matrix"
 import type { BezierObject } from "./curve";
@@ -13,29 +14,34 @@ export const place = (
   curveNode:VectorNode,
   curve: BezierObject[],
   options: SettingData,
-  isCalculating: boolean,
   groupNode: GroupNode = undefined,
   position = 0
 ) => {
-  let totalLength = curve[curve.length -1].cumulative
+  const totalLength = curve[curve.length -1].cumulative
   let curvePos = 0;
+  const totalCount = options.autoWidth ? options.count : options.count
+  
+
   const spacing = options.autoWidth
-    ? totalLength / options.count
+    ? totalLength / (totalCount -1)
     : options.spacing;
   let clonedNodes=[];
-  for (var count = position; count < options.count; count++) {
-    if (!isCalculating) return; // kill function if user cancels selection;
+  console.log(curve)
+  for (var count = position; count < totalCount; count++) {
     // select curve based on spacing
+    if (spacing * count > totalLength) break;
     if (spacing * count > curve[curvePos].cumulative) curvePos += 1;
     const current = curve[curvePos];
-    const t =
-      (spacing * count - (current.cumulative - current.length)) /
-      current.length;
-
+    // const t =
+    //   (spacing * count - (current.cumulative - current.length)) /
+    //   current.length;
+    const t = (1 / (totalCount -1)) * count 
+    console.log(t)
     const {angle, point} = getPointfromCurve(current,t);
 
     let object =
       node.type === "COMPONENT" ? node.createInstance() : node.clone();
+
     curveNode.parent.appendChild(object);
     const center: Point = {
       x: 0 - object.width * options.horizontalAlign, // no horozonatal align on text, kerning gets fucked up
@@ -46,6 +52,7 @@ export const place = (
     const matrix = compose(
     baseMatrix,    
     translate(point.x,point.y),
+    rotateDEG(180),
     rotate(angle),
     translate(center.x,center.y),
 	  );
@@ -53,13 +60,13 @@ export const place = (
     object.relativeTransform = ObjToFigmaMatrix(matrix);
     clonedNodes = [...clonedNodes,object];
   }
-  if (!isCalculating) return; // kill function if user cancels selection;
+  
   const group = figma.flatten(clonedNodes,curveNode.parent);
   group.opacity = 0.2;
   group.locked = true;
-  const fills = clone(group.fills);
-  fills[0].color = {r:0.051,g:0.6,b:1};
-  group.fills = fills;
+  //const fills = clone(group.fills);
+  //fills[0].color = {r:0.051,g:0.6,b:1};
+  //group.fills = fills;
   
   return group;
 };
@@ -71,9 +78,13 @@ const getPointfromCurve =(current: BezierObject, t: number): {angle:number,point
   if (current.type === "CUBIC") {
     //position in % of that boolean
 
-    const normal = current.bezier.normal(t === 0 ? 0.001 : t);  // t=0 returns NaN
+    if (t === 0 ) t = 1/current.bezier.len;
+    else if (t === 1) t = 0.999;
+    const point = {x: current.bezier.mx(t*current.length), y:current.bezier.my(t*current.length)}
+    const prevpoint = {x: current.bezier.mx(t*current.length), y:current.bezier.my(t*current.length)}
+    const normal = current.bezier.normal(t);  // t=0 returns NaN 
     const angle = Math.atan2(normal.y, normal.x);
-    const point = current.bezier.get(t);
+
     return {angle,point}
 
   } else if (current.type === "LINE") {
@@ -141,3 +152,6 @@ export const pointBtwn = (
     y: a.y + ((b.y - a.y) / dist) * t,
   };
 };
+
+
+
