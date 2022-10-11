@@ -80,12 +80,9 @@ const getPointfromCurve =(current: BezierObject, t: number): {angle:number,point
 
     if (t === 0 ) t = 1/current.bezier.len;
     else if (t === 1) t = 0.999;
-    const point = {x: current.bezier.mx(t*current.length), y:current.bezier.my(t*current.length)}
-    const prevpoint = {x: current.bezier.mx(t*current.length), y:current.bezier.my(t*current.length)}
-    const normal = current.bezier.normal(t);  // t=0 returns NaN 
-    const angle = Math.atan2(normal.y, normal.x);
+    const {point,angle} = current.bezier.get(t*current.length); 
 
-    return {angle,point}
+    return {point,angle}
 
   } else if (current.type === "LINE") {
     const point = pointBtwn(
