@@ -1,5 +1,3 @@
-import test from 'node:test';
-import { text } from 'stream/consumers';
 import {svgToBezier} from './curve';
 import {textToPoints} from './text';
 import * as Things from './things';

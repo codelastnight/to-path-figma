@@ -44,7 +44,7 @@ export type BezierObject = BezierInfo | LineInfo;
 		if (numberPoints.length === 8) {
 			const curve = new Bezier(numberPoints,100) // clean this up later, typedpoints is redundant.
 			cumulative+=curve.length;
-
+			console.log(numberPoints)
 			const data:BezierInfo = {
 				type: 'CUBIC',
 				bezier: curve,

@@ -26,7 +26,6 @@ export const place = (
     ? totalLength / (totalCount -1)
     : options.spacing;
   let clonedNodes=[];
-  console.log(curve)
   for (var count = position; count < totalCount; count++) {
     // select curve based on spacing
     if (spacing * count > totalLength) break;
@@ -36,7 +35,7 @@ export const place = (
     //   (spacing * count - (current.cumulative - current.length)) /
     //   current.length;
     const t = (1 / (totalCount -1)) * count 
-    console.log(t)
+    
     const {angle, point} = getPointfromCurve(current,t);
 
     let object =
@@ -52,7 +51,6 @@ export const place = (
     const matrix = compose(
     baseMatrix,    
     translate(point.x,point.y),
-    rotateDEG(180),
     rotate(angle),
     translate(center.x,center.y),
 	  );
@@ -76,11 +74,9 @@ export const place = (
  */
 const getPointfromCurve =(current: BezierObject, t: number): {angle:number,point:Point}=> {
   if (current.type === "CUBIC") {
-    //position in % of that boolean
 
-    if (t === 0 ) t = 1/current.bezier.len;
-    else if (t === 1) t = 0.999;
-    const {point,angle} = current.bezier.get(t*current.length); 
+    const {point,angle} = current.bezier.get(t); 
+    console.log(point,angle)
 
     return {point,angle}
 

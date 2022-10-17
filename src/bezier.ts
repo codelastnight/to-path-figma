@@ -27,7 +27,9 @@ interface BezierConstructor {
  * @param c 
  * @param d 
  */
-export const Bezier = function(this: Bezier, points,n) {
+
+// from https://gamedev.stackexchange.com/questions/5373/moving-ships-between-two-planets-along-a-bezier-missing-some-equations-for-acce/5427#5427
+export const Bezier = function(points,n) {
     this.a = {x:points[0], y: points[1]};
     this.b = {x:points[2], y: points[3]};
     this.c = {x:points[4], y: points[5]};
@@ -48,33 +50,9 @@ export const Bezier = function(this: Bezier, points,n) {
     this.length = clen;    
 } as BezierConstructor;
 
+// from https://gamedev.stackexchange.com/questions/5373/moving-ships-between-two-planets-along-a-bezier-missing-some-equations-for-acce/5427#5427
 Bezier.prototype = {
     map: function(u) {
-        var targetLength = u * this.arcLengths[this.len];
-        var low = 0, high = this.len, index = 0;
-        while (low < high) {
-            index = low + (((high - low) / 2) | 0);
-            if (this.arcLengths[index] < targetLength) {
-                low = index + 1;
-            
-            } else {
-                high = index;
-            }
-        }
-        if (this.arcLengths[index] > targetLength) {
-            index--;
-        }
-        
-        var lengthBefore = this.arcLengths[index];
-        if (lengthBefore === targetLength) {
-            return index / this.len;
-        
-        } else {
-            return (index + (targetLength - lengthBefore) / (this.arcLengths[index + 1] - lengthBefore)) / this.len;
-        }
-    },
-	// return two closest
-    map2: function(u) {
         var targetLength = u * this.arcLengths[this.len];
         var low = 0, high = this.len, index = 0;
         while (low < high) {
@@ -119,12 +97,14 @@ Bezier.prototype = {
                + 3 * (1 - t) * (t * t) * this.c.y
                + (t * t * t) * this.d.y;
     },
+    //function that combines everything into 1 call
 	get: function(u) {
 		const t = this.map(u);
 		const step = 1/this.len
-		if (t > step) return undefined;
+        const tPrev = this.map(u +step);
 		const point = {x: this.x(t), y: this.my(t)}
-		const angle = Math.atan2(point.x - this.x(t - step), point.x - this.x(t - step))
+        console.log(point)
+		const angle = Math.atan2(point.y - this.y(tPrev), point.x - this.x(tPrev))
 		return {point, angle}
 	}
 };
