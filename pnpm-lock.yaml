@@ -12,7 +12,6 @@ specifiers:
   '@types/react': ^18.0.21
   '@types/react-dom': ^18.0.6
   autoprefixer: ^10.4.12
-  bezier-js: ^6.1.0
   caniuse-lite: ^1.0.30001415
   css-loader: ^6.7.1
   cssnano: ^5.1.13
@@ -47,7 +46,6 @@ specifiers:
   webpack-cli: ^4.10.0
 
 dependencies:
-  bezier-js: 6.1.0
   figma-plugin-ds: 1.0.1
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
@@ -758,10 +756,6 @@ packages:
   /balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: true
-
-  /bezier-js/6.1.0:
-    resolution: {integrity: sha512-oc8fkHqG0R+dQuNiXVbPMB0cc8iDqkLAjbA2gq26QmV8tZqW9GGI7iNEX1ioRWlZperQS7v5BX03+9FLVWZbSw==}
-    dev: false
 
   /binary-extensions/2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}

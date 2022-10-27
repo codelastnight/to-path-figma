@@ -69,7 +69,6 @@
 		"webpack-cli": "^4.10.0"
 	},
 	"dependencies": {
-		"bezier-js": "^6.1.0",
 		"figma-plugin-ds": "^1.0.1",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
