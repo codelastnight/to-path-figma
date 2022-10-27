@@ -6,7 +6,7 @@ const defaultSettings:SettingData = {
 	verticalAlign: 0.5,
 	horizontalAlign: 0.5,
 	spacing: 20,
-	count: 5,
+	count: 10,
 	autoWidth: true,
 	totalLength: 0,
 	isLoop: false,

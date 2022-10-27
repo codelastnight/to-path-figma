@@ -13,6 +13,8 @@ export interface Bezier {
 	y(t: number):number
 	map(u:number):number
     get(u:number): {point: Point, angle: number}
+    getCubicDerivative(t): Point
+    getNormal(t,d): Point
 }
 interface BezierConstructor {
 	new (points: number[], n: number): Bezier;
@@ -53,6 +55,7 @@ export const Bezier = function(points,n) {
 // from https://gamedev.stackexchange.com/questions/5373/moving-ships-between-two-planets-along-a-bezier-missing-some-equations-for-acce/5427#5427
 Bezier.prototype = {
     map: function(u) {
+        // some binary tree
         var targetLength = u * this.arcLengths[this.len];
         var low = 0, high = this.len, index = 0;
         while (low < high) {
@@ -70,19 +73,21 @@ Bezier.prototype = {
         
         var lengthBefore = this.arcLengths[index];
         if (lengthBefore === targetLength) {
-            return index / this.len;
+            const present = index / this.len
+            return present;
         
         } else {
-            return (index + (targetLength - lengthBefore) / (this.arcLengths[index + 1] - lengthBefore)) / this.len;
+            const present = (index + (targetLength - lengthBefore) / (this.arcLengths[index + 1] - lengthBefore)) / this.len;
+            return present;
         }
     },
-    mx: function (u) {
-        return this.x(this.map(u));
-    },
+    // mx: function (u) {
+    //     return this.x(this.map(u));
+    // },
     
-    my: function (u) {
-        return this.y(this.map(u));
-    },
+    // my: function (u) {
+    //     return this.y(this.map(u));
+    // },
     
     x: function (t) {
         return ((1 - t) * (1 - t) * (1 - t)) * this.a.x
@@ -97,14 +102,40 @@ Bezier.prototype = {
                + 3 * (1 - t) * (t * t) * this.c.y
                + (t * t * t) * this.d.y;
     },
-    //function that combines everything into 1 call
+   
+   
+    //https://pomax.github.io/bezierinfo/chapters/pointvectors/pointvectors.js
+    getCubicDerivative: function(t) {
+        const mt = (1 - t), a = mt*mt, b = 2*mt*t, c = t*t, d = [
+            {
+                x: 3 * (this.b.x - this.a.x),
+                y: 3 * (this.b.y - this.a.y)
+            },
+            {
+                x: 3 * (this.c.x - this.b.x),
+                y: 3 * (this.c.y - this.b.y)
+            },
+            {
+                x: 3 * (this.d.x - this.c.x),
+                y: 3 * (this.d.y - this.c.y)
+            }
+        ];
+    
+        return {
+            x: a * d[0].x + b * d[1].x + c * d[2].x,
+            y: a * d[0].y + b * d[1].y + c * d[2].y
+        };
+    },
+    getNormal: function(d) {
+        const q = Math.sqrt(d.x * d.x + d.y * d.y);
+        return { x: -d.y / q, y: d.x / q };
+    },
+     //function that combines everything into 1 call
 	get: function(u) {
 		const t = this.map(u);
-		const step = 1/this.len
-        const tPrev = this.map(u +step);
-		const point = {x: this.x(t), y: this.my(t)}
-        console.log(point)
-		const angle = Math.atan2(point.y - this.y(tPrev), point.x - this.x(tPrev))
+		const point = {x: this.x(t), y: this.y(t)}
+        const normal = this.getNormal(this.getCubicDerivative(t));
+		const angle = Math.atan2(normal.y, normal.x);
 		return {point, angle}
-	}
+	},
 };

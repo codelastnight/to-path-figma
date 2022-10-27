@@ -76,7 +76,6 @@ const getPointfromCurve =(current: BezierObject, t: number): {angle:number,point
   if (current.type === "CUBIC") {
 
     const {point,angle} = current.bezier.get(t); 
-    console.log(point,angle)
 
     return {point,angle}
 
@@ -95,7 +94,6 @@ const getPointfromCurve =(current: BezierObject, t: number): {angle:number,point
 }
 
 
-const transformObject = (object: SceneNode) => {};
 
 
 /**
