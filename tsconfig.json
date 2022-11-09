@@ -1,7 +1,10 @@
 {
+  //"extends": "@tsconfig/svelte/tsconfig.json",
+ // "include": ["src/**/*","./node_modules/@figma"],
   "compilerOptions": {
     "target": "es6",
     "jsx": "react",
+    "moduleResolution": "Node",
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/@figma"

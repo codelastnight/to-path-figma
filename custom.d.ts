@@ -1,5 +1,5 @@
-
-interface Point {
+//old -- remember to remove
+interface Point{
 	x: number
 	y: number
 	angle?: number // in degrees

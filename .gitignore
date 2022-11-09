@@ -3,3 +3,8 @@ dist
 dist/ui.html
 dist/code.ts
 dist/ui.js
+/public/build/
+/public
+public/index.html
+src/build
+.DS_Store

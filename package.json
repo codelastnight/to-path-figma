@@ -4,9 +4,10 @@
 	"description": "plugin that puts things on paths in figma design tool",
 	"main": "code.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "npx webpack --mode=development --watch",
-		"prod": "npx webpack --mode=production --watch"
+		"build": "rollup -c",
+		"dev": "rollup -c -w",
+		"start": "sirv public",
+		"preinstall": "npx only-allow pnpm"
 	},
 	"repository": {
 		"type": "git",
@@ -26,31 +27,38 @@
 	},
 	"homepage": "https://github.com/codelastnight/to-path-figma#readme",
 	"devDependencies": {
-		"@figma/plugin-typings": "^1.19.0",
-		"@types/node": "^12.19.8",
-		"@types/react": "^16.14.2",
-		"@types/react-dom": "^16.9.10",
-		"chokidar-cli": "^2.1.0",
-		"css-loader": "^3.6.0",
-		"html-webpack-inline-source-plugin": "0.0.10",
-		"html-webpack-plugin": "^3.2.0",
-		"node-sass": "^4.14.1",
-		"node-sass-chokidar": "^1.5.0",
-		"postcss-cli": "^7.1.2",
-		"sass-loader": "^8.0.2",
-		"style-loader": "^1.3.0",
-		"ts-loader": "^6.2.2",
-		"typescript": "^3.9.7",
-		"url-loader": "^2.3.0",
-		"webpack": "^4.44.2",
-		"webpack-cli": "^3.3.12"
+		"@figma/plugin-typings": "^1.52.0",
+		"@rollup/plugin-commonjs": "^22.0.2",
+		"@rollup/plugin-image": "^2.1.1",
+		"@rollup/plugin-node-resolve": "^14.1.0",
+		"@rollup/plugin-typescript": "^8.5.0",
+		"@tsconfig/svelte": "^3.0.0",
+		"@types/node": "^18.8.2",
+		"autoprefixer": "^10.4.12",
+		"caniuse-lite": "^1.0.30001415",
+		"cssnano": "^5.1.13",
+		"postcss": "^8.4.17",
+		"postcss-cli": "^10.0.0",
+		"postcss-nested": "^5.0.6",
+		"postcss-preset-env": "^7.8.2",
+		"rollup": "^2.79.1",
+		"rollup-plugin-html-bundle": "0.0.3",
+		"rollup-plugin-livereload": "^2.0.5",
+		"rollup-plugin-postcss": "^4.0.2",
+		"rollup-plugin-svelte": "^7.1.0",
+		"rollup-plugin-svg": "^2.0.0",
+		"rollup-plugin-terser": "^7.0.2",
+		"tslib": "^2.4.0",
+		"typescript": "^4.8.4",
+		"sirv-cli": "^2.0.2"
+
+	
 	},
 	"dependencies": {
-		"autoprefixer": "^9.8.6",
-		"figma-plugin-ds": "^0.1.8",
-		"npm-run-all": "^4.1.5",
-		"on-change": "^1.8.1",
-		"react": "^16.14.0",
-		"react-dom": "^16.14.0"
+		"svelte": "^3.50.1",
+		"tailwindcss": "^3.1.8",
+		"figma-plugin-ds-svelte": "^1.4.3",
+		"svg-pathdata": "^6.0.3",
+		"transformation-matrix": "^2.13.0"
 	}
 }
