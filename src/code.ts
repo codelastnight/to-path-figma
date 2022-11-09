@@ -1,6 +1,6 @@
-import { svgToBezier } from "./curve";
-import { textToPoints } from "./text";
-import * as Things from "./things";
+import { svgToBezier } from "./lib/curve";
+import { textToPoints } from "./lib/text";
+import * as Things from "./lib/things";
 
 const defaultSettings: SettingData = {
   verticalAlign: 0.5,
