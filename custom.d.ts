@@ -1,4 +1,4 @@
-
+//old -- remember to remove
 interface Point{
 	x: number
 	y: number
