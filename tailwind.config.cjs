@@ -1,7 +1,33 @@
 module.exports = {
     content: ['./index.html', './src/**/*.{svelte,js,ts}'],
+
     theme: {
-        extend: {},
+        fontSize: {
+            xs: 'var(--font-size-xsmall)',
+            sm: 'var(--font-size-small)',
+            md: 'var(--font-size-large)',
+            lg: 'var(--font-size-xlarge)',
+        },
+        spacing: {
+            0: '0px',
+            1: '1px',
+            2: '2px',
+            xxxs: 'var(--size-xxxsmall)',
+            xxs: 'var(--size-xxsmall)',
+            xs: 'var(--size-xsmall)',
+            s: 'var(--size-small)',
+            m: 'var(--size-medium)',
+            l: 'var(--size-large)',
+            xl: 'var(--size-xlarge)',
+            xxl: 'var(--size-xxlarge)',
+            huge: 'var(--size-huge)'
+
+
+
+        },
+        extend: {
+
+        },
     },
     variants: {
         extend: {},

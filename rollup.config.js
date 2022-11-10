@@ -6,9 +6,12 @@ import { terser } from 'rollup-plugin-terser';
 import svg from 'rollup-plugin-svg';
 import typescript from '@rollup/plugin-typescript';
 import copy from 'rollup-plugin-copy'
-
+import injectProcessEnv from 'rollup-plugin-inject-process-env';
+import pkg from './package.json';
+import sveltePreprocess from 'svelte-preprocess';
 /* Post CSS */
 import postcss from 'rollup-plugin-postcss';
+import svgo from 'rollup-plugin-svgo';
 
 /* Inline to single html */
 import htmlBundle from 'rollup-plugin-html-bundle';
@@ -16,7 +19,7 @@ import htmlBundle from 'rollup-plugin-html-bundle';
 const production = !process.env.ROLLUP_WATCH;
 
 export default [{
-	input: 'src/main.js',
+	input: 'src/main.ts',
 	output: {
 		sourcemap: true,
 		format: 'iife',
@@ -25,8 +28,15 @@ export default [{
 	},
 	plugins: [
 		svelte({
-			// enable run-time checks when not in production
-			dev: !production
+
+			preprocess: sveltePreprocess({
+				sourceMap: !production,
+			}),
+			compilerOptions: {
+				dev: !production
+
+			}
+
 		}),
 
 		// If you have external dependencies installed from
@@ -40,7 +50,19 @@ export default [{
 			extensions: ['.svelte', '.mjs', '.js', '.json', '.node']
 		}),
 		commonjs(),
+		typescript(),
 		svg(),
+		svgo({
+			plugins: [{
+				removeViewBox: false
+			}, {
+				removeDimensions: true
+			}, {
+				convertColors: {
+					currentColors: true
+				}
+			}]
+		}),
 		postcss({
 			config: {
 				path: './postcss.config.js'
@@ -77,16 +99,21 @@ export default [{
 		name: 'code'
 	},
 	plugins: [
-		resolve(),
-		typescript(),
-		commonjs(),
-		production && terser(),
 		copy({
 			targets: [
 				{ src: 'manifest.json', dest: 'public' },
 			],
-			hook: 'writeBundle' // notice here
-		})
+			copyOnce: true
+		}),
+		resolve(),
+		typescript(),
+		commonjs(),
+		injectProcessEnv({
+			'process.env.PKG_VERSION': JSON.stringify(pkg.version),
+			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+		}),
+		production && terser()
+
 	]
 }
 ];
