@@ -8,6 +8,11 @@ module.exports = {
             md: 'var(--font-size-large)',
             lg: 'var(--font-size-xlarge)',
         },
+        fontWeight: {
+            normal: 'var(--font-weight-normal: 400)',
+            medium: 'var(---font-weight-medium: 500',
+            bold: 'var(---font-weight-bold: 600'
+        },
         spacing: {
             0: '0px',
             1: '1px',

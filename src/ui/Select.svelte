@@ -16,12 +16,26 @@
   type btnStateType = keyof typeof btnState;
 </script>
 
-<button type="button">
+<button type="button" class={state}>
+  {@html iconState[state]}
   {btnState[state]}
 </button>
 
 <style>
   button {
     @apply px-xxs py-xxxs;
+    @apply flex gap-xxs;
+    @apply text-md;
+    @apply font-bold;
+  }
+  .inactive {
+    @apply hover:bg-[var(--figma-color-bg-hover)];
+    @apply font-medium;
+  }
+  .active {
+    @apply border-2 border-dotted border-spacing-xxxs rounded-md;
+    @apply bg-[var(--figma-color-bg-selected-pressed)];
+  }
+  .set {
   }
 </style>
