@@ -2,6 +2,7 @@
   //import Global CSS from the svelte boilerplate
   //contains Figma color vars, spacing vars, utility classes and more
   import { GlobalCSS } from "figma-plugin-ds-svelte";
+  import Tailwind from "./Tailwind.svelte";
 
   //import some Svelte Figma UI components
   import { Button, Input, Label, SelectMenu } from "figma-plugin-ds-svelte";
@@ -40,6 +41,7 @@
   }
 </script>
 
+<Tailwind />
 <div class="wrapper p-xxsmall">
   <Label>Shape</Label>
   <SelectMenu bind:menuItems bind:value={selectedShape} class="mb-xxsmall" />
@@ -52,6 +54,7 @@
       >Cancel</Button
     >
     <Button on:click={createShapes} bind:disabled>Create shapes</Button>
+    <div class="bg-gray-600 w-full h-20" />
   </div>
 </div>
 

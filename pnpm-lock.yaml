@@ -26,7 +26,7 @@ specifiers:
   sirv-cli: ^2.0.2
   svelte: ^3.50.1
   svg-pathdata: ^6.0.3
-  tailwindcss: ^3.1.8
+  tailwindcss: ^3.2.3
   transformation-matrix: ^2.13.0
   tslib: ^2.4.0
   typescript: ^4.8.4
@@ -35,7 +35,7 @@ dependencies:
   figma-plugin-ds-svelte: 1.4.3
   svelte: 3.50.1
   svg-pathdata: 6.0.3
-  tailwindcss: 3.1.8_postcss@8.4.17
+  tailwindcss: 3.2.3_postcss@8.4.17
   transformation-matrix: 2.13.0
 
 devDependencies:
@@ -410,15 +410,18 @@ packages:
       acorn: 7.4.1
       acorn-walk: 7.2.0
       xtend: 4.0.2
+    dev: false
 
   /acorn-walk/7.2.0:
     resolution: {integrity: sha512-OPdCF6GsMIP+Az+aWfAAOEt2/+iVDKE7oy6lJ098aoe59oAmK76qV6Gw60SbZ8jHuG2wH058GF4pLFbYamYrVA==}
     engines: {node: '>=0.4.0'}
+    dev: false
 
   /acorn/7.4.1:
     resolution: {integrity: sha512-nQyp0o1/mNdbTO1PO6kHkwSrmgZ0MT/jCCpNiwbUjGoRN4dlBhqJtoQuCnEOKzgTVwg0ZWiCoQy6SxMebQVh8A==}
     engines: {node: '>=0.4.0'}
     hasBin: true
+    dev: false
 
   /acorn/8.8.0:
     resolution: {integrity: sha512-QOxyigPVrpZ2GXT+PFyZTl6TtOFc5egxHIP9IlQ+RbupQuX4RkT/Bee4/kQuC02Xkzg84JcT7oLYtDIQxp+v7w==}
@@ -773,6 +776,7 @@ packages:
 
   /defined/1.0.0:
     resolution: {integrity: sha512-Y2caI5+ZwS5c3RiNDJ6u53VhQHv+hHKwhkI1iHvceKUHw9Df6EK2zRLfjejRgMuCuxK7PfSWIMwWecceVvThjQ==}
+    dev: false
 
   /dependency-graph/0.11.0:
     resolution: {integrity: sha512-JeMq7fEshyepOWDfcfHK06N3MhyPhz++vtqWhMT5O9A3K42rdsEDpfdVqjaqaAhsw6a+ZqeDvQVtD0hFHQWrzg==}
@@ -1201,6 +1205,7 @@ packages:
 
   /minimist/1.2.6:
     resolution: {integrity: sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==}
+    dev: false
 
   /mri/1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
@@ -1782,6 +1787,17 @@ packages:
     dependencies:
       postcss: 8.4.17
       postcss-selector-parser: 6.0.10
+    dev: true
+
+  /postcss-nested/6.0.0_postcss@8.4.17:
+    resolution: {integrity: sha512-0DkamqrPcmkBDsLn+vQDIrtkSbNkv5AD/M322ySo9kqFkCIYklym2xEmWkwo+Y3/qZo34tzEPNUw4y7yMCdv5w==}
+    engines: {node: '>=12.0'}
+    peerDependencies:
+      postcss: ^8.2.14
+    dependencies:
+      postcss: 8.4.17
+      postcss-selector-parser: 6.0.10
+    dev: false
 
   /postcss-nesting/10.2.0_postcss@8.4.17:
     resolution: {integrity: sha512-EwMkYchxiDiKUhlJGzWsD9b2zvq/r2SSubcRrgP+jujMXFzqvANLt16lJANC+5uZ6hjI7lpRmI6O8JIl+8l1KA==}
@@ -2377,6 +2393,7 @@ packages:
 
   /svelte-click-outside/1.0.0:
     resolution: {integrity: sha512-TVDn5Vd8L0WI0Y9BFh/2I7judkIqYCbFKkGwGl/f8D0inwBFNyU0weKhrbJY4VQtYnWriq0NPl+mIYGisgALbw==}
+    dev: false
 
   /svelte/3.50.1:
     resolution: {integrity: sha512-bS4odcsdj5D5jEg6riZuMg5NKelzPtmsCbD9RG+8umU03TeNkdWnP6pqbCm0s8UQNBkqk29w/Bdubn3C+HWSwA==}
@@ -2401,8 +2418,8 @@ packages:
       stable: 0.1.8
     dev: true
 
-  /tailwindcss/3.1.8_postcss@8.4.17:
-    resolution: {integrity: sha512-YSneUCZSFDYMwk+TGq8qYFdCA3yfBRdBlS7txSq0LUmzyeqRe3a8fBQzbz9M3WS/iFT4BNf/nmw9mEzrnSaC0g==}
+  /tailwindcss/3.2.3_postcss@8.4.17:
+    resolution: {integrity: sha512-Xt9D4PK4zuuQCEB8bwK9JUCKmTgUwyac/6b0/42Vqhgl6YJkep+Wf5wq+5uXYfmrupdAD0YY2NY1hyZp1HjRrg==}
     engines: {node: '>=12.13.0'}
     hasBin: true
     peerDependencies:
@@ -2418,6 +2435,7 @@ packages:
       glob-parent: 6.0.2
       is-glob: 4.0.3
       lilconfig: 2.0.6
+      micromatch: 4.0.5
       normalize-path: 3.0.0
       object-hash: 3.0.0
       picocolors: 1.0.0
@@ -2425,7 +2443,7 @@ packages:
       postcss-import: 14.1.0_postcss@8.4.17
       postcss-js: 4.0.0_postcss@8.4.17
       postcss-load-config: 3.1.4_postcss@8.4.17
-      postcss-nested: 5.0.6_postcss@8.4.17
+      postcss-nested: 6.0.0_postcss@8.4.17
       postcss-selector-parser: 6.0.10
       postcss-value-parser: 4.2.0
       quick-lru: 5.1.1
@@ -2527,6 +2545,7 @@ packages:
   /xtend/4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
+    dev: false
 
   /y18n/5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
