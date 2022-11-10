@@ -54,7 +54,6 @@
       >Cancel</Button
     >
     <Button on:click={createShapes} bind:disabled>Create shapes</Button>
-    <div class="bg-gray-600 w-full h-20" />
   </div>
 </div>
 

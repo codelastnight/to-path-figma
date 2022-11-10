@@ -6,7 +6,7 @@ import {
   rotateDEG,
 } from "transformation-matrix";
 import type { Matrix } from "transformation-matrix";
-import type { BezierObject } from "./lib/curve";
+import type { BezierObject } from "./curve";
 
 export const place = (
   node: SceneNode, // to clone
