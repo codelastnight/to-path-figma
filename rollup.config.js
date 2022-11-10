@@ -5,6 +5,7 @@ import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import svg from 'rollup-plugin-svg';
 import typescript from '@rollup/plugin-typescript';
+import copy from 'rollup-plugin-copy'
 
 /* Post CSS */
 import postcss from 'rollup-plugin-postcss';
@@ -79,9 +80,16 @@ export default [{
 		resolve(),
 		typescript(),
 		commonjs(),
-		production && terser()
+		production && terser(),
+		copy({
+			targets: [
+				{ src: 'manifest.json', dest: 'public' },
+			],
+			hook: 'writeBundle' // notice here
+		})
 	]
-}];
+}
+];
 
 function serve() {
 	let started = false;
