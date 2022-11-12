@@ -5,6 +5,7 @@
   import Tailwind from "./Tailwind.svelte";
   //import some Svelte Figma UI components
   import { Button, Input, Label, SelectMenu } from "figma-plugin-ds-svelte";
+  import Select from "./ui/Select.svelte";
 
   //menu items, this is an array of objects to populate to our select menus
   let menuItems = [
@@ -35,7 +36,7 @@
       "*"
     );
   }
-
+  let state = "inactive";
   function cancel() {
     parent.postMessage({ pluginMessage: { type: "cancel" } }, "*");
   }
@@ -45,6 +46,7 @@
 <div class="flex flex-col h-full justify-between">
   <main class="p-xxs">
     <Label>Object</Label>
+    <Select bind:state type="Vector Path" />
     <SelectMenu bind:menuItems bind:value={selectedShape} class="" />
 
     <Label>Count</Label>
@@ -69,7 +71,7 @@
   </footer>
 </div>
 
-<style>
+<style lang="postcss">
   /* Add additional global or scoped styles here */
   .footer-info {
     @apply flex justify-between;

@@ -12,6 +12,8 @@ import sveltePreprocess from 'svelte-preprocess';
 /* Post CSS */
 import postcss from 'rollup-plugin-postcss';
 import svgo from 'rollup-plugin-svgo';
+import css from 'rollup-plugin-css-only'
+
 
 /* Inline to single html */
 import htmlBundle from 'rollup-plugin-html-bundle';
@@ -22,7 +24,7 @@ export default [{
 	input: 'src/main.ts',
 	output: {
 		sourcemap: true,
-		format: 'iife',
+		format: 'es',
 		name: 'ui',
 		file: 'src/build/bundle.js'
 	},
@@ -31,6 +33,12 @@ export default [{
 
 			preprocess: sveltePreprocess({
 				sourceMap: !production,
+				typescript: {
+					tsconfigFile: './tsconfig.json',
+				},
+				postcss: {
+					plugins: [require('tailwindcss'), require('autoprefixer')]
+				}
 			}),
 			compilerOptions: {
 				dev: !production
@@ -50,7 +58,6 @@ export default [{
 			extensions: ['.svelte', '.mjs', '.js', '.json', '.node']
 		}),
 		commonjs(),
-		typescript(),
 		svg(),
 		svgo({
 			plugins: [{
@@ -63,10 +70,15 @@ export default [{
 				}
 			}]
 		}),
-		postcss({
-			config: {
-				path: './postcss.config.js'
-			}
+		// postcss({
+		// 	config: {
+		// 		path: './postcss.config.js'
+		// 	}
+		// }),
+		css({
+			output: 'src/build/bundle.css',
+			mangle: production,
+			compress: production,
 		}),
 		htmlBundle({
 			template: 'src/template.html',

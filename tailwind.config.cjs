@@ -2,6 +2,15 @@ module.exports = {
     content: ['./index.html', './src/**/*.{svelte,js,ts}'],
 
     theme: {
+        colors: {
+            'bg-inverse': 'var(--figma-color-bg-inverse)',
+            'text-oninverse': 'var(--figma-color-text-oninverse)',
+            'bg-hover': 'var(--figma-color-bg-hover)',
+            'bg-selected-pressed': 'var(--figma-color-bg-selected-pressed)',
+            'secondary': 'var(--figma-color-secondary)',
+            'bg-secondary': 'var(--figma-color-bg-secondary)',
+            'border': 'var(--figma-color-border)'
+        },
         fontSize: {
             xs: 'var(--font-size-xsmall)',
             sm: 'var(--font-size-small)',
@@ -9,9 +18,9 @@ module.exports = {
             lg: 'var(--font-size-xlarge)',
         },
         fontWeight: {
-            normal: 'var(--font-weight-normal: 400)',
-            medium: 'var(---font-weight-medium: 500',
-            bold: 'var(---font-weight-bold: 600'
+            normal: 'var(--font-weight-normal)',
+            medium: 'var(---font-weight-medium)',
+            bold: 'var(---font-weight-bold)'
         },
         spacing: {
             0: '0px',
@@ -38,4 +47,8 @@ module.exports = {
         extend: {},
     },
     plugins: [],
+    future: {
+        purgeLayersByDefault: true,
+        removeDeprecatedGapUtilities: true,
+    }
 }
