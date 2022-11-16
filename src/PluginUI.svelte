@@ -2,10 +2,15 @@
   //import Global CSS from the svelte boilerplate
   //contains Figma color vars, spacing vars, utility classes and more
   import { GlobalCSS } from "figma-plugin-ds-svelte";
+  import pathIcon from "./components/icons/path.svg";
+  import pathEmptyIcon from "./components/icons/path-empty.svg";
+  import shapeIcon from "./components/icons/shape.svg";
+  import shapeEmptyIcon from "./components/icons/shape-empty.svg";
+
   import Tailwind from "./Tailwind.svelte";
   //import some Svelte Figma UI components
   import { Button, Input, Label, SelectMenu } from "figma-plugin-ds-svelte";
-  import Select from "./ui/Select.svelte";
+  import Select from "./components/Select.svelte";
 
   //menu items, this is an array of objects to populate to our select menus
   let menuItems = [
@@ -16,27 +21,15 @@
   window.oncontextmenu = null;
 
   var disabled = true;
-  var selectedShape;
   var count = 5;
   const version = "v2.0.0";
 
-  //this is a reactive variable that will return false when a value is selected from
-  //the select menu, its value is bound to the primary buttons disabled prop
-  $: disabled = selectedShape === null;
+  let shapeState = "inactive";
+  let pathState = "inactive";
+  let selected: "path" | "shape" = "path";
 
-  function createShapes() {
-    parent.postMessage(
-      {
-        pluginMessage: {
-          type: "create-shapes",
-          count: count,
-          shape: selectedShape.value,
-        },
-      },
-      "*"
-    );
-  }
-  let state = "inactive";
+  $ if (shapeState === "active")
+
   function cancel() {
     parent.postMessage({ pluginMessage: { type: "cancel" } }, "*");
   }
@@ -44,20 +37,30 @@
 
 <Tailwind />
 <div class="flex flex-col h-full justify-between">
-  <main class="p-xxs">
-    <Label>Object</Label>
-    <Select bind:state type="Vector Path" />
-    <SelectMenu bind:menuItems bind:value={selectedShape} class="" />
+  <main class="">
+    <header class="px-xxs">
+      <Label>Object</Label>
+      <Select
+        bind:state={shapeState}
+        type="Shape or Text"
+        icons={[shapeEmptyIcon, shapeIcon]}
+      />
+      <Label>Path</Label>
+      <Select
+        bind:state={pathState}
+        type="Vector Path"
+        icons={[pathEmptyIcon, pathIcon]}
+      />
+    </header>
 
     <Label>Count</Label>
-    <Input iconText="#" bind:value={count} class="mb-xxsmall" />
   </main>
   <footer>
     <div class="p-xxs flex justify-between">
       <Button on:click={cancel} variant="secondary" class="mr-xsmall">
         Cancel
       </Button>
-      <Button on:click={createShapes} bind:disabled>Create shapes</Button>
+      <Button bind:disabled>Create shapes</Button>
     </div>
     <div class="footer-info">
       <p class="">{version}</p>
