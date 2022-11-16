@@ -24,7 +24,7 @@ export default [{
 	input: 'src/main.ts',
 	output: {
 		sourcemap: true,
-		format: 'es',
+		format: 'iife',
 		name: 'ui',
 		file: 'src/build/bundle.js'
 	},
@@ -75,11 +75,11 @@ export default [{
 		// 		path: './postcss.config.js'
 		// 	}
 		// }),
-		css({
-			output: 'src/build/bundle.css',
-			mangle: production,
-			compress: production,
-		}),
+		// css({
+		// 	output: 'bundle.css',
+		// 	mangle: production,
+		// 	compress: production,
+		// }),
 		htmlBundle({
 			template: 'src/template.html',
 			target: 'public/index.html',

@@ -33,9 +33,9 @@
     {btnState[state]}
   </div>
   {#if (state = "set")}
-    <Button on:click|stopPropagation={close}>
+    <button on:click={close}>
       {@html x}
-    </Button>
+    </button>
   {/if}
 </button>
 
