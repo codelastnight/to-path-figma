@@ -1,3 +1,4 @@
+import "./app.postcss";
 import App from "./PluginUI.svelte";
 
 const app = new App({

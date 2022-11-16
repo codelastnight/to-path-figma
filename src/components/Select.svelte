@@ -1,6 +1,6 @@
 <script lang="ts">
-  import cursorIcon from "./icons/cursor.svg";
-  import x from "./icons/x.svg";
+  import CursorIcon from "./icons/cursor.svg";
+  import X from "./icons/x.svg";
   import { Button } from "figma-plugin-ds-svelte";
 
   export let type: string = "";
@@ -13,7 +13,7 @@
   };
   const iconState = {
     inactive: icons[0],
-    active: cursorIcon,
+    active: CursorIcon,
     set: icons[1],
   };
   type btnStateType = keyof typeof btnState;
@@ -27,32 +27,50 @@
   }
 </script>
 
-<button type="button" class={state} on:click={setactive}>
-  <div>
-    {@html iconState[state]}
-    {btnState[state]}
+{#if state === "set"}
+  <div class={`button ${state}`} on:click={setactive}>
+    <div class="flex gap-xxxs">
+      <div class="icon">
+        {@html iconState[state]}
+      </div>
+      {btnState[state]}
+    </div>
+    {#if state === "set"}
+      <button class="p-0 icon" on:click={close}>
+        {@html X}
+      </button>
+    {/if}
   </div>
-  {#if (state = "set")}
-    <button on:click={close}>
-      {@html x}
-    </button>
-  {/if}
-</button>
+{:else}
+  <button type="button" class={`button ${state}`} on:click={setactive}>
+    <div class="flex gap-xxxs items-center">
+      <div class="icon">
+        {@html iconState[state]}
+      </div>
+      {btnState[state]}
+    </div>
+    {#if state === "set"}
+      <button class="p-0 icon" on:click={close}>
+        {@html X}
+      </button>
+    {/if}
+  </button>
+{/if}
 
 <style lang="postcss">
   /* this is an attempt at more semantic css in tailwind */
-  button {
-    @apply px-xxs py-xxxs rounded-md;
-    @apply flex gap-xxs;
-    @apply text-md font-bold;
+  .button {
+    @apply px-xxs rounded-md;
+    @apply flex gap-xxs items-center w-full;
+    @apply text-md  border-[1.5px] border-transparent;
   }
   .inactive {
     @apply hover:bg-[var(--figma-color-bg-hover)];
-    @apply font-medium cursor-pointer;
+    @apply cursor-pointer;
   }
   .active {
-    @apply border-2 border-dotted border-spacing-xxxs;
-    @apply bg-[var(--figma-color-bg-selected-pressed)];
+    @apply border-dashed border-[var(--figma-color-border-selected)];
+    @apply font-medium bg-[var(--figma-color-bg-selected)] text-[var(--figma-color-text-selected)];
   }
   .set {
     @apply bg-[var(--figma-color-bg-inverse)];

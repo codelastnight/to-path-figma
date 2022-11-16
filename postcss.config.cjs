@@ -1,12 +1,13 @@
-import tailwind from 'tailwindcss';
-import autoprefixer from 'autoprefixer';
-import cssnano from 'cssnano';
-import tailwindConfig from './tailwind.config.cjs';
-module.exports = {
+const tailwindcss = require("tailwindcss");
+const autoprefixer = require("autoprefixer");
 
-    plugins: [
-        tailwind(tailwindConfig),
-        autoprefixer(),
-        cssnano()
-    ],
+const config = {
+  plugins: [
+    //Some plugins, like tailwindcss/nesting, need to run before Tailwind,
+    tailwindcss(),
+    //But others, like autoprefixer, need to run after,
+    autoprefixer,
+  ],
 };
+
+module.exports = config;
