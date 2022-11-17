@@ -2,15 +2,11 @@
   //import Global CSS from the svelte boilerplate
   //contains Figma color vars, spacing vars, utility classes and more
   import { GlobalCSS } from "figma-plugin-ds-svelte";
-  import pathIcon from "./components/icons/path.svg";
-  import pathEmptyIcon from "./components/icons/path-empty.svg";
-  import shapeIcon from "./components/icons/shape.svg";
-  import shapeEmptyIcon from "./components/icons/shape-empty.svg";
 
   import Tailwind from "./Tailwind.svelte";
   //import some Svelte Figma UI components
   import { Button, Input, Label, SelectMenu } from "figma-plugin-ds-svelte";
-  import Select from "./components/Select.svelte";
+  import ObjectSelector from "./components/ObjectSelector.svelte";
 
   //menu items, this is an array of objects to populate to our select menus
   let menuItems = [
@@ -24,12 +20,6 @@
   var count = 5;
   const version = "v2.0.0";
 
-  let shapeState = "inactive";
-  let pathState = "inactive";
-  let selected: "path" | "shape" = "path";
-
-  $ if (shapeState === "active")
-
   function cancel() {
     parent.postMessage({ pluginMessage: { type: "cancel" } }, "*");
   }
@@ -39,18 +29,7 @@
 <div class="flex flex-col h-full justify-between">
   <main class="">
     <header class="px-xxs">
-      <Label>Object</Label>
-      <Select
-        bind:state={shapeState}
-        type="Shape or Text"
-        icons={[shapeEmptyIcon, shapeIcon]}
-      />
-      <Label>Path</Label>
-      <Select
-        bind:state={pathState}
-        type="Vector Path"
-        icons={[pathEmptyIcon, pathIcon]}
-      />
+      <ObjectSelector />
     </header>
 
     <Label>Count</Label>

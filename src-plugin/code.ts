@@ -2,7 +2,7 @@ import { svgToBezier } from "./lib/curve";
 import { textToPoints } from "./lib/text";
 import * as Things from "./lib/things";
 
-const defaultSettings: SettingData = {
+const defaultSettings = {
   verticalAlign: 0.5,
   horizontalAlign: 0.5,
   spacing: 20,
@@ -16,6 +16,7 @@ const defaultSettings: SettingData = {
   precision: 420,
   reverse: false,
 };
+type settingsData = typeof defaultSettings
 let currentPreview: VectorNode[] = [];
 let isCalculating = false;
 // This shows the HTML page in "ui.html".
