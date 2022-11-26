@@ -37,25 +37,11 @@ export default defineConfig({
                 }]
         }
     })
-        //svelteSVG({
-        //     svgoConfig: {
-        //         plugins: [{
-        //             removeViewBox: false
-        //         }, {
-        //             removeDimensions: true
-        //         }, {
-        //             convertColors: {
-        //                 currentColors: true
-        //             }
-        //         }]
-        //     }, // See https://github.com/svg/svgo#configuration
-        //     requireSuffix: false, // Set false to accept '.svg' without the '?component'
-        // }),
+
         , viteSingleFile()],
-    // css: {
-    //     postcss
-    // },
+
     build: {
+        sourcemap: true,
         target: "esnext",
         assetsInlineLimit: 100000000,
         chunkSizeWarningLimit: 100000000,
@@ -64,9 +50,7 @@ export default defineConfig({
         outDir: "../public",
         rollupOptions: {
             inlineDynamicImports: true,
-            // output: {
-            //     manualChunks: () => "everything.js",
-            // },
+
         },
     },
 });

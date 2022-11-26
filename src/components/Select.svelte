@@ -9,17 +9,20 @@
   export let icons: any[] = ["", ""];
   export let objectName = "";
 
-  $: if (!!objectName) state = "set";
+  //$: if (!!objectName) state = "set";
 
   const dispatch = createEventDispatcher();
 
-  const clear = () => dispatch("clear");
+  const clear = () => {
+    dispatch("clear");
+    state = "active";
+  };
   const active = () => dispatch("active");
 
   const btnState = {
     inactive: `No ${type} Selected`,
     active: `Select a ${type}`,
-    set: objectName,
+    set: "",
   };
   const iconState = {
     inactive: icons[0],
@@ -35,18 +38,18 @@
 </script>
 
 {#if state === "set"}
-  <div class={`button ${state}`}>
-    <div class="flex gap-xxxs">
+  <div class={`button justify-between ${state}`}>
+    <div class="flex gap-xxxs items-center button-text ">
       <div class="icon">
         {@html iconState[state]}
       </div>
-      {btnState[state]}
+      <p class="truncate">
+        {objectName}
+      </p>
     </div>
-    {#if state === "set"}
-      <button class="p-0 icon" on:click={clear}>
-        {@html X}
-      </button>
-    {/if}
+    <button class="p-0 icon icon-button" on:click={clear}>
+      {@html X}
+    </button>
   </div>
 {:else}
   <button type="button" class={`button ${state}`} on:click={active}>
@@ -56,19 +59,14 @@
       </div>
       {btnState[state]}
     </div>
-    {#if state === "set"}
-      <button class="p-0 icon" on:click={close}>
-        {@html X}
-      </button>
-    {/if}
   </button>
 {/if}
 
 <style lang="postcss">
   /* this is an attempt at more semantic css in tailwind */
   .button {
-    @apply px-xxs rounded-md;
-    @apply flex gap-xxs items-center w-full;
+    @apply px-xxxs rounded-md;
+    @apply flex items-center w-full;
     @apply text-sm border-[1.5px] border-transparent;
   }
   .inactive {
@@ -82,5 +80,12 @@
   .set {
     @apply bg-[var(--figma-color-bg-inverse)];
     @apply text-[var(--figma-color-text-oninverse)];
+  }
+  .icon-button {
+    @apply hover:bg-[var(--figma-color-bg-inverse-hover)];
+  }
+  .button-text {
+    flex: 1;
+    min-width: 0;
   }
 </style>

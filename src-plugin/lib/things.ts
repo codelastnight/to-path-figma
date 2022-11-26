@@ -58,7 +58,7 @@ export const place = (
   }
 
   const group = figma.flatten(clonedNodes, curveNode.parent);
-  group.opacity = 0.2;
+  group.opacity = 0.4;
   group.locked = true;
 
   return group;

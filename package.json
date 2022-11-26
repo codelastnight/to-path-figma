@@ -4,8 +4,6 @@
   "description": "plugin that puts things on paths in figma design tool",
   "main": "code.js",
   "scripts": {
-    "build:old": "rollup -c ",
-    "dev:old": "rollup -c -w",
     "start": "sirv public",
     "preinstall": "npx only-allow pnpm",
     "tsc": "npm run tsc:main && npm run tsc:ui",
