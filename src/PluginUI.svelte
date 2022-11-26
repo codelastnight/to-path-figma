@@ -7,18 +7,21 @@
   //import some Svelte Figma UI components
   import { Button, Input, Label, SelectMenu } from "figma-plugin-ds-svelte";
   import ObjectSelector from "./components/ObjectSelector.svelte";
+  import Options from "./components/Options.svelte";
 
-  //menu items, this is an array of objects to populate to our select menus
-  let menuItems = [
-    { value: "rectangle", label: "Rectangle", group: null, selected: false },
-    { value: "triangle", label: "Triangle ", group: null, selected: false },
-    { value: "circle", label: "Circle", group: null, selected: false },
-  ];
   window.oncontextmenu = null;
 
   var disabled = true;
-  var count = 5;
   const version = "v2.0.0";
+
+  let onSelection;
+  let onOptionsChange;
+
+  onmessage = (event) => {
+    const msg = event.data.pluginMessage;
+    onSelection(msg);
+    onOptionsChange(msg);
+  };
 
   function cancel() {
     parent.postMessage({ pluginMessage: { type: "cancel" } }, "*");
@@ -29,15 +32,17 @@
 <div class="flex flex-col h-full justify-between">
   <main class="">
     <header class="px-xxs">
-      <ObjectSelector />
+      <ObjectSelector bind:onSelection />
     </header>
 
-    <Label>Count</Label>
+    <div class="figma-divider mt-xxs" />
+    <Options bind:onOptionsChange />
   </main>
   <footer>
+    <div class="figma-divider" />
     <div class="p-xxs flex justify-between">
-      <Button on:click={cancel} variant="secondary" class="mr-xsmall">
-        Cancel
+      <Button on:click={cancel} variant="tertiary" class="mr-xsmall">
+        Tutorial
       </Button>
       <Button bind:disabled>Create shapes</Button>
     </div>

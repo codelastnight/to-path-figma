@@ -18,6 +18,7 @@ specifiers:
   rollup: ^3.3.0
   svelte: ^3.53.1
   svelte-preprocess: ^4.10.7
+  svelte-range-slider-pips: ^2.1.0
   svg-pathdata: ^6.0.3
   svgo: ^3.0.1
   tailwindcss: ^3.2.4
@@ -31,8 +32,8 @@ specifiers:
 
 dependencies:
   figma-plugin-ds-svelte: 1.4.3
-  rollup: 3.3.0
   svelte: 3.53.1
+  svelte-range-slider-pips: 2.1.0
   svg-pathdata: 6.0.3
   tailwindcss: 3.2.4_postcss@8.4.19
   transformation-matrix: 2.14.0
@@ -51,6 +52,7 @@ devDependencies:
   postcss-cli: 10.0.0_postcss@8.4.19
   postcss-load-config: 4.0.1_postcss@8.4.19
   postcss-preset-env: 7.8.2_postcss@8.4.19
+  rollup: 3.3.0
   svelte-preprocess: 4.10.7_ipbdh7cyfqksu7wxqf2yjzz6i4
   svgo: 3.0.1
   tslib: 2.4.1
@@ -2181,6 +2183,7 @@ packages:
     hasBin: true
     optionalDependencies:
       fsevents: 2.3.2
+    dev: true
 
   /run-parallel/1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
@@ -2360,6 +2363,10 @@ packages:
       svelte: 3.53.1
       typescript: 4.8.4
     dev: true
+
+  /svelte-range-slider-pips/2.1.0:
+    resolution: {integrity: sha512-WpJQSXo1RG++mIKOkkfmcFho9ngzIBl7fPl0bDzpa6yFTFbxeFUVF5KkUSaiZwzs2SNT3xy6nAUeVLbVQ74JLA==}
+    dev: false
 
   /svelte/3.53.1:
     resolution: {integrity: sha512-Q4/hHkktZogGhN5iqxqSi9sjEVoe/NbIxX4hXEHoasTxj+TxEQVAq66LnDMdAZxjmsodkoI5F3slqsS68U7FNw==}

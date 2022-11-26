@@ -2,21 +2,7 @@ import { svgToBezier } from "./lib/curve";
 import { textToPoints } from "./lib/text";
 import * as Things from "./lib/things";
 
-const defaultSettings = {
-  verticalAlign: 0.5,
-  horizontalAlign: 0.5,
-  spacing: 20,
-  count: 10,
-  autoWidth: true,
-  totalLength: 0,
-  isLoop: false,
-  objWidth: 0,
-  offset: 0,
-  rotCheck: true,
-  precision: 420,
-  reverse: false,
-};
-type settingsData = typeof defaultSettings;
+import { defaultOptions, optionsType } from "../config";
 
 let selectedItems = {
   path: "",
@@ -27,15 +13,13 @@ type selectionType = "shape" | "path" | "none";
 let currentPreview: VectorNode[] = [];
 let isCalculating = false;
 let selectionMode: selectionType = "shape";
-
-// This shows the HTML page in "ui.html".
-figma.showUI(__html__, { themeColors: true, width: 250, height: 480 });
+let currentOptions: optionsType | null = null;
 
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the
 // posted message.
 figma.ui.onmessage = (msg) => {
-  console.log("code:", msg);
+  console.log(msg);
   if (msg.type === "selection:set-active") {
     selectionMode = msg.selectionMode;
     figma.ui.postMessage({
@@ -56,6 +40,12 @@ figma.ui.onmessage = (msg) => {
 
   if (msg.type === "selection:generate") {
     selectionMode = msg.selectionMode;
+    generate();
+  }
+
+  if (msg.type === "options:set") {
+    currentOptions = msg.options;
+    currentPreview = clearPreview(currentPreview);
     generate();
   }
 };
@@ -93,7 +83,8 @@ figma.on("selectionchange", () => {
   }
 });
 function clearPreview(selection) {
-  if (selection == null || selection.length === 0) return;
+  if (selection === undefined || selection === null || selection.length === 0)
+    return selection;
   selection.forEach((previewNode) => {
     if (previewNode.removed) return;
     previewNode.remove();
@@ -106,9 +97,25 @@ function generate() {
   const path = figma.getNodeById(selectedItems.path) as VectorNode;
   const curve = svgToBezier(path.vectorPaths[0].data);
   const shape = figma.getNodeById(selectedItems.shape) as SceneNode;
-  const preview = Things.place(shape, path, curve, defaultSettings);
+  const preview = Things.place(shape, path, curve, currentOptions);
+  console.log(currentPreview);
   currentPreview = [preview, ...currentPreview];
 }
+
+function init() {
+  figma.skipInvisibleInstanceChildren = true;
+  currentOptions = defaultOptions;
+  if (!!currentOptions)
+    figma.ui.postMessage({
+      type: "options:get",
+      options: defaultOptions,
+    });
+}
+figma.once("run", () => {
+  init();
+});
+// This shows the HTML page in "ui.html".
+figma.showUI(__html__, { themeColors: true, width: 250, height: 480 });
 
 figma.on("close", () => {
   currentPreview = clearPreview(currentPreview);

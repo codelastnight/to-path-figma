@@ -29,12 +29,6 @@
     active: CursorIcon,
     set: icons[1],
   };
-  type btnStateType = keyof typeof btnState;
-  function setactive() {
-    if (state === "inactive") {
-      state = "active";
-    }
-  }
 </script>
 
 {#if state === "set"}

@@ -9,7 +9,20 @@
   import { postMessage } from "./util";
   //const dispatch = createEventDispatcher();
   // this code is um... dont look!!!
-
+  export const onSelection = (msg) => {
+    if (msg.type === "selection:set-active") {
+      console.log("ui:", msg);
+      selectionMode = msg.selectionMode;
+      if (selectionMode !== "none") {
+        if ("name" in msg && !!msg.name) {
+          names[msg.selectionMode] = msg.name;
+          state[msg.selectionMode] = "set";
+          if (state[reverse[msg.selectionMode]] !== "set")
+            SetActive(reverse[msg.selectionMode]);
+        }
+      }
+    }
+  };
   let state = {
     shape: "active",
     path: "inactive",
@@ -34,22 +47,6 @@
       postMessage("selection:generate", { selectionMode: selectionMode });
     }
   }
-
-  onmessage = (event) => {
-    const msg = event.data.pluginMessage;
-    if (msg.type === "selection:set-active") {
-      console.log("ui:", msg);
-      selectionMode = msg.selectionMode;
-      if (selectionMode !== "none") {
-        if ("name" in msg && !!msg.name) {
-          names[msg.selectionMode] = msg.name;
-          state[msg.selectionMode] = "set";
-          if (state[reverse[msg.selectionMode]] !== "set")
-            SetActive(reverse[msg.selectionMode]);
-        }
-      }
-    }
-  };
 
   function SetActive(selectId: "path" | "shape" | "none") {
     if (selectId === "none") return;
