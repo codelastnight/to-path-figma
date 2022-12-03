@@ -11,7 +11,6 @@
   // this code is um... dont look!!!
   export const onSelection = (msg) => {
     if (msg.type === "selection:set-active") {
-      console.log("ui:", msg);
       selectionMode = msg.selectionMode;
       if (selectionMode !== "none") {
         if ("name" in msg && !!msg.name) {

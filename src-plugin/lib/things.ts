@@ -7,23 +7,25 @@ import {
 } from "transformation-matrix";
 import type { Matrix } from "transformation-matrix";
 import type { BezierObject } from "./curve";
-
+import type { optionsType, Point } from "../../config";
+import { getPointfromCurve } from "./curve";
 export const place = (
   node: SceneNode, // to clone
   curveNode: VectorNode,
   curve: BezierObject[],
-  options: SettingData,
+  options: optionsType,
   groupNode: GroupNode = undefined,
   position = 0
 ) => {
   const totalLength = curve[curve.length - 1].cumulative;
-  let curvePos = 0;
   const totalCount = options.count;
-
   const spacing = options.autoWidth
     ? totalLength / (totalCount - 1)
     : options.spacing;
+
   let clonedNodes = [];
+  let curvePos = 0;
+
   for (var count = position; count < totalCount; count++) {
     // select curve based on spacing
     const position = spacing * count;
@@ -62,25 +64,6 @@ export const place = (
   group.locked = true;
 
   return group;
-};
-
-/**
- * get point and angle from position t for either a bezier or line.
- */
-const getPointfromCurve = (
-  current: BezierObject,
-  t: number
-): { angle: number; point: Point } => {
-  if (current.type === "CUBIC") {
-    const { point, angle } = current.bezier.get(t);
-
-    return { point, angle };
-  } else if (current.type === "LINE") {
-    const point = pointBtwn(current.points[0], current.points[1], t);
-    const angle = current.angle;
-    return { angle, point };
-  }
-  throw "failed at getPointfromCurve(). You should not see this error. Please contact developer if you do. ";
 };
 
 /**

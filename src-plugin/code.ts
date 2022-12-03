@@ -14,12 +14,11 @@ let currentPreview: VectorNode[] = [];
 let isCalculating = false;
 let selectionMode: selectionType = "shape";
 let currentOptions: optionsType | null = null;
-
+let isText = false;
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the
 // posted message.
 figma.ui.onmessage = (msg) => {
-  console.log(msg);
   if (msg.type === "selection:set-active") {
     selectionMode = msg.selectionMode;
     figma.ui.postMessage({
@@ -40,13 +39,13 @@ figma.ui.onmessage = (msg) => {
 
   if (msg.type === "selection:generate") {
     selectionMode = msg.selectionMode;
-    generate();
+    isText ? generateText() : generate();
   }
 
   if (msg.type === "options:set") {
     currentOptions = msg.options;
     currentPreview = clearPreview(currentPreview);
-    generate();
+    isText ? generateText() : generate();
   }
 };
 
@@ -59,6 +58,7 @@ figma.on("selectionchange", () => {
   const node = selection[0];
 
   if (selectionMode === "shape" && node !== null) {
+    isText = false;
     selectedItems.shape = node.id;
     figma.ui.postMessage({
       type: "selection:set-active",
@@ -78,8 +78,15 @@ figma.on("selectionchange", () => {
       name: node.name,
       selectionMode: selectionMode,
     });
-  } else if (selectionMode === "shape" && node.type === "TEXT") {
-    textToPoints(node.fillGeometry[0].data);
+  }
+  if (selectionMode === "shape" && node.type === "TEXT") {
+    isText = true;
+    selectedItems.shape = node.id;
+    figma.ui.postMessage({
+      type: "selection:set-active",
+      name: node.name,
+      selectionMode: selectionMode,
+    });
   }
 });
 function clearPreview(selection) {
@@ -93,12 +100,28 @@ function clearPreview(selection) {
   return [];
 }
 function generate() {
+  figma.ui.postMessage({
+    type: "loading:set",
+    isLoading: true,
+  });
   if (selectedItems.path === "" || selectedItems.shape === "") return;
   const path = figma.getNodeById(selectedItems.path) as VectorNode;
   const curve = svgToBezier(path.vectorPaths[0].data);
   const shape = figma.getNodeById(selectedItems.shape) as SceneNode;
   const preview = Things.place(shape, path, curve, currentOptions);
-  console.log(currentPreview);
+  currentPreview = [preview, ...currentPreview];
+  figma.ui.postMessage({
+    type: "loading:set",
+    isLoading: false,
+  });
+}
+
+function generateText() {
+  if (selectedItems.path === "" || selectedItems.shape === "") return;
+  const path = figma.getNodeById(selectedItems.path) as VectorNode;
+  const curve = svgToBezier(path.vectorPaths[0].data);
+  const text = figma.getNodeById(selectedItems.shape) as TextNode;
+  const preview = textToPoints(text, path, currentOptions, curve);
   currentPreview = [preview, ...currentPreview];
 }
 

@@ -5,13 +5,22 @@
 
   import Tailwind from "./Tailwind.svelte";
   //import some Svelte Figma UI components
-  import { Button, Input, Label, SelectMenu } from "figma-plugin-ds-svelte";
+  import {
+    Button,
+    Input,
+    Label,
+    SelectMenu,
+    Icon,
+    IconSpinner,
+  } from "figma-plugin-ds-svelte";
   import ObjectSelector from "./components/ObjectSelector.svelte";
   import Options from "./components/Options.svelte";
+  import { merge_ssr_styles } from "svelte/internal";
 
   window.oncontextmenu = null;
 
-  var disabled = true;
+  var isLoading = true;
+
   const version = "v2.0.0";
 
   let onSelection;
@@ -21,8 +30,12 @@
     const msg = event.data.pluginMessage;
     onSelection(msg);
     onOptionsChange(msg);
+    onSetLoading(msg);
   };
 
+  function onSetLoading(msg) {
+    if (msg.type === "loading:set") isLoading = msg.isLoading;
+  }
   function cancel() {
     parent.postMessage({ pluginMessage: { type: "cancel" } }, "*");
   }
@@ -44,7 +57,13 @@
       <Button on:click={cancel} variant="tertiary" class="mr-xsmall">
         Tutorial
       </Button>
-      <Button bind:disabled>Create shapes</Button>
+      <Button bind:disabled={isLoading}>
+        {#if isLoading}
+          <Icon iconName={IconSpinner} color="black" spin />
+        {:else}
+          Generate!
+        {/if}
+      </Button>
     </div>
     <div class="footer-info">
       <p class="">{version}</p>

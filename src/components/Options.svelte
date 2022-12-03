@@ -47,7 +47,8 @@
         <RangeSlider
           values={[options.count]}
           min={2}
-          max={100}
+          max={50}
+          id="slider-count"
           on:change={handleSlider}
         />
       </div>

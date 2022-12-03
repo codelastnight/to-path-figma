@@ -1,3 +1,5 @@
+import type { Point } from "../../config";
+
 export interface Bezier {
   a: Point;
   b: Point;

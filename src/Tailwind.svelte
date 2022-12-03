@@ -12,4 +12,7 @@
       border-color: var(--figma-color-border);
     }
   }
+  #slider-count {
+    @apply text-xs;
+  }
 </style>

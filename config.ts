@@ -13,3 +13,7 @@ export const defaultOptions = {
   reverse: false,
 };
 export type optionsType = typeof defaultOptions;
+export interface Point {
+  x: number;
+  y: number;
+}

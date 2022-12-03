@@ -4,6 +4,11 @@
       "lib": ["es6"],
       "strict": false,
       "typeRoots": [      "../node_modules/@types",
-      "../node_modules/@figma"]
+      "../node_modules/@figma"],
+      "baseUrl": ".",
+      "moduleResolution": "node",
+      "paths": {
+        "*": ["../node_modules/*"]
+    },
     }
   }
