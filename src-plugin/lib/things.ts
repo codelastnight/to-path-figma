@@ -1,10 +1,4 @@
-import {
-  scale,
-  rotate,
-  translate,
-  compose,
-  rotateDEG,
-} from "transformation-matrix";
+import { rotate, translate, compose } from "transformation-matrix";
 import type { Matrix } from "transformation-matrix";
 import type { BezierObject } from "./curve";
 import type { optionsType, Point } from "../../config";
@@ -71,7 +65,7 @@ export const place = (
  * @param m figma matrix array
  * @returns matrix object
  */
-const FigmaMatrixToObj = (m: Transform): Matrix => {
+export const FigmaMatrixToObj = (m: Transform): Matrix => {
   return {
     a: m[0][0],
     c: m[0][1],
@@ -87,7 +81,7 @@ const FigmaMatrixToObj = (m: Transform): Matrix => {
  * @param m figma matrix array
  * @returns matrix object
  */
-const ObjToFigmaMatrix = (m: Matrix): Transform => {
+export const ObjToFigmaMatrix = (m: Matrix): Transform => {
   return [
     [m.a, m.c, m.e],
     [m.b, m.d, m.f],

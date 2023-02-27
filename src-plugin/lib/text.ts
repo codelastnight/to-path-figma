@@ -1,18 +1,16 @@
 import { SVGPathData, encodeSVGPath } from "svg-pathdata";
 import type { SVGCommand } from "svg-pathdata/lib/types";
-
 import {
-  scale,
   rotate,
   translate,
   compose,
+  scale,
   applyToPoint,
   applyToPoints,
 } from "transformation-matrix";
-import type { Matrix } from "transformation-matrix";
-
 import { BezierObject, getPointfromCurve } from "./curve";
 import type { optionsType, Point } from "../../config";
+import { FigmaMatrixToObj, ObjToFigmaMatrix } from "./things";
 
 /**
  * turn text svg code is into curved one.
@@ -27,85 +25,79 @@ export const textToPoints = (
   curve: BezierObject[] = undefined,
   position = 0
 ) => {
-  const svgData = textNode.fillGeometry[0].data;
-  const paths = svgData.split("Z").slice(0, -1); // remove extra array at the end
+  const svgData = figma.flatten([textNode.clone()], curveNode.parent);
+  const paths = svgData.vectorPaths;
 
   const totalLength = curve[curve.length - 1].cumulative;
   let clonedNodes = [];
   let curvePos = 0;
 
-  const newpaths = paths.reduce((prev, path) => {
-    path += "Z"; //put this guy back
-
-    const { commands } = new SVGPathData(path);
+  const newpaths = paths.map((path) => {
+    //path += "Z"; //put this guy back
+    const pathData = new SVGPathData(path.data);
+    const commands = pathData.commands;
     const bounds = getBounds(commands);
+
     const center: Point = {
       x: 0 - (bounds[1].x - bounds[0].x) * options.horizontalAlign, // no horozonatal align on text, kerning gets fucked up
       y: 0 - (bounds[1].y - bounds[0].y) * options.verticalAlign,
     };
 
-    const letterPos = bounds[0].x + center.x;
-    if (letterPos > totalLength) return;
+    const letterPos = bounds[0].x;
+    //    console.log(letterPos);
+    if (letterPos > totalLength) return path;
     if (letterPos > curve[curvePos].cumulative) {
       curvePos += 1;
     }
     const current = curve[curvePos];
     const t =
       (letterPos - (current.cumulative - current.length)) / current.length;
-
+    //console.log(letterPos, t);
+    //  if (t < 0) throw "math error";
     const { angle, point } = getPointfromCurve(current, t);
+    const baseMatrix = FigmaMatrixToObj(curveNode.relativeTransform);
     const transformMatrix = compose(
-      translate(point.x, point.y),
-      rotate(angle),
-      translate(center.x, center.y)
+      //  baseMatrix,
+      translate(point.x, point.y)
+      //rotate(angle)
+      // translate(center.x, center.y),
     );
-    const tranformedCommands = commands.map((point) => {
-      if (point.type === SVGPathData.CLOSE_PATH) return point;
-      else if (
-        point.type === SVGPathData.LINE_TO ||
-        point.type === SVGPathData.MOVE_TO
-      ) {
-        const newPoint = applyToPoint(transformMatrix, {
-          x: point.x,
-          y: point.y,
-        });
-        point.x = newPoint.x;
-        point.y = newPoint.y;
-      } else if (point.type === SVGPathData.CURVE_TO) {
-        const newPoints = applyToPoints(transformMatrix, [
-          [point.x, point.y],
-          [point.x1, point.y1],
-          [point.x2, point.y2],
-        ]);
-        point = {
-          type: point.type,
-          relative: point.relative,
-          x: newPoints[0][0],
-          y: newPoints[0][1],
-          x1: newPoints[1][0],
-          y1: newPoints[1][1],
-          x2: newPoints[2][0],
-          y2: newPoints[2][1],
-        };
-      }
+    const originMatrix = pathData.matrix(
+      transformMatrix.a,
+      transformMatrix.b,
+      transformMatrix.c,
+      transformMatrix.d,
+      transformMatrix.e,
+      transformMatrix.f
+    );
+    //const star = figma.createStar();
+    ///curveNode.parent.appendChild(star);
+    //star.relativeTransform = ObjToFigmaMatrix(transformMatrix);
+    const newPathData = encodeSVGPath(originMatrix.commands)
+      .replace(/((-?\d)([a-zA-Z]))/g, "$2 $3") // add space btn number and letter
+      .replace(/(([a-zA-Z])(-?\d))/g, "$2 $3") // add sapce btn letter and number
+      .toUpperCase()
 
-      return point;
-    });
+      .replace(/(Z)(M)/g, "$1 $2")
 
-    return prev + " " + encodeSVGPath(tranformedCommands);
+      .trim();
+    return { windingRule: path.windingRule, data: newPathData };
   });
-  const newNode = figma.flatten([textNode.clone()]);
-  const regex = newpaths.replace(
-    /(([a-zA-Z])(-?\d))|((-?\d)([a-zA-Z]))/g,
-    "$2 $3"
-  );
-  console.log(regex);
-  newNode.vectorPaths = [
-    {
-      windingRule: "EVENODD",
-      data: regex,
-    },
-  ];
+
+  const newNode = figma.flatten([textNode.clone()], curveNode.parent);
+  newNode.relativeTransform = curveNode.relativeTransform;
+
+  // //lol regex
+  // const regex = newpaths
+  //   .replace(/((-?\d)([a-zA-Z]))/g, "$2 $3") // add space btn number and letter
+  //   .replace(/(([a-zA-Z])(-?\d))/g, "$2 $3") // add sapce btn letter and number
+  //   .replace(/(\s\s+)/g, " ") // remove double spaces
+  //   .toUpperCase()
+  //   .trim();
+  //console.log(regex);
+  newNode.vectorPaths = newpaths;
+  svgData.remove();
+
   return newNode;
 };
 

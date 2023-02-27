@@ -4,8 +4,7 @@
   "description": "plugin that puts things on paths in figma design tool",
   "main": "code.js",
   "scripts": {
-    "start": "sirv public",
-    "preinstall": "npx only-allow pnpm",
+    "test": "vitest",
     "tsc": "npm run tsc:main && npm run tsc:ui",
     "tsc:main": "tsc --noEmit -p src-plugin",
     "tsc:ui": "tsc --noEmit -p src",
@@ -14,7 +13,10 @@
     "build:main": "esbuild src-plugin/code.ts --bundle --outfile=public/code.js",
     "build:ui": "npx vite build --minify esbuild --emptyOutDir=false",
     "build:watch": "concurrently -n widget,iframe \"npm run build:main -- --watch\" \"npm run build:ui -- --watch\"",
-    "dev": "concurrently -n tsc,build,vite 'npm:tsc:watch' 'npm:build:watch' 'vite'"
+    "dev": "concurrently -n tsc,build,vite 'npm:tsc:watch' 'npm:build:watch' 'vite'",
+    "coverage": "vitest run --coverage",
+    "start": "sirv public",
+    "preinstall": "npx only-allow pnpm"
   },
   "repository": {
     "type": "git",
@@ -34,7 +36,7 @@
   },
   "homepage": "https://github.com/codelastnight/to-path-figma#readme",
   "devDependencies": {
-    "@figma/plugin-typings": "^1.55.1",
+    "@figma/plugin-typings": "^1.58.0",
     "@sveltejs/vite-plugin-svelte": "^1.2.0",
     "@tsconfig/svelte": "^3.0.0",
     "@types/node": "^18.11.9",
@@ -55,7 +57,8 @@
     "vite": "^3.2.4",
     "vite-plugin-singlefile": "^0.13.1",
     "vite-plugin-svelte-svg": "^2.0.2",
-    "vite-svg-loader": "^3.6.0"
+    "vite-svg-loader": "^3.6.0",
+    "vitest": "^0.28.5"
   },
   "dependencies": {
     "figma-plugin-ds-svelte": "^1.4.3",

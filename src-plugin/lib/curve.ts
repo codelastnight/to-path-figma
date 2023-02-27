@@ -1,6 +1,7 @@
 //import {Bezier} from 'bezier-js';
 import { Bezier } from "./bezier";
 import type { Point } from "../../config";
+import { pointBtwn } from "./things";
 interface LineInfo {
   type: "LINE";
   points: Point[];
@@ -98,6 +99,8 @@ export const getPointfromCurve = (
   current: BezierObject,
   t: number
 ): { angle: number; point: Point } => {
+  // hotfix if t is less then 0
+  if (t < 0) t = 0.001;
   if (current.type === "CUBIC") {
     const { point, angle } = current.bezier.get(t);
 

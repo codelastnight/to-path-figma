@@ -1,7 +1,7 @@
 import { svgToBezier } from "./lib/curve";
 import { textToPoints } from "./lib/text";
 import * as Things from "./lib/things";
-
+import { transformVectorNetwork } from "./lib/transformVectorNetwork";
 import { defaultOptions, optionsType } from "../config";
 
 let selectedItems = {
@@ -121,7 +121,7 @@ function generateText() {
   const path = figma.getNodeById(selectedItems.path) as VectorNode;
   const curve = svgToBezier(path.vectorPaths[0].data);
   const text = figma.getNodeById(selectedItems.shape) as TextNode;
-  const preview = textToPoints(text, path, currentOptions, curve);
+  const preview = transformVectorNetwork(text, path, currentOptions, curve);
   currentPreview = [preview, ...currentPreview];
 }
 
