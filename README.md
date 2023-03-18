@@ -4,8 +4,8 @@
 - [x] rewrite core bezier algorithm
 - [x] rethink "preview" functionality
 - [x] refactor "place objects" code
-- [ ] rewrite text to path function
-- [ ] redesign UI (partially done)
+- [x] rewrite text to path function
+- [x] redesign UI (partially done)
 - [ ] implement new ui
 - [ ] test and review
 
