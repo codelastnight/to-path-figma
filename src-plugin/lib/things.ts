@@ -87,21 +87,3 @@ export const ObjToFigmaMatrix = (m: Matrix): Transform => {
     [m.b, m.d, m.f],
   ];
 };
-
-/**
- * find point between two points a and b over time
- * *in this case time is pixels
- * @param a point a
- * @param b point b
- * @param t current time
- * @param dist total time
- */
-export const pointBtwn = (a: Point, b: Point, t: number): Point => {
-  //find the unit  vector between points a and b
-  // not really unit vector in the math sense tho
-  //const unitVector: Point = { x: , y: }
-  return {
-    x: a.x + (b.x - a.x) * t,
-    y: a.y + (b.y - a.y) * t,
-  };
-};

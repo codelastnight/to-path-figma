@@ -1,7 +1,6 @@
 //import {Bezier} from 'bezier-js';
 import { Bezier } from "./bezier";
 import type { Point } from "../../config";
-import { pointBtwn } from "./things";
 interface LineInfo {
   type: "LINE";
   points: Point[];
@@ -111,4 +110,20 @@ export const getPointfromCurve = (
     return { angle, point };
   }
   throw "failed at getPointfromCurve(). You should not see this error. Please contact developer if you do. ";
+};
+
+/**
+ * find unit point between two points a and b over time
+ * *in this case time is pixels
+ * @param a point a
+ * @param b point b
+ * @param t current time
+ */
+export const pointBtwn = (a: Point, b: Point, t: number): Point => {
+  // i think "unit" in this case is 1 figma pixel
+  // const unitVector: Point = { x: , y: }
+  return {
+    x: a.x + (b.x - a.x) * t,
+    y: a.y + (b.y - a.y) * t,
+  };
 };
