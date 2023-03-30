@@ -1,7 +1,7 @@
 import { svgToBezier } from "./lib/curve";
 import { textToPoints } from "./lib/text";
 import * as Things from "./lib/things";
-import { transformVectorNetwork } from "./lib/transformVectorNetwork";
+import { transformVectorNetwork } from "./lib/textToVectorNetwork";
 import { defaultOptions, optionsType } from "../config";
 
 let selectedItems = {
