@@ -1,7 +1,7 @@
 import { svgToBezier } from "./lib/curve";
-import { textToPoints } from "./lib/text";
+//import { textToPoints } from "./lib/text";
 import * as Things from "./lib/things";
-import { transformVectorNetwork } from "./lib/textToVectorNetwork";
+import { textToVectorNetwork } from "./lib/textToVectorNetwork";
 import { defaultOptions, optionsType } from "../config";
 
 let selectedItems = {
@@ -119,12 +119,9 @@ function generate() {
 function generateText() {
   if (selectedItems.path === "" || selectedItems.shape === "") return;
   const path = figma.getNodeById(selectedItems.path) as VectorNode;
-  const transform = path.absoluteTransform;
-  const selectionX = transform[0][2];
-  const selectionY = transform[1][2];
   const curve = svgToBezier(path.vectorPaths[0].data);
   const text = figma.getNodeById(selectedItems.shape) as TextNode;
-  const preview = transformVectorNetwork(text, path, currentOptions, curve);
+  const preview = textToVectorNetwork(text, path, currentOptions, curve);
   currentPreview = [preview, ...currentPreview];
 }
 

@@ -3,13 +3,14 @@ import {
   translate,
   compose,
   applyToPoint,
-  applyToPoints,
   decomposeTSR,
 } from "transformation-matrix";
 import { getPointfromCurve } from "./curve";
 import type { BezierObject } from "./curve";
 import type { optionsType, Point } from "../../config";
 import { FigmaMatrixToObj, ObjToFigmaMatrix } from "./things";
+
+// fix to stop typescript from yelling at me for mutating (sorry)
 type Mutable<T> = { -readonly [P in keyof T]: T[P] };
 
 export function textToVectorNetwork(
@@ -28,11 +29,9 @@ export function textToVectorNetwork(
   let newVertices = [];
   let newSegments = [];
   let firstPoint = { x: 0, y: 0 };
+
+  //fix for applying curveNode transform to new generated transform
   const endmatrix = decomposeTSR(FigmaMatrixToObj(curveNode.absoluteTransform));
-  const transform = curveNode.absoluteTransform;
-  const selectionX = transform[0][2];
-  const selectionY = transform[1][2];
-  console.log(selectionX, selectionY);
   // funny workaround for getting baseline, bc we dont have access to actual font baseline data
   let textBaseline = 0;
   vectorNetwork.regions.forEach((region, index) => {
@@ -42,9 +41,7 @@ export function textToVectorNetwork(
     const letterPosition = bounds[0].x + horizontalCenter; // get centered position for letter
 
     if (letterPosition > totalLength) throw "text longer then curve";
-    if (letterPosition > curve[curveIndex].cumulative) {
-      curveIndex += 1;
-    }
+    if (letterPosition > curve[curveIndex].cumulative) curveIndex += 1;
     const currentCurve = curve[curveIndex];
     // calculate time t from curve
     const t =
@@ -77,6 +74,8 @@ export function textToVectorNetwork(
         ) as Mutable<VectorVertex>;
 
         const { x, y } = applyToPoint(transformMatrix, vertex);
+
+        //store first vertex point for fixing position later. see repositionVector()
         if (index === 0) firstPoint = { x: x, y: y };
 
         vertex.x = x;
@@ -100,7 +99,6 @@ export function textToVectorNetwork(
         newSegments.push(segment);
       });
     });
-    //if its the first point, calculate distance btwn new point and curve point store it for later
   });
   //apply changes
   const newVectorNetwork = {
