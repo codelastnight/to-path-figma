@@ -119,6 +119,9 @@ function generate() {
 function generateText() {
   if (selectedItems.path === "" || selectedItems.shape === "") return;
   const path = figma.getNodeById(selectedItems.path) as VectorNode;
+  const transform = path.absoluteTransform;
+  const selectionX = transform[0][2];
+  const selectionY = transform[1][2];
   const curve = svgToBezier(path.vectorPaths[0].data);
   const text = figma.getNodeById(selectedItems.shape) as TextNode;
   const preview = transformVectorNetwork(text, path, currentOptions, curve);

@@ -4,11 +4,12 @@ import {
   compose,
   applyToPoint,
   applyToPoints,
+  decomposeTSR,
 } from "transformation-matrix";
 import { getPointfromCurve } from "./curve";
 import type { BezierObject } from "./curve";
 import type { optionsType, Point } from "../../config";
-
+import { FigmaMatrixToObj, ObjToFigmaMatrix } from "./things";
 type Mutable<T> = { -readonly [P in keyof T]: T[P] };
 
 export function transformVectorNetwork(
@@ -27,12 +28,16 @@ export function transformVectorNetwork(
   let newVertices = [];
   let newSegments = [];
   let firstPoint = { x: 0, y: 0 };
+  const endmatrix = decomposeTSR(FigmaMatrixToObj(curveNode.absoluteTransform));
+  const transform = curveNode.absoluteTransform;
+  const selectionX = transform[0][2];
+  const selectionY = transform[1][2];
+  console.log(selectionX, selectionY);
   // funny workaround for getting baseline, bc we dont have access to actual font baseline data
   let textBaseline = 0;
   vectorNetwork.regions.forEach((region, index) => {
     const bounds = getBoundsFromVectorRegion(region, vectorNetwork);
     if (index === 0) textBaseline = (bounds[1].y - bounds[0].y) * 1;
-    console.log(textBaseline);
     const horizontalCenter = (bounds[1].x - bounds[0].x) * 0.5;
     const letterPosition = bounds[0].x + horizontalCenter; // get centered position for letter
 
@@ -53,12 +58,17 @@ export function transformVectorNetwork(
 
     //calculate transformation matrix to apply on character
     const transformMatrix = compose(
+      translate(endmatrix.translate.tx, endmatrix.translate.ty),
+      rotate(endmatrix.rotation.angle),
       translate(point.x - letterPosition, point.y - textBaseline),
       rotate(angle - perpendicular, letterPosition, textBaseline)
     );
 
     // calcualte separate rotation matrix for tangents
-    const rotationMatrix = rotate(angle - perpendicular);
+    const rotationMatrix = compose(
+      rotate(angle - perpendicular),
+      rotate(endmatrix.rotation.angle)
+    );
     // rotate and translate points. only rotate the tangents
     region.loops.forEach((loop) => {
       loop.forEach((segmentIndex) => {
@@ -67,6 +77,7 @@ export function transformVectorNetwork(
         ) as Mutable<VectorVertex>;
 
         const { x, y } = applyToPoint(transformMatrix, vertex);
+        if (index === 0) firstPoint = { x: x, y: y };
 
         vertex.x = x;
         vertex.y = y;
@@ -90,14 +101,6 @@ export function transformVectorNetwork(
       });
     });
     //if its the first point, calculate distance btwn new point and curve point store it for later
-    if (index === 0) {
-      const rotatedBounds = applyToPoints(transformMatrix, bounds);
-      firstPoint = {
-        x: rotatedBounds[0].x + (rotatedBounds[1].x - rotatedBounds[0].x) * 0.5,
-        y: rotatedBounds[0].y + (rotatedBounds[1].y - rotatedBounds[0].y) * 1,
-      };
-      console.log(firstPoint, point);
-    }
   });
   //apply changes
   const newVectorNetwork = {
@@ -109,15 +112,42 @@ export function transformVectorNetwork(
 
   // fixes weird winding rule issue when setting vectornetwrok
   const textCloneFix = figma.flatten([textClone.clone()], curveNode.parent);
-  textCloneFix.relativeTransform = curveNode.relativeTransform;
+  /// textCloneFix.relativeTransform = curveNode.relativeTransform;
   // reposition the new genretated text to match the curve
-  textCloneFix.x = textCloneFix.x + firstPoint.x;
-  textCloneFix.y = textCloneFix.y + firstPoint.y;
+  textCloneFix.relativeTransform = repositionVector(textCloneFix, firstPoint);
 
   //clean up
   textClone.remove();
 
   return textCloneFix;
+}
+
+/**
+ * repositions vector node to a known point.
+ * @param vector vector node to reposition
+ * @param absoluteVertexPoint reference absolute position that the vertex should be in
+ * @returns
+ */
+function repositionVector(vector: VectorNode, absoluteVertexPoint: Point) {
+  const position = {
+    x: vector.absoluteTransform[0][2],
+    y: vector.absoluteTransform[1][2],
+  };
+  //get absolute position of vector node, add it to the vertex point,
+  const initPoint = {
+    x: position.x + vector.vectorNetwork.vertices[0].x,
+    y: position.y + vector.vectorNetwork.vertices[0].y,
+  };
+  // then subtract that from absoluteVertexPoint, calculated before as the actual absolute position that the new object needs to be in
+  const fixPoint = {
+    x: absoluteVertexPoint.x - initPoint.x,
+    y: absoluteVertexPoint.y - initPoint.y,
+  };
+  const applyFix = compose(
+    FigmaMatrixToObj(vector.relativeTransform),
+    translate(fixPoint.x, fixPoint.y)
+  );
+  return ObjToFigmaMatrix(applyFix);
 }
 
 /**
