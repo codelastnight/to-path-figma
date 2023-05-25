@@ -75,8 +75,8 @@
     @apply bg-[var(--figma-color-bg-inverse)];
     @apply text-[var(--figma-color-text-oninverse)];
   }
-  .icon-button {
-    @apply hover:bg-[var(--figma-color-bg-inverse-hover)];
+  .icon-button:hover {
+    @apply bg-[var(--figma-color-icon-hover)];
   }
   .button-text {
     flex: 1;

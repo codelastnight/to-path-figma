@@ -47,7 +47,7 @@
     }
   }
 
-  function SetActive(selectId: "path" | "shape" | "none") {
+  function SetActive(selectId: "path" | "shape" | "text" | "none") {
     if (selectId === "none") return;
     selectionMode = selectId;
     state[selectId] = "active";
@@ -64,7 +64,7 @@
   }
 </script>
 
-<Label>Object</Label>
+<Label>Object or Text</Label>
 <Select
   state={state.shape}
   type="Shape or Text"
