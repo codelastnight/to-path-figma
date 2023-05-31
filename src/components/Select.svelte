@@ -6,9 +6,9 @@
 
   export let type: string = "";
   export let state: string = "inactive";
-  export let icons: any[] = ["", ""];
+  export let icons: any[] = ["", "", ""];
   export let objectName = "";
-
+  export let altIcon = false;
   //$: if (!!objectName) state = "set";
 
   const dispatch = createEventDispatcher();
@@ -27,13 +27,13 @@
   const iconState = {
     inactive: icons[0],
     active: CursorIcon,
-    set: icons[1],
+    set: icons[altIcon ? 2 : 1],
   };
 </script>
 
 {#if state === "set"}
   <div class={`button justify-between ${state}`}>
-    <div class="flex gap-xxxs items-center button-text ">
+    <div class="flex gap-xxxs items-center button-text">
       <div class="icon">
         {@html iconState[state]}
       </div>
@@ -66,8 +66,11 @@
   .inactive {
     @apply hover:bg-[var(--figma-color-bg-hover)];
     @apply cursor-pointer;
+    @apply text-[var(--figma-color-text)];
   }
   .active {
+    @apply text-[var(--figma-color-text)];
+
     @apply border-dashed border-[var(--figma-color-border-selected)];
     @apply font-medium bg-[var(--figma-color-bg-selected)] text-[var(--figma-color-text-selected)];
   }

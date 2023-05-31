@@ -15,4 +15,7 @@
   #slider-count {
     @apply text-xs;
   }
+  body {
+    @apply text-[var(--figma-color-text)];
+  }
 </style>

@@ -3,6 +3,7 @@
   import { Input, IconTidyUpGrid, Label } from "figma-plugin-ds-svelte";
   import RangeSlider from "svelte-range-slider-pips";
   import { postMessage } from "./util";
+  import Slider from "./Slider.svelte";
 
   let timer;
   let options: optionsType | null = null;
@@ -28,30 +29,20 @@
       postMessage("options:set", { options: optionData });
     }, time);
   }
-  function handleSlider(e) {
-    const data = e.detail;
-    options.count = data.value;
-  }
 </script>
 
 {#if !!options}
   <div class="px-xxs">
-    <Label>Count</Label>
-    <div class="flex items-center gap-xxs">
-      <Input
-        class="basis-0 min-w-[5rem] "
-        bind:value={options.count}
+    <div class="w-full">
+      <Slider
+        value={options.count}
+        min={2}
+        max={50}
+        id="slider-count"
+        label="Count"
         iconName={IconTidyUpGrid}
+        on:change={(e) => (options.count = e.detail.value)}
       />
-      <div class="w-full">
-        <RangeSlider
-          values={[options.count]}
-          min={2}
-          max={50}
-          id="slider-count"
-          on:change={handleSlider}
-        />
-      </div>
     </div>
   </div>
 {/if}
