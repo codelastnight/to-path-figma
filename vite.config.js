@@ -52,7 +52,9 @@ export default defineConfig({
         brotliSize: false,
         outDir: "../public",
         rollupOptions: {
-            inlineDynamicImports: true,
+            output: {
+                inlineDynamicImports: true,
+            }
 
         },
     },

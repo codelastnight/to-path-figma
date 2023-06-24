@@ -1,6 +1,6 @@
-//import {Bezier} from 'bezier-js';
 import { Bezier } from "./bezier";
 import type { Point } from "../../config";
+
 interface LineInfo {
   type: "LINE";
   points: Point[];
@@ -44,10 +44,10 @@ export const svgToBezier = (svgData: string): BezierObject[] => {
         splitPoints[splitPoints.length - 1],
       ]; //this adds the last point from the previous array into the next one.
 
-      const numberPoints = splitPoints.map((value) => {
-        return parseFloat(value);
-      });
+      //convert string to float
+      const numberPoints = splitPoints.map((value) => parseFloat(value));
       if (numberPoints.length === 8) {
+        // if its a cubic bezier
         const curve = new Bezier(numberPoints, 100);
         cumulative += curve.length;
         const data: BezierInfo = {
@@ -58,20 +58,22 @@ export const svgToBezier = (svgData: string): BezierObject[] => {
         };
         return data;
       } else if (numberPoints.length === 4) {
-        const linePoints = [
+        // if its a line bezier
+
+        const points = [
           { x: numberPoints[0], y: numberPoints[1] },
           { x: numberPoints[2], y: numberPoints[3] },
         ];
-        const length = distBtwn(linePoints[0], linePoints[1]);
+        const length = distBtwn(points[0], points[1]);
         cumulative += length;
         const data: LineInfo = {
           type: "LINE",
-          points: linePoints,
-          length: length,
-          cumulative: cumulative,
+          points,
+          length,
+          cumulative,
           angle: Math.atan2(
-            linePoints[1].y - linePoints[0].y,
-            linePoints[1].x - linePoints[0].x
+            points[1].y - points[0].y,
+            points[1].x - points[0].x
           ),
         };
         return data;
