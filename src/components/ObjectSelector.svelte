@@ -6,7 +6,7 @@
   import textIcon from "./icons/text.svg";
   import { Button, Input, Label, SelectMenu } from "figma-plugin-ds-svelte";
   import Select from "./Select.svelte";
-  import { postMessage } from "./util";
+  import { postMessage } from "./util/message";
   //const dispatch = createEventDispatcher();
   // this code is um... dont look!!!
 

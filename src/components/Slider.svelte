@@ -1,5 +1,10 @@
-<script>
+<script lang="ts">
+  /**modified from:
+   * https://svelte.dev/repl/7f0042a186ee4d8e949c46ca663dbe6c?version=3.33.0
+   */
   import { createEventDispatcher } from "svelte";
+  import { Input, Label, IconLayoutGridUniform } from "figma-plugin-ds-svelte";
+  import debounce from "./util/debounce";
   import { fly, fade } from "svelte/transition";
 
   // Props
@@ -9,8 +14,9 @@
   export let id = null;
   export let value =
     typeof initialValue === "string" ? parseInt(initialValue) : initialValue;
+
   export let label = "label";
-  export let iconName = "";
+  export let iconName = null;
   // Node Bindings
   let container = null;
   let thumb = null;
@@ -24,6 +30,13 @@
   let thumbHover = false;
   let keydownAcceleration = 0;
   let accelerationTimer = null;
+
+  const onInputSet = debounce((e) => {
+    const val = e.target.value;
+    if (!val || val === "") return;
+
+    setValue(typeof val === "string" ? parseInt(val) : val);
+  }, 200);
 
   // Dispatch 'change' events
   const dispatch = createEventDispatcher();
@@ -152,7 +165,7 @@
   $: if (progressBar && thumb) {
     // Limit value min -> max
     value = value > min ? value : min;
-    value = value < max ? value : max;
+    //value = value < max ? value : max;
 
     let percent = ((value - min) * 100) / (max - min);
     let offsetLeft = container.clientWidth * (percent / 100) + 5;
@@ -171,43 +184,42 @@
   on:mouseup={onDragEnd}
   on:resize={resizeWindow}
 />
-<div class="flex justify-between">
-  <Label>{label}</Label>
+<div>
+  <div class="flex justify-between items-center pt-xxs">
+    <p class="h-[20px] text-xs text-[var(--figma-color-text-secondary)]">
+      {label}
+    </p>
 
-  <Input class="basis-0 min-w-[5rem] " bind:value {iconName} />
-</div>
-<div class="range">
-  <div
-    class="range__wrapper"
-    tabindex="0"
-    on:keydown={onKeyPress}
-    bind:this={element}
-    role="slider"
-    aria-valuemin={min}
-    aria-valuemax={max}
-    aria-valuenow={value}
-    {id}
-    on:mousedown={onTrackEvent}
-    on:touchstart={onTrackEvent}
-  >
-    <div class="range__track" bind:this={container}>
-      <div class="range__track--highlighted" bind:this={progressBar} />
-      <div
-        class="range__thumb"
-        class:range__thumb--holding={holding}
-        bind:this={thumb}
-        on:touchstart={onDragStart}
-        on:mousedown={onDragStart}
-      >
-        <!-- {#if holding || thumbHover}
-          <div
-            class="range__tooltip"
-            in:fly={{ y: 7, duration: 200 }}
-            out:fade={{ duration: 100 }}
-          >
-            {value}
-          </div>
-        {/if} -->
+    <Input
+      class="input basis-0 min-w-[5rem] "
+      value={`${value}`}
+      min="2"
+      on:input={onInputSet}
+      {iconName}
+    />
+  </div>
+  <div class="range">
+    <div
+      class="range__wrapper"
+      tabindex="0"
+      on:keydown={onKeyPress}
+      bind:this={element}
+      role="slider"
+      aria-valuemin={min}
+      aria-valuemax={max}
+      aria-valuenow={value}
+      {id}
+      on:mousedown={onTrackEvent}
+      on:touchstart={onTrackEvent}
+    >
+      <div class="range__track" bind:this={container}>
+        <div class="range__track--highlighted" bind:this={progressBar} />
+        <div
+          class="range__thumb"
+          bind:this={thumb}
+          on:touchstart={onDragStart}
+          on:mousedown={onDragStart}
+        />
       </div>
     </div>
   </div>
@@ -228,27 +240,32 @@
   </style>
 </svelte:head>
 
-<style>
+<style lang="postcss">
+  :global(.input > input) {
+    text-align: end;
+    padding-right: var(--size-xxsmall);
+    @apply py-xxxs h-[20px];
+  }
   .range {
     position: relative;
     flex: 1;
     --track-focus: #c368ff;
     --thumb-holding-outline: rgba(191, 102, 251, 0.3);
+    border-radius: var(--size-xxsmall);
+
+    /* padding: 0 var(--size-xxsmall); */
   }
 
   .range__wrapper {
-    min-width: 100%;
-    position: relative;
-    /* padding: 0.5rem; */
     box-sizing: border-box;
     outline: none;
-    overflow: hidden;
-    border-radius: 0.7em;
-    cursor: ew-resize;
+    @apply relative cursor-pointer min-w-full;
+    @apply py-xxs;
   }
 
-  .range__wrapper:hover > .range__track {
-    background: #c368ff;
+  .range__wrapper:hover > .range__track,
+  .range__wrapper:active > .range__track {
+    background: var(--figma-color-bg-tertiary);
   }
 
   .range__wrapper:focus-visible {
@@ -257,47 +274,39 @@
   }
 
   .range__track {
-    height: 2em;
-    background-color: var(--figma-color-bg-secondary);
+    height: 2px;
+    background-color: var(--figma-color-bg-tertiary);
   }
 
   .range__track--highlighted {
-    /* background-color: var(--track-highlight-bgcolor, #6185ff);
-    background: var(
-      --track-highlight-bg,
-      linear-gradient(90deg, #6185ff, #9c65ff)
-    ); */
     background: var(--figma-color-text-onselected-tertiary);
     width: 0;
-    height: 2em;
+    height: 2px;
     position: absolute;
     /* border-radius: 999px; */
+  }
+  .range__wrapper:hover .range__track--highlighted,
+  .range__wrapper:active .range__track--highlighted {
+    background: var(--figma-color-bg-brand);
   }
 
   .range__thumb {
-    display: flex;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: var(--thumb-bgcolor, white);
-    cursor: pointer;
-    /* border-radius: 999px; */
-    margin-top: -8px;
-    transition: box-shadow 100ms;
+    width: 12px;
+    height: 12px;
+    @apply rounded-full bg-[var(--figma-color-bg)] -ml-[12px] -mt-[6px];
+    @apply absolute border-[1.2px] border-[var(--figma-color-text-onselected-tertiary)] cursor-pointer transition scale-90;
     user-select: none;
-    box-shadow: var(
-      --thumb-boxshadow,
-      0 1px 1px 0 rgba(0, 0, 0, 0.14),
-      0 0px 2px 1px rgba(0, 0, 0, 0.2)
-    );
   }
-
+  .range__thumb:hover {
+    background-color: var(--figma-color-bg-selected);
+  }
+  .range__thumb:active {
+    background-color: var(--figma-color-bg-selected-strong);
+  }
+  .range__wrapper:hover .range__thumb,
+  .range__wrapper:active .range__thumb {
+    @apply scale-100;
+  }
   .range__thumb--holding {
-    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.14),
-      0 1px 2px 1px rgba(0, 0, 0, 0.2),
-      0 0 0 6px var(--thumb-holding-outline, rgba(113, 119, 250, 0.3));
   }
 </style>

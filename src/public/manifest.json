@@ -1,14 +1,12 @@
 {
-	"name": "To Path",
-	"id": "751576264585242935",
-	"api": "1.0.0",
-	"main": "code.js",
-	"ui": "index.html",
-	"editorType": [
-		"figma"
-	  ],
-	"relaunchButtons": [
-		{"command": "relaunch", "name": "Edit Linked Path"}
-	  ]
-	
+  "name": "To Path",
+  "id": "751576264585242935",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "index.html",
+  "networkAccess": {
+    "allowedDomains": ["https://rsms.me"]
+  },
+  "editorType": ["figma"],
+  "relaunchButtons": [{ "command": "relaunch", "name": "Edit Linked Path" }]
 }
