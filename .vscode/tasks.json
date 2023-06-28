@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "App Build",
+      "label": "Sub:App Build",
       "command": "pnpm",
       "args": ["run", "build:main", "--watch"],
       "type": "shell",
@@ -11,7 +11,7 @@
       }
     },
     {
-      "label": "UI Build",
+      "label": "Sub:UI Build",
       "command": "pnpm",
       "args": ["run", "build:ui", "--watch"],
       "type": "shell",
@@ -20,8 +20,8 @@
       }
     },
     {
-      "label": "Build all",
-      "dependsOn": ["App Build", "UI Build"]
+      "label": "Build all watch",
+      "dependsOn": ["Sub:App Build", "Sub:UI Build"]
     }
   ]
 }
