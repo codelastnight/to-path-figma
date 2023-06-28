@@ -1,8 +1,9 @@
 import { rotate, translate, compose } from "transformation-matrix";
-import type { Matrix } from "transformation-matrix";
-import type { BezierObject } from "./curve";
+import { getPointfromCurve } from "./getPointfromCurve";
+import { FigmaMatrixToObj, ObjToFigmaMatrix } from "./helper";
+
+import type { BezierObject } from "./getPointfromCurve";
 import type { optionsType, Point } from "../../config";
-import { getPointfromCurve } from "./curve";
 export const place = (
   node: SceneNode, // to clone
   curveNode: VectorNode,
@@ -58,32 +59,4 @@ export const place = (
   group.locked = true;
 
   return group;
-};
-
-/**
- * convert figma matrix into one I can consume (I ate!!!)
- * @param m figma matrix array
- * @returns matrix object
- */
-export const FigmaMatrixToObj = (m: Transform): Matrix => {
-  return {
-    a: m[0][0],
-    c: m[0][1],
-    e: m[0][2],
-    b: m[1][0],
-    d: m[1][1],
-    f: m[1][2],
-  };
-};
-
-/**
- * convert matrix object into figma matrix (I ate!!!)
- * @param m figma matrix array
- * @returns matrix object
- */
-export const ObjToFigmaMatrix = (m: Matrix): Transform => {
-  return [
-    [m.a, m.c, m.e],
-    [m.b, m.d, m.f],
-  ];
 };

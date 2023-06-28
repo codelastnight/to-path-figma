@@ -1,4 +1,4 @@
-import { svgToBezier } from "./lib/curve";
+import svgToBezier from "./lib/svgToBezier";
 //import { textToPoints } from "./lib/text";
 import * as Things from "./lib/things";
 import { textToVectorNetwork } from "./lib/textToVectorNetwork";

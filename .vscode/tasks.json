@@ -1,0 +1,27 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "App Build",
+      "command": "pnpm",
+      "args": ["run", "build:main", "--watch"],
+      "type": "shell",
+      "presentation": {
+        "group": "build"
+      }
+    },
+    {
+      "label": "UI Build",
+      "command": "pnpm",
+      "args": ["run", "build:ui", "--watch"],
+      "type": "shell",
+      "presentation": {
+        "group": "build"
+      }
+    },
+    {
+      "label": "Build all",
+      "dependsOn": ["App Build", "UI Build"]
+    }
+  ]
+}

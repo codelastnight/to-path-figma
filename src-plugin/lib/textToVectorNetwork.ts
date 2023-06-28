@@ -5,10 +5,11 @@ import {
   applyToPoint,
   decomposeTSR,
 } from "transformation-matrix";
-import { getPointfromCurve } from "./curve";
-import type { BezierObject } from "./curve";
+import { getPointfromCurve } from "./getPointfromCurve";
+import { FigmaMatrixToObj, ObjToFigmaMatrix } from "./helper";
+
+import type { BezierObject } from "./getPointfromCurve";
 import type { optionsType, Point } from "../../config";
-import { FigmaMatrixToObj, ObjToFigmaMatrix } from "./things";
 
 // fix to stop typescript from yelling at me for mutating (sorry)
 type Mutable<T> = { -readonly [P in keyof T]: T[P] };
